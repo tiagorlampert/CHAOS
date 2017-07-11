@@ -22,6 +22,18 @@
 ## DISCLAIMER
 The use of the CHAOS Framework is COMPLETE RESPONSIBILITY of the END-USER. Developer assume NO liability and are NOT responsible for any misuse or damage caused by this program.
 
+## FEATURES
+* Windows Remote Control
+* Download File
+* Upload File
+* Persistence
+* Open Url Remotely
+* Get Operating System Name
+* Run Fork Bomb
+
+## TESTED ON
+[![Kali)](https://www.google.com/s2/favicons?domain=https://www.kali.org/)](https://www.kali.org) **Kali Linux - ROLLING EDITION**
+
 ## USAGE
 **You need Golang and UPX package installed!**
 
@@ -45,18 +57,6 @@ cd CHAOS
 go run CHAOS.go
 ```
 *Note: CHAOS has a delay of 70 seconds to bypass most of the antivirus and sandboxes.*
-
-## FEATURES
-* Windows Remote Control
-* Download File
-* Upload File
-* Persistence
-* Open Url Remotely
-* Get Operating System Name
-* Run Fork Bomb
-
-## TESTED ON
-[![Kali)](https://www.google.com/s2/favicons?domain=https://www.kali.org/)](https://www.kali.org) **Kali Linux - ROLLING EDITION**
 
 ## SCREENSHOT
 <img src="https://github.com/tiagorlampert/CHAOS/blob/master/content/screenshot.png">

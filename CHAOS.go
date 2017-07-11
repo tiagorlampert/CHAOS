@@ -1,4 +1,3 @@
-
 package main
 
 import(
@@ -98,41 +97,41 @@ func GeneratePath(str_size int) string {
 }
 
 func GenerateKey(Size int) string {
-    characters := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%&*()_-"
-    var bytes = make([]byte, Size)
-    rand.Read(bytes)
-    for i, x := range bytes {
-        bytes[i] = characters[x%byte(len(characters))]
-    }
-    return string(bytes)
+  characters := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%&*()_-"
+  var bytes = make([]byte, Size)
+  rand.Read(bytes)
+  for i, x := range bytes {
+      bytes[i] = characters[x%byte(len(characters))]
+  }
+  return string(bytes)
 }
 
 func GenerateNameFileTmp(Size int) string {
-    characters := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-    var bytes = make([]byte, Size)
-    rand.Read(bytes)
-    for i, x := range bytes {
-        bytes[i] = characters[x%byte(len(characters))]
-    }
-    return string(bytes)
+  characters := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+  var bytes = make([]byte, Size)
+  rand.Read(bytes)
+  for i, x := range bytes {
+      bytes[i] = characters[x%byte(len(characters))]
+  }
+  return string(bytes)
 }
 
 func Encrypt(Key []byte, PlainCode []byte) string {
-	Block, err := aes.NewCipher(Key)
-	if err != nil {
-		panic(err)
-	}
+  Block, err := aes.NewCipher(Key)
+  if err != nil {
+    panic(err)
+  }
 
-	CipherCode := make([]byte, aes.BlockSize+len(PlainCode))
-	Blk := CipherCode[:aes.BlockSize]
-	if _, err := io.ReadFull(rand.Reader, Blk); err != nil {
-		panic(err)
-	}
+  CipherCode := make([]byte, aes.BlockSize+len(PlainCode))
+  Blk := CipherCode[:aes.BlockSize]
+  if _, err := io.ReadFull(rand.Reader, Blk); err != nil {
+    panic(err)
+  }
 
-	Stream := cipher.NewCFBEncrypter(Block, Blk)
-	Stream.XORKeyStream(CipherCode[aes.BlockSize:], PlainCode)
+  Stream := cipher.NewCFBEncrypter(Block, Blk)
+  Stream.XORKeyStream(CipherCode[aes.BlockSize:], PlainCode)
 
-	return base64.URLEncoding.EncodeToString(CipherCode)
+  return base64.URLEncoding.EncodeToString(CipherCode)
 }
 
 func ShowName(){

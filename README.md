@@ -44,6 +44,7 @@ cd CHAOS
 ```
 go run CHAOS.go
 ```
+*Note: CHAOS has a delay of 70 seconds to bypass most of the antivirus and sandboxes.*
 
 ## FEATURES
 * Windows Remote Control
@@ -61,7 +62,7 @@ go run CHAOS.go
 <img src="https://github.com/tiagorlampert/CHAOS/blob/master/content/screenshot.png">
 
 ## VIDEO DEMONSTRATION
-https://youtu.be/QRNN2KwCYOg
+[![CHAOS](http://img.youtube.com/vi/QRNN2KwCYOg/0.jpg)](http://www.youtube.com/watch?v=QRNN2KwCYOg)
 
 ## CONTACT
 **tiagorlampert@gmail.com**

@@ -59,10 +59,15 @@ go run CHAOS.go
 *Note: CHAOS has a delay of 70 seconds to bypass most of the antivirus and sandboxes.*
 
 ## SCREENSHOT
+<p align="center">
 <img src="https://github.com/tiagorlampert/CHAOS/blob/master/content/screenshot.png">
+</p>
 
 ## VIDEO DEMONSTRATION
-[![CHAOS](http://img.youtube.com/vi/QRNN2KwCYOg/0.jpg)](http://www.youtube.com/watch?v=QRNN2KwCYOg)
+<p align="center">
+<a href="http://www.youtube.com/watch?v=QRNN2KwCYOg">
+  <img src="http://img.youtube.com/vi/QRNN2KwCYOg/0.jpg" width="600"/>
+</a></p>
 
 ## CONTACT
 **tiagorlampert@gmail.com**

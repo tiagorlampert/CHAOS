@@ -184,7 +184,7 @@ func GenerateCode(){
   fmt.Println("")
   fmt.Print(YELLOW, " [*] Enter LHOST: ", WHITE)
   LHOST := ReadLine()
-  if len(LHOST) < 8 {
+  if len(LHOST) < 7 {
     fmt.Println(RED, "[!] Invalid LHOST!")
     WaitTimeMenu()
     GenerateCode()

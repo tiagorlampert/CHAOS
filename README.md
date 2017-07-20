@@ -57,15 +57,6 @@ cd CHAOS
 go run CHAOS.go
 ```
 
-Or run the compiled version.
-```
-sudo chmod +x CHAOS
-```
-
-```
-./CHAOS
-```
-
 *Note: CHAOS has a delay of 70 seconds to bypass most of the antivirus and sandboxes.*
 
 ## SCREENSHOT

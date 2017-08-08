@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  CHAOS Framework allow generate payloads and control remote machines.
+  CHAOS Framework allow generate payloads and control remote Windows systems.
 </p>
 
 ## DISCLAIMER

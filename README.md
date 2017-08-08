@@ -23,13 +23,13 @@
 The use of the CHAOS Framework is COMPLETE RESPONSIBILITY of the END-USER. Developer assume NO liability and are NOT responsible for any misuse or damage caused by this program.
 
 ## FEATURES
-* Windows Remote Control
-* Download File
-* Upload File
-* Persistence
-* Open Url Remotely
-* Get Operating System Name
-* Run Fork Bomb
+- [x] Windows Remote Control
+- [x] Download File
+- [x] Upload File
+- [x] Persistence
+- [x] Open Url Remotely
+- [x] Get Operating System Name
+- [x] Run Fork Bomb
 
 ## TESTED ON
 [![Kali)](https://www.google.com/s2/favicons?domain=https://www.kali.org/)](https://www.kali.org) **Kali Linux - ROLLING EDITION**
@@ -73,7 +73,7 @@ go run CHAOS.go
 ## CONTACT
 **tiagorlampert@gmail.com**
 
-<h1 align="center">Don't submit to VirusTotal or other scanning service. :3</h1>
+<h1 align="center">Don't submit to VirusTotal or other scanning service. :smirk: </h1>
 <p align="center">
 <img src="https://github.com/tiagorlampert/CHAOS/blob/master/content/nodistribute.png">
 </p>

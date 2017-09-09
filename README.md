@@ -20,6 +20,10 @@
 </p>
 
 ## DISCLAIMER
+<p align="center">
+  :books: This project is created only for learning purpose.
+</p>
+
 The use of the CHAOS Framework is COMPLETE RESPONSIBILITY of the END-USER. Developer assume NO liability and are NOT responsible for any misuse or damage caused by this program.
 
 ## FEATURES
@@ -71,9 +75,12 @@ go run CHAOS.go
 </a></p>
 
 ## CONTACT
-**tiagorlampert@gmail.com**
+:email: **tiagorlampert@gmail.com**
 
-<h1 align="center">Don't submit to VirusTotal or other scanning service. :smirk: </h1>
+## LICENSE
+<a rel="license" href="https://github.com/tiagorlampert/CHAOS/blob/master/LICENSE"><img alt="BSD-3-Clause License" src="https://github.com/tiagorlampert/CHAOS/blob/master/content/bsd.png" width="60em" height=auto/></a><br/><a href="https://github.com/tiagorlampert/CHAOS">CHAOS Framework</a> is licensed under <a rel="license" href="https://github.com/tiagorlampert/CHAOS/blob/master/LICENSE">BSD-3-Clause License</a>.
+
+<h1 align="center">Don't submit to VirusTotal or other scanning service. </h1>
 <p align="center">
 <img src="https://github.com/tiagorlampert/CHAOS/blob/master/content/nodistribute.png">
 </p>

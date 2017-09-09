@@ -27,11 +27,11 @@
 The use of the CHAOS Framework is COMPLETE RESPONSIBILITY of the END-USER. Developer assume NO liability and are NOT responsible for any misuse or damage caused by this program.
 
 ## FEATURES
-- [x] Windows Remote Control
+- [x] Reverse Shell
 - [x] Download File
 - [x] Upload File
 - [x] Persistence
-- [x] Open Url Remotely
+- [x] Open URL Remotely
 - [x] Get Operating System Name
 - [x] Run Fork Bomb
 

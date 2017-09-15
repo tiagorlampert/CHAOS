@@ -79,8 +79,3 @@ go run CHAOS.go
 
 ## LICENSE
 <a rel="license" href="https://github.com/tiagorlampert/CHAOS/blob/master/LICENSE"><img alt="BSD-3-Clause License" src="https://github.com/tiagorlampert/CHAOS/blob/master/content/bsd.png" width="60em" height=auto/></a><br/><a href="https://github.com/tiagorlampert/CHAOS">CHAOS Framework</a> is licensed under <a rel="license" href="https://github.com/tiagorlampert/CHAOS/blob/master/LICENSE">BSD-3-Clause License</a>.
-
-<h1 align="center">Don't submit to VirusTotal or other scanning service. </h1>
-<p align="center">
-<img src="https://github.com/tiagorlampert/CHAOS/blob/master/content/nodistribute.png">
-</p>

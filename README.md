@@ -13,6 +13,9 @@
   <a href="https://github.com/tiagorlampert/CHAOS/blob/master/CHAOS.go">
     <img src="https://img.shields.io/badge/Release-1.0.2-red.svg">
   </a>
+    <a href="https://opensource.org">
+    <img src="https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg">
+  </a>
 </p>
 
 <p align="center">

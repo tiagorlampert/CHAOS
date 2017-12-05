@@ -22,14 +22,14 @@
   CHAOS Framework allow generate payloads and control remote Windows systems.
 </p>
 
-## DISCLAIMER
+## Disclaimer
 <p align="center">
   :books: This project is created only for learning purpose.
 </p>
 
-The use of the CHAOS Framework is COMPLETE RESPONSIBILITY of the END-USER. Developer assume NO liability and are NOT responsible for any misuse or damage caused by this program.
+THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS SOFTWARE AT YOUR OWN RISK. THE USE IS COMPLETE RESPONSIBILITY OF THE END-USER. THE DEVELOPERS ASSUME NO LIABILITY AND ARE NOT RESPONSIBLE FOR ANY MISUSE OR DAMAGE CAUSED BY THIS PROGRAM.
 
-## FEATURES
+## Features
 - [x] Reverse Shell
 - [x] Download File
 - [x] Upload File
@@ -38,47 +38,69 @@ The use of the CHAOS Framework is COMPLETE RESPONSIBILITY of the END-USER. Devel
 - [x] Get Operating System Name
 - [x] Run Fork Bomb
 
-## TESTED ON
+## Tested On
 [![Kali)](https://www.google.com/s2/favicons?domain=https://www.kali.org/)](https://www.kali.org) **Kali Linux - ROLLING EDITION**
 
-## USAGE
-**You need Golang and UPX package installed!**
+## How To Use
+```bash
+# Install dependencies (You need Golang and UPX package installed)
+$ apt install golang upx-ucl -y
 
-### Install Prerequisites
+# Clone this repository
+$ git clone https://github.com/tiagorlampert/CHAOS.git
 
-```
-# apt install golang upx-ucl -y
-```
+# Go into the repository
+$ cd CHAOS
 
-### Cloning
-```
-git clone https://github.com/tiagorlampert/CHAOS.git
-```
-
-### Running
-```
-cd CHAOS
+# Run
+$ go run CHAOS.go
 ```
 
-```
-go run CHAOS.go
-```
+## Note
+* CHAOS has a delay of 30 seconds to bypass most of the antivirus and sandboxes.
 
-*Note: CHAOS has a delay of 70 seconds to bypass most of the antivirus and sandboxes.*
-
-## SCREENSHOT
+## Screenshot
 <p align="center">
 <img src="https://github.com/tiagorlampert/CHAOS/blob/master/content/screenshot.png">
 </p>
 
-## VIDEO DEMONSTRATION
+## Video
 <p align="center">
 <a href="http://www.youtube.com/watch?v=QRNN2KwCYOg">
   <img src="http://img.youtube.com/vi/QRNN2KwCYOg/0.jpg" width="600"/>
 </a></p>
 
-## CONTACT
+## Contact
 :email: **tiagorlampert@gmail.com**
 
-## LICENSE
-<a rel="license" href="https://github.com/tiagorlampert/CHAOS/blob/master/LICENSE"><img alt="BSD-3-Clause License" src="https://github.com/tiagorlampert/CHAOS/blob/master/content/bsd.png" width="60em" height=auto/></a><br/><a href="https://github.com/tiagorlampert/CHAOS">CHAOS Framework</a> is licensed under <a rel="license" href="https://github.com/tiagorlampert/CHAOS/blob/master/LICENSE">BSD-3-Clause License</a>.
+## License
+
+>The [BSD 3-Clause License](https://opensource.org/licenses/BSD-3-Clause)
+>
+>Copyright (c) 2017, Tiago Rodrigo Lampert
+>
+>All rights reserved.
+>
+>Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+>
+>* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+>
+>* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.
+>
+>* Neither the name of the copyright holder nor the names of its
+  contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
+>
+>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

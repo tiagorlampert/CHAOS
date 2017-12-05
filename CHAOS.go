@@ -24,7 +24,7 @@ const (
 	BLUE    = "\x1b[34;1m"
 	MAGENTA = "\x1b[35;1m"
 	CYAN    = "\x1b[36;1m"
-	VERSION = "1.0.2"
+	VERSION = "1.0.3"
 )
 
 func main() {

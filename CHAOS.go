@@ -180,7 +180,7 @@ func GenerateCode() {
 	fmt.Print(YELLOW, " [*] Enter LPORT: ", WHITE)
 	LPORT := ReadLine()
 	if len(LPORT) == 0 {
-		LPORT := "8080"
+		LPORT = "8080"
 		fmt.Println(GREEN, "[+] DEFAULT LPORT ("+LPORT+")")
 	} else if len(LPORT) < 2 {
 		fmt.Println(RED, "[!] Invalid LPORT!")
@@ -415,7 +415,7 @@ func RunServer() {
 	fmt.Print(YELLOW, " [*] Enter LPORT: ", WHITE)
 	LPORT := ReadLine()
 	if len(LPORT) == 0 {
-		LPORT := "8080"
+		LPORT = "8080"
 		fmt.Println(GREEN, "[+] DEFAULT LPORT DEFINED ("+LPORT+")")
 	} else if len(LPORT) < 2 {
 		fmt.Println(RED, "[!] Invalid LPORT!")

@@ -61,7 +61,7 @@ $ go run CHAOS.go
 
 ## Screenshot
 <p align="center">
-<img src="https://github.com/tiagorlampert/CHAOS/blob/master/content/screenshot.png">
+<img src="https://github.com/tiagorlampert/CHAOS/blob/master/content/screenshot.gif">
 </p>
 
 ## Video

@@ -5,7 +5,7 @@
 <h1 align="center">CHAOS Framework</h1>
 <p align="center">
   <a href="https://golang.org/">
-    <img src="https://img.shields.io/badge/Golang-1.8.3-blue.svg">
+    <img src="https://img.shields.io/badge/Golang-1.9.2-blue.svg">
   </a>
   <a href="https://github.com/tiagorlampert/CHAOS/blob/master/LICENSE">
     <img src="https://img.shields.io/badge/License-BSD%203-lightgrey.svg">

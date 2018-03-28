@@ -21,7 +21,7 @@ func ServeFiles(){
 	http.Handle("/", http.FileServer(http.Dir(*directory)))
 
 	log.Printf("\n\nServing CHAOS directory %s on HTTP port: %s\n", *directory, *port)
-  fmt.Println("\nClose this window to stop.")
+  	fmt.Println("\nClose this window to stop.")
 	log.Fatal(http.ListenAndServe(":"+*port, nil))
 }
 

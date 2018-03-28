@@ -5,13 +5,13 @@
 <h1 align="center">CHAOS Framework</h1>
 <p align="center">
   <a href="https://golang.org/">
-    <img src="https://img.shields.io/badge/Golang-1.9.2-blue.svg">
+    <img src="https://img.shields.io/badge/Golang-1.10-blue.svg">
   </a>
   <a href="https://github.com/tiagorlampert/CHAOS/blob/master/LICENSE">
     <img src="https://img.shields.io/badge/License-BSD%203-lightgrey.svg">
   </a>
   <a href="https://github.com/tiagorlampert/CHAOS/blob/master/CHAOS.go">
-    <img src="https://img.shields.io/badge/Release-1.0.3-red.svg">
+    <img src="https://img.shields.io/badge/Release-1.1.0-red.svg">
   </a>
     <a href="https://opensource.org">
     <img src="https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg">
@@ -24,7 +24,7 @@
 
 ## Disclaimer
 <p align="center">
-  :books: This project is created only for learning purpose.
+  :books: This project was created only for learning purpose.
 </p>
 
 THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS SOFTWARE AT YOUR OWN RISK. THE USE IS COMPLETE RESPONSIBILITY OF THE END-USER. THE DEVELOPERS ASSUME NO LIABILITY AND ARE NOT RESPONSIBLE FOR ANY MISUSE OR DAMAGE CAUSED BY THIS PROGRAM.
@@ -33,6 +33,7 @@ THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS
 - [x] Reverse Shell
 - [x] Download File
 - [x] Upload File
+- [x] Keylogger :new:
 - [x] Persistence
 - [x] Open URL Remotely
 - [x] Get Operating System Name
@@ -44,7 +45,7 @@ THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS
 ## How To Use
 ```bash
 # Install dependencies (You need Golang and UPX package installed)
-$ apt install golang upx-ucl -y
+$ apt install golang upx-ucl xterm git -y
 
 # Clone this repository
 $ git clone https://github.com/tiagorlampert/CHAOS.git
@@ -56,8 +57,10 @@ $ cd CHAOS
 $ go run CHAOS.go
 ```
 
-## Note
-* CHAOS has a delay of 30 seconds to bypass most of the antivirus and sandboxes.
+## FAQ
+> #### Why does Keylogger capture all uppercase letters?
+> All the letters obtained using the keylogger are uppercase letters. It is a known problem, in case anyone knows how to fix the Keylogger function using golang, please contact me or open an issue.
+
 
 ## Screenshot
 <p align="center">

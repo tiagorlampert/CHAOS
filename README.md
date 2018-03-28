@@ -11,7 +11,7 @@
     <img src="https://img.shields.io/badge/License-BSD%203-lightgrey.svg">
   </a>
   <a href="https://github.com/tiagorlampert/CHAOS/blob/master/CHAOS.go">
-    <img src="https://img.shields.io/badge/Release-1.1.0-red.svg">
+    <img src="https://img.shields.io/badge/Release-2.1.0-red.svg">
   </a>
     <a href="https://opensource.org">
     <img src="https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg">

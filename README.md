@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/tiagorlampert/CHAOS/master/content/logo.png">
 </p>
 
-<h1 align="center">CHAOS Framework</h1>
+<h1 align="center">CHAOS Payload Generator</h1>
 <p align="center">
   <a href="https://golang.org/">
     <img src="https://img.shields.io/badge/Golang-1.10-blue.svg">
@@ -11,7 +11,7 @@
     <img src="https://img.shields.io/badge/License-BSD%203-lightgrey.svg">
   </a>
   <a href="https://github.com/tiagorlampert/CHAOS/blob/master/CHAOS.go">
-    <img src="https://img.shields.io/badge/Release-2.1.0-red.svg">
+    <img src="https://img.shields.io/badge/Release-2.5.0-red.svg">
   </a>
     <a href="https://opensource.org">
     <img src="https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg">
@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  CHAOS Framework allow generate payloads and control remote Windows systems.
+  CHAOS allow generate payloads and control remote Windows systems.
 </p>
 
 ## Disclaimer
@@ -33,6 +33,7 @@ THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS
 - [x] Reverse Shell
 - [x] Download File
 - [x] Upload File
+- [x] Screenshot :new:
 - [x] Keylogger :new:
 - [x] Persistence
 - [x] Open URL Remotely
@@ -45,10 +46,14 @@ THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS
 ## How To Use
 ```bash
 # Install dependencies (You need Golang and UPX package installed)
-$ apt install golang upx-ucl xterm git -y
+$ apt install golang xterm git upx-ucl -y
 
 # Clone this repository
 $ git clone https://github.com/tiagorlampert/CHAOS.git
+
+# Get and install external imports (requirement to screenshot)
+$ go get github.com/kbinani/screenshot
+$ go install github.com/kbinani/screenshot
 
 # Go into the repository
 $ cd CHAOS
@@ -59,8 +64,10 @@ $ go run CHAOS.go
 
 ## FAQ
 > #### Why does Keylogger capture all uppercase letters?
-> All the letters obtained using the keylogger are uppercase letters. It is a known problem, in case anyone knows how to fix the Keylogger function using golang, please contact me or open an issue.
+> All the letters obtained using the keylogger are uppercase letters. It is a known issue, in case anyone knows how to fix the Keylogger function using golang, please contact me or open an issue.
 
+> #### Why are necessary get and install external libraries?
+> To implement the screenshot function i used a third-party library, you can check it in https://github.com/kbinani/screenshot. You must download and install it to generate the payload.
 
 ## Screenshot
 <p align="center">

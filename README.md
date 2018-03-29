@@ -52,8 +52,11 @@ $ apt install golang xterm git upx-ucl -y
 $ git clone https://github.com/tiagorlampert/CHAOS.git
 
 # Get and install external imports (requirement to screenshot)
-$ go get github.com/kbinani/screenshot
-$ go install github.com/kbinani/screenshot
+$ go get github.com/kbinani/screenshot && go get github.com/lxn/win
+$ go install github.com/kbinani/screenshot && go install github.com/lxn/win
+
+# Maybe you will see the message "package github.com/lxn/win: build constraints exclude all Go files".
+# It's occurs because the libraries are to windows systems, but it necessary to build the payload.
 
 # Go into the repository
 $ cd CHAOS
@@ -78,7 +81,7 @@ $ go run CHAOS.go
 > All the letters obtained using the keylogger are uppercase letters. It is a known issue, in case anyone knows how to fix the Keylogger function using golang, please contact me or open an issue.
 
 > #### Why are necessary get and install external libraries?
-> To implement the screenshot function i used a third-party library, you can check it in https://github.com/kbinani/screenshot. You must download and install it to generate the payload.
+> To implement the screenshot function i used a third-party library, you can check it in https://github.com/kbinani/screenshot and https://github.com/lxn/win. You must download and install it to generate the payload.
 
 ## Contact
 :email: **tiagorlampert@gmail.com**

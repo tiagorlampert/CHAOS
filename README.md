@@ -62,23 +62,23 @@ $ cd CHAOS
 $ go run CHAOS.go
 ```
 
-## FAQ
-> #### Why does Keylogger capture all uppercase letters?
-> All the letters obtained using the keylogger are uppercase letters. It is a known issue, in case anyone knows how to fix the Keylogger function using golang, please contact me or open an issue.
-
-> #### Why are necessary get and install external libraries?
-> To implement the screenshot function i used a third-party library, you can check it in https://github.com/kbinani/screenshot. You must download and install it to generate the payload.
-
-## Screenshot
+## Screenshot (outdated)
 <p align="center">
 <img src="https://github.com/tiagorlampert/CHAOS/blob/master/content/screenshot.gif">
 </p>
 
 ## Video
 <p align="center">
-<a href="http://www.youtube.com/watch?v=QRNN2KwCYOg">
-  <img src="http://img.youtube.com/vi/QRNN2KwCYOg/0.jpg" width="600"/>
+<a href="https://www.youtube.com/watch?v=9P-3qSA_ZjQ">
+  <img src="http://img.youtube.com/vi/9P-3qSA_ZjQ/0.jpg" width="600"/>
 </a></p>
+
+## FAQ
+> #### Why does Keylogger capture all uppercase letters?
+> All the letters obtained using the keylogger are uppercase letters. It is a known issue, in case anyone knows how to fix the Keylogger function using golang, please contact me or open an issue.
+
+> #### Why are necessary get and install external libraries?
+> To implement the screenshot function i used a third-party library, you can check it in https://github.com/kbinani/screenshot. You must download and install it to generate the payload.
 
 ## Contact
 :email: **tiagorlampert@gmail.com**

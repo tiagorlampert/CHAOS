@@ -42,6 +42,7 @@ THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS
 | `Open URL`               |    X    |    X   |   X   |
 | `Get OS Info`            |    X    |    X   |   X   |
 | `Fork Bomb`              |    X    |    X   |   X   |
+| `Run Hidden`             |    X    |        |       |
 
 ## Tested On
 [![Kali)](https://www.google.com/s2/favicons?domain=https://www.kali.org/)](https://www.kali.org) **Kali Linux - ROLLING EDITION**

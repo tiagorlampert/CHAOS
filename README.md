@@ -43,7 +43,7 @@ THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS
 ## Tested On
 [![Kali)](https://www.google.com/s2/favicons?domain=https://www.kali.org/)](https://www.kali.org) **Kali Linux - ROLLING EDITION**
 
-## How To Use
+## How To Install
 ```bash
 # Install dependencies
 $ apt install golang git -y
@@ -65,7 +65,7 @@ $ cd ~/go/src/github.com/tiagorlampert/CHAOS
 $ go run main.go
 ```
 
-## Screenshot
+## Gif
 <p align="center">
 <img src="https://github.com/tiagorlampert/CHAOS/blob/master/content/screenshot.gif">
 </p>

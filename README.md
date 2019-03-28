@@ -122,6 +122,12 @@ Command                 | On TARGET does...
 ## Contact
 :email: **tiagorlampert@gmail.com**
 
+## Donate
+If you enjoyed this project, give me a cup of coffee. :)
+
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=SG83FSKPKCRJ6&currency_code=USD&source=url)
+
+
 ## License
 
 >The [BSD 3-Clause License](https://opensource.org/licenses/BSD-3-Clause)

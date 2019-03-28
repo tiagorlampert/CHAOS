@@ -5,13 +5,13 @@
 <h1 align="center">CHAOS Payload Generator</h1>
 <p align="center">
   <a href="https://golang.org/">
-    <img src="https://img.shields.io/badge/Golang-1.10-blue.svg">
+    <img src="https://img.shields.io/badge/Golang-1.11-blue.svg">
   </a>
   <a href="https://github.com/tiagorlampert/CHAOS/blob/master/LICENSE">
     <img src="https://img.shields.io/badge/License-BSD%203-lightgrey.svg">
   </a>
   <a href="https://github.com/tiagorlampert/CHAOS/blob/master/CHAOS.go">
-    <img src="https://img.shields.io/badge/Release-2.5.0-red.svg">
+    <img src="https://img.shields.io/badge/Release-3.0-red.svg">
   </a>
     <a href="https://opensource.org">
     <img src="https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg">
@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  CHAOS allow generate payloads and control remote Windows systems.
+  CHAOS allow generate payloads and control remote systems.
 </p>
 
 ## Disclaimer
@@ -45,27 +45,27 @@ THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS
 
 ## How To Use
 ```bash
-# Install dependencies (You need Golang and UPX package installed)
-$ apt install golang xterm git upx-ucl -y
+# Install dependencies
+$ apt install golang git -y
 
-# Clone this repository
-$ git clone https://github.com/tiagorlampert/CHAOS.git
+# Get this repository
+$ go get github.com/tiagorlampert/CHAOS
 
-# Get and install external imports (requirement to screenshot)
-$ go get github.com/kbinani/screenshot && go get github.com/lxn/win
-$ go install github.com/kbinani/screenshot && go install github.com/lxn/win
+# Get and install external golang dependencies
+$ go get github.com/kbinani/screenshot && go get github.com/lxn/win && go get github.com/matishsiao/goInfo
+$ go install github.com/kbinani/screenshot && go install github.com/lxn/win && go install github.com/matishsiao/goInfo
 
 # Maybe you will see the message "package github.com/lxn/win: build constraints exclude all Go files".
 # It's occurs because the libraries are to windows systems, but it necessary to build the payload.
 
 # Go into the repository
-$ cd CHAOS
+$ cd ~/go/src/github.com/tiagorlampert/CHAOS
 
 # Run
-$ go run CHAOS.go
+$ go run main.go
 ```
 
-## Screenshot (outdated)
+## Screenshot
 <p align="center">
 <img src="https://github.com/tiagorlampert/CHAOS/blob/master/content/screenshot.gif">
 </p>
@@ -90,7 +90,7 @@ $ go run CHAOS.go
 
 >The [BSD 3-Clause License](https://opensource.org/licenses/BSD-3-Clause)
 >
->Copyright (c) 2017, Tiago Rodrigo Lampert
+>Copyright (c) 2017 - 2019, Tiago Rodrigo Lampert
 >
 >All rights reserved.
 >

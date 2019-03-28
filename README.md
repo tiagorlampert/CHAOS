@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  CHAOS allow generate payloads and control remote operating systems.
+  CHAOS is a PoC that allow generate payloads and control remote operating systems.
 </p>
 
 ## Disclaimer

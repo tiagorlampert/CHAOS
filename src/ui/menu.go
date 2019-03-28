@@ -13,6 +13,6 @@ func ShowMenu() {
 	fmt.Println(c.CYAN, "                               by tiagorlampert")
 	fmt.Println("")
 	fmt.Println(c.WHITE, " Please use `tab` to autocomplete commands,")
-	fmt.Println(c.WHITE, " or type `help` to show help menu.")
+	fmt.Println(c.WHITE, " or type `exit` to quit this program.")
 	fmt.Println("")
 }

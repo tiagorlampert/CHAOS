@@ -72,8 +72,8 @@ $ go run main.go
 
 ## Video
 <p align="center">
-<a href="https://www.youtube.com/watch?v=9P-3qSA_ZjQ">
-  <img src="https://img.youtube.com/vi/9P-3qSA_ZjQ/maxresdefault.jpg" width="700"/>
+<a href="https://www.youtube.com/watch?v=Fq_0yDPFjYE">
+  <img src="https://img.youtube.com/vi/Fq_0yDPFjYE/maxresdefault.jpg" width="700"/>
 </a></p>
 
 ## FAQ

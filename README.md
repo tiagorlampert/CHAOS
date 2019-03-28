@@ -30,15 +30,18 @@
 THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS SOFTWARE AT YOUR OWN RISK. THE USE IS COMPLETE RESPONSIBILITY OF THE END-USER. THE DEVELOPERS ASSUME NO LIABILITY AND ARE NOT RESPONSIBLE FOR ANY MISUSE OR DAMAGE CAUSED BY THIS PROGRAM.
 
 ## Features
-- [x] Reverse Shell
-- [x] Download File
-- [x] Upload File
-- [x] Screenshot :new:
-- [x] Keylogger :new:
-- [x] Persistence
-- [x] Open URL Remotely
-- [x] Get Operating System Name
-- [x] Run Fork Bomb
+
+| Feature                  |  ![w]   |  ![m]  |  ![l] |
+|:-------------------------|:-------:|:------:|:-----:|
+| `Reverse Shell`          |    X    |    X   |   X   |
+| `Download File`          |    X    |    X   |   X   |
+| `Upload File`            |    X    |    X   |   X   |
+| `Screenshot`             |    X    |    X   |   X   |
+| `Keylogger`              |    X    |        |       |
+| `Persistence`            |    X    |        |       |
+| `Open URL`               |    X    |    X   |   X   |
+| `Get OS Info`            |    X    |    X   |   X   |
+| `Fork Bomb`              |    X    |    X   |   X   |
 
 ## Tested On
 [![Kali)](https://www.google.com/s2/favicons?domain=https://www.kali.org/)](https://www.kali.org) **Kali Linux - ROLLING EDITION**
@@ -117,3 +120,7 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+[w]:https://raw.githubusercontent.com/tiagorlampert/CHAOS/master/content/windows.png "Windows status"
+[l]:https://raw.githubusercontent.com/tiagorlampert/CHAOS/master/content/linux.png "Linux status"
+[m]:https://raw.githubusercontent.com/tiagorlampert/CHAOS/master/content/mac.png "Mac OS status"

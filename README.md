@@ -68,16 +68,16 @@ $ cd ~/go/src/github.com/tiagorlampert/CHAOS
 $ go run main.go
 ```
 
-## Gif
-<p align="center">
-<img src="https://github.com/tiagorlampert/CHAOS/blob/master/content/screenshot.gif">
-</p>
-
 ## Video
 <p align="center">
 <a href="https://www.youtube.com/watch?v=Fq_0yDPFjYE">
   <img src="https://img.youtube.com/vi/Fq_0yDPFjYE/maxresdefault.jpg" width="700"/>
 </a></p>
+
+## Gif
+<p align="center">
+<img src="https://github.com/tiagorlampert/CHAOS/blob/master/content/screenshot.gif">
+</p>
 
 ## FAQ
 > #### Why does Keylogger capture all uppercase letters?

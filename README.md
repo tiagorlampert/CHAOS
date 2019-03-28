@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  CHAOS allow generate payloads and control remote systems.
+  CHAOS allow generate payloads and control remote operating systems.
 </p>
 
 ## Disclaimer
@@ -90,7 +90,7 @@ $ go run main.go
 
 >The [BSD 3-Clause License](https://opensource.org/licenses/BSD-3-Clause)
 >
->Copyright (c) 2017 - 2019, Tiago Rodrigo Lampert
+>Copyright (c) 2017, Tiago Rodrigo Lampert
 >
 >All rights reserved.
 >

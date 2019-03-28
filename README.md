@@ -10,7 +10,7 @@
   <a href="https://github.com/tiagorlampert/CHAOS/blob/master/LICENSE">
     <img src="https://img.shields.io/badge/License-BSD%203-lightgrey.svg">
   </a>
-  <a href="https://github.com/tiagorlampert/CHAOS/blob/master/CHAOS.go">
+  <a href="https://github.com/tiagorlampert/CHAOS/blob/master/main.go">
     <img src="https://img.shields.io/badge/Release-3.0-red.svg">
   </a>
     <a href="https://opensource.org">

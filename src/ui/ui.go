@@ -223,7 +223,7 @@ func StartMenu() {
 		os.Exit(0)
 	} else {
 		fmt.Println("")
-		fmt.Print(c.RED, " [!] Invalid Option! To get help type `help`.")
+		fmt.Print(c.RED, " [!] Invalid Option!")
 
 		util.WaitTime(3)
 		util.ClearScreen()

@@ -13,24 +13,3 @@ type HostParams struct {
 	LPort    string
 	FName    string
 }
-
-// type TargetParams struct {
-// 	Download     bool
-// 	DownloadPath string
-// 	Upload       bool
-// 	UploadPath   string
-// 	OpenURL      bool
-// 	OpenURLPath  string
-// 	// Screenshot         bool
-// 	// KeyloggerStart     bool
-// 	// KeyloggerShow      bool
-// 	// PersistenceEnable  bool
-// 	// PersistenceDisable bool
-// 	// GetOS              bool
-// 	// LockScreen         bool
-// 	// Bomb               bool
-// 	// ClearScreen        bool
-// 	// Back               bool
-// 	// Exit               bool
-// 	// Help               bool
-// }

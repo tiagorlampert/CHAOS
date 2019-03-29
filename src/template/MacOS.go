@@ -11,9 +11,6 @@ import (
 	"os/exec"
 	"strconv"
 
-	//"syscall"
-	//"time"
-
 	screenshot "github.com/kbinani/screenshot"
 	goInfo "github.com/matishsiao/goInfo"
 )

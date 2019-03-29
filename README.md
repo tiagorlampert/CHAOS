@@ -50,7 +50,7 @@ THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS
 ## How To Install
 ```bash
 # Install dependencies
-$ apt install golang git -y
+$ sudo apt install golang git -y
 
 # Get this repository
 $ go get github.com/tiagorlampert/CHAOS

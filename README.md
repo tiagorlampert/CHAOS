@@ -55,7 +55,7 @@ $ sudo apt install golang git -y
 # Get this repository
 $ go get github.com/tiagorlampert/CHAOS
 
-# Get external golang dependencies (ARE REQUIRED INSTALL ALL DEPENDENCIES)
+# Get external golang dependencies (ARE REQUIRED GET ALL DEPENDENCIES)
 $ go get github.com/kbinani/screenshot
 $ go get github.com/lxn/win
 $ go get github.com/matishsiao/goInfo

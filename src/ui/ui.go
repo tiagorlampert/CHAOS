@@ -223,7 +223,7 @@ func StartMenu() {
 		os.Exit(0)
 	} else {
 		fmt.Println("")
-		fmt.Print(c.RED, " [!] Invalid Option!")
+		fmt.Print(c.RED, " [!] Invalid parameter!")
 
 		util.WaitTime(3)
 		util.ClearScreen()

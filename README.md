@@ -55,9 +55,11 @@ $ apt install golang git -y
 # Get this repository
 $ go get github.com/tiagorlampert/CHAOS
 
-# Get and install external golang dependencies
-$ go get github.com/kbinani/screenshot && go get github.com/lxn/win && go get github.com/matishsiao/goInfo
-$ go install github.com/kbinani/screenshot && go install github.com/lxn/win && go install github.com/matishsiao/goInfo
+# Get external golang dependencies
+$ go get github.com/kbinani/screenshot
+$ go get github.com/lxn/win
+$ go get github.com/matishsiao/goInfo
+$ go get golang.org/x/sys/Windows
 
 # Maybe you will see the message "package github.com/lxn/win: build constraints exclude all Go files".
 # It's occurs because the libraries are to windows systems, but it necessary to build the payload.

@@ -34,11 +34,10 @@ func TemplateTextReplace(IPAddress string, ServerPort string, FileNameCHAOS stri
 	output = bytes.Replace(output, []byte("FileNameCHAOS"), []byte(string(FileNameCHAOS)), -1)
 	output = bytes.Replace(output, []byte("NameFolderExtesion"), []byte(string(NameFolderExtesion)), -1)
 
-	// Check if folder to save soruce code and output exits
+	// Check if folder exist to save source code
 	// and if don't exist, create it
 	// Where: NameTemplate = TargetOSName
-	// Path:
-	// build/Windows/payload/
+	// Path: build/Windows/payload/
 	CheckIfNotExistAndCreateFolder("build/" + NameTemplate + "/" + SourceCodeName + "/")
 
 	if err = ioutil.WriteFile("build/"+NameTemplate+"/"+SourceCodeName+"/"+SourceCodeName+".go", output, 0666); err != nil {

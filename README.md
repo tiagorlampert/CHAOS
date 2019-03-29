@@ -59,7 +59,7 @@ $ go get github.com/tiagorlampert/CHAOS
 $ go get github.com/kbinani/screenshot
 $ go get github.com/lxn/win
 $ go get github.com/matishsiao/goInfo
-$ go get golang.org/x/sys/Windows
+$ go get golang.org/x/sys/windows
 
 # Maybe you will see the message "package github.com/lxn/win: build constraints exclude all Go files".
 # It's occurs because the libraries are to windows systems, but it necessary to build the payload.

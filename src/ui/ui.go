@@ -152,36 +152,42 @@ func StartMenu() {
 
 					fmt.Println("")
 					fmt.Println(c.GREEN, "[*] Compiling...")
-					exec.Command("sh", "-c", "GOOS=windows GOARCH=386 go build -ldflags \"-s -w -H=windowsgui\" -o \"build/"+osTarget+"/"+fileName+"/"+fileName+osTargetExt+"\" build/"+osTarget+"/"+fileName+"/"+fileName+".go").Output()
+					cmd := exec.Command("sh", "-c", "GOOS=windows GOARCH=386 go build -ldflags \"-s -w -H=windowsgui\" -o \"build/"+osTarget+"/"+fileName+"/"+fileName+osTargetExt+"\" build/"+osTarget+"/"+fileName+"/"+fileName+".go")
+
+					output, _ := cmd.CombinedOutput()
 
 					if util.CheckIfFileExist("build/" + osTarget + "/" + fileName + "/" + fileName + osTargetExt) {
 						fmt.Println(c.GREEN, "[*] Generated at build/"+osTarget+"/"+fileName+"/"+fileName+osTargetExt)
 					} else {
-						fmt.Println(c.RED, "[!] File not found! There's a problem with compiling.")
+						fmt.Println(c.RED, "[!] File not found! There's a problem with compiling. "+string(output))
 					}
 				} else if osTarget == "MacOS" {
 					util.TemplateTextReplace(p.LHost, lport, fileName, pathPersistence, fileName, osTarget)
 
 					fmt.Println("")
 					fmt.Println(c.GREEN, "[*] Compiling...")
-					exec.Command("sh", "-c", "go build -ldflags \"-s -w\" -o \"build/"+osTarget+"/"+fileName+"/"+fileName+osTargetExt+"\" build/"+osTarget+"/"+fileName+"/"+fileName+".go").Output()
+					cmd := exec.Command("sh", "-c", "go build -ldflags \"-s -w\" -o \"build/"+osTarget+"/"+fileName+"/"+fileName+osTargetExt+"\" build/"+osTarget+"/"+fileName+"/"+fileName+".go")
+
+					output, _ := cmd.CombinedOutput()
 
 					if util.CheckIfFileExist("build/" + osTarget + "/" + fileName + "/" + fileName + osTargetExt) {
 						fmt.Println(c.GREEN, "[*] Generated at build/"+osTarget+"/"+fileName+"/"+fileName+osTargetExt)
 					} else {
-						fmt.Println(c.RED, "[!] File not found! There's a problem with compiling.")
+						fmt.Println(c.RED, "[!] File not found! There's a problem with compiling. "+string(output))
 					}
 				} else if osTarget == "Linux" {
 					util.TemplateTextReplace(p.LHost, lport, fileName+".exe", pathPersistence, fileName, osTarget)
 
 					fmt.Println("")
 					fmt.Println(c.GREEN, "[*] Compiling...")
-					exec.Command("sh", "-c", "go build -ldflags \"-s -w\" -o \"build/"+osTarget+"/"+fileName+"/"+fileName+osTargetExt+"\" build/"+osTarget+"/"+fileName+"/"+fileName+".go").Output()
+					cmd := exec.Command("sh", "-c", "go build -ldflags \"-s -w\" -o \"build/"+osTarget+"/"+fileName+"/"+fileName+osTargetExt+"\" build/"+osTarget+"/"+fileName+"/"+fileName+".go")
+
+					output, _ := cmd.CombinedOutput()
 
 					if util.CheckIfFileExist("build/" + osTarget + "/" + fileName + "/" + fileName + osTargetExt) {
 						fmt.Println(c.GREEN, "[*] Generated at build/"+osTarget+"/"+fileName+"/"+fileName+osTargetExt)
 					} else {
-						fmt.Println(c.RED, "[!] File not found! There's a problem with compiling.")
+						fmt.Println(c.RED, "[!] File not found! There's a problem with compiling. "+string(output))
 					}
 				}
 

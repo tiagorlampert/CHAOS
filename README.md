@@ -50,22 +50,16 @@ THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS
 ## How to Install
 ```bash
 # Install dependencies
-$ sudo apt install golang git -y
+$ sudo apt install golang git go-dep -y
 
 # Get this repository
 $ go get github.com/tiagorlampert/CHAOS
 
-# Get external golang dependencies (ARE REQUIRED GET ALL DEPENDENCIES)
-$ go get github.com/kbinani/screenshot
-$ go get github.com/lxn/win
-$ go get github.com/matishsiao/goInfo
-$ go get golang.org/x/sys/windows
-
-# Maybe you will see the message "package github.com/lxn/win: build constraints exclude all Go files".
-# It's occurs because the libraries are to windows systems, but it necessary to build the payload.
-
 # Go into the repository
 $ cd ~/go/src/github.com/tiagorlampert/CHAOS
+
+# Install dependencies
+$ dep ensure
 
 # Run
 $ go run main.go

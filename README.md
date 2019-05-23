@@ -58,7 +58,7 @@ $ go get github.com/tiagorlampert/CHAOS
 # Go into the repository
 $ cd ~/go/src/github.com/tiagorlampert/CHAOS
 
-# Install dependencies
+# Get project dependencies
 $ dep ensure
 
 # Run

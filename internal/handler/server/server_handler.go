@@ -141,5 +141,5 @@ func (server *ServerHandler) connect(v []string) {
 	defer device.Connection.Close()
 
 	clientHandler := client.NewClientHandler(device.Connection)
-	clientHandler.HandleConnection()
+	clientHandler.HandleConnection(device.Hostname, device.UserID)
 }

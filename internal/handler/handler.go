@@ -16,5 +16,5 @@ type Server interface {
 }
 
 type Client interface {
-	HandleConnection()
+	HandleConnection(hostname string, user string)
 }

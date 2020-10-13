@@ -22,7 +22,7 @@ func ServerCompleter(d prompt.Document) []prompt.Suggest {
 	s := []prompt.Suggest{
 		{Text: "devices", Description: "Show connected devices"},
 		{Text: "connect", Description: "Connect to specified device"},
-		{Text: "mac-address=", Description: "Specify a Mac Address of target device"},
+		{Text: "mac-address=", Description: "Specify a mac address of target device"},
 		{Text: "exit", Description: "Quit this program"},
 	}
 	return prompt.FilterHasPrefix(s, d.GetWordBeforeCursor(), true)

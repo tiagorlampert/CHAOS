@@ -21,7 +21,7 @@ func NewClientHandler(conn net.Conn) handler.Client {
 	}
 }
 
-func (c ClientHandler) HandleConnection() error {
+func (c ClientHandler) HandleConnection() {
 	p := prompt.New(
 		c.executor,
 		completer.ClientCompleter,
@@ -29,8 +29,6 @@ func (c ClientHandler) HandleConnection() error {
 		prompt.OptionPrefixTextColor(prompt.White),
 	)
 	p.Run()
-
-	return nil
 }
 
 func (c ClientHandler) executor(input string) {

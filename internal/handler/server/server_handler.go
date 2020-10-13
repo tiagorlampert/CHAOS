@@ -126,14 +126,14 @@ func renderDevicesTable(devices map[string]*models.Device) {
 }
 
 func (server *ServerHandler) connect(v []string) {
-	if len(v) <= 1 {
+	if !util.Contains(v, "mac-address=") {
 		fmt.Println(c.Yellow, "[!] You should specify a Mac Address!")
 		return
 	}
 
-	address := util.SplitAfterIndex(v[1], '=')
+	macAddr := util.SplitAfterIndex(util.Find(v, "mac-address="), '=')
 
-	device, found := server.GetDevice(address)
+	device, found := server.GetDevice(macAddr)
 	if !found {
 		fmt.Println(c.Yellow, "[!] Specified device not found!")
 		return
@@ -141,7 +141,5 @@ func (server *ServerHandler) connect(v []string) {
 	defer device.Connection.Close()
 
 	clientHandler := client.NewClientHandler(device.Connection)
-	if err := clientHandler.HandleConnection(); err != nil {
-		log.WithField("cause", err.Error()).Error("error handling client app")
-	}
+	clientHandler.HandleConnection()
 }

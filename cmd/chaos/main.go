@@ -35,9 +35,6 @@ func NewApp() *App {
 }
 
 func (a *App) Run() error {
-	if err := a.handler.Handle(); err != nil {
-		log.WithField("cause", err.Error()).Error("error handling app")
-		return err
-	}
+	a.handler.Handle()
 	return nil
 }

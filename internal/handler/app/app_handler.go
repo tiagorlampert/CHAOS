@@ -18,7 +18,7 @@ func NewAppHandler() handler.App {
 	return &appHandler{}
 }
 
-func (c appHandler) Handle() error {
+func (c appHandler) Handle() {
 	p := prompt.New(
 		executor,
 		completer.HostCompleter,
@@ -26,8 +26,6 @@ func (c appHandler) Handle() error {
 		prompt.OptionPrefixTextColor(prompt.White),
 	)
 	p.Run()
-
-	return nil
 }
 
 func executor(input string) {
@@ -52,39 +50,18 @@ func executor(input string) {
 }
 
 func serverHandler(v []string) {
-	fmt.Println(v)
-	if !contains(v, "port=") {
+	if !util.Contains(v, "port=") {
 		fmt.Println(c.Yellow, "[!] You should specify a port!")
 		return
 	}
-	if !contains(v, "address=") {
+	if !util.Contains(v, "address=") {
 		fmt.Println(c.Yellow, "[!] You should specify a address!")
 		return
 	}
 
-	address := util.SplitAfterIndex(find(v, "address="), '=')
-	port := util.SplitAfterIndex(find(v, "port="), '=')
+	address := util.SplitAfterIndex(util.Find(v, "address="), '=')
+	port := util.SplitAfterIndex(util.Find(v, "port="), '=')
 
 	handler := server.NewServerHandler(address, port)
 	handler.HandleConnections()
-}
-
-func contains(v []string, str string) bool {
-	var has bool
-	for _, param := range v {
-		if strings.Contains(param, str) {
-			has = true
-			break
-		}
-	}
-	return has
-}
-
-func find(v []string, str string) string {
-	for _, param := range v {
-		if strings.Contains(param, str) {
-			return param
-		}
-	}
-	return ""
 }

@@ -5,7 +5,7 @@ import (
 )
 
 type App interface {
-	Handle() error
+	Handle()
 }
 
 type Server interface {
@@ -16,5 +16,5 @@ type Server interface {
 }
 
 type Client interface {
-	HandleConnection() error
+	HandleConnection()
 }

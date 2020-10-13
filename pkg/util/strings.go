@@ -1,6 +1,9 @@
 package util
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
 var (
 	DelimiterString string = "\n"
@@ -29,4 +32,8 @@ func Find(v []string, str string) string {
 		}
 	}
 	return ""
+}
+
+func StringToInt(v string) (int, error) {
+	return strconv.Atoi(v)
 }

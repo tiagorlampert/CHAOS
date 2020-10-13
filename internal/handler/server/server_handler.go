@@ -126,20 +126,34 @@ func renderDevicesTable(devices map[string]*models.Device) {
 }
 
 func (server *ServerHandler) connect(v []string) {
-	if !util.Contains(v, "mac-address=") {
-		fmt.Println(c.Yellow, "[!] You should specify a Mac Address!")
+	if len(v) < 1 {
+		fmt.Println(c.Yellow, "[!] You should specify a target index!")
 		return
 	}
 
-	macAddr := util.SplitAfterIndex(util.Find(v, "mac-address="), '=')
-
-	device, found := server.GetDevice(macAddr)
-	if !found {
-		fmt.Println(c.Yellow, "[!] Specified device not found!")
+	device, err := getDeviceByIndex(server.Devices, v[1])
+	if err != nil {
+		log.WithField("cause", err.Error()).Errorf("error getting device with index %s", v[1])
 		return
 	}
 	defer device.Connection.Close()
 
 	clientHandler := client.NewClientHandler(device.Connection)
 	clientHandler.HandleConnection(device.Hostname, device.UserID)
+}
+
+func getDeviceByIndex(devices map[string]*models.Device, vIndex string) (*models.Device, error) {
+	v, err := util.StringToInt(vIndex)
+	if err != nil {
+		return nil, err
+	}
+
+	var index int
+	for _, device := range devices {
+		index++
+		if index == v {
+			return device, nil
+		}
+	}
+	return nil, fmt.Errorf("index %d not found", v)
 }

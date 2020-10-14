@@ -126,7 +126,7 @@ func renderDevicesTable(devices map[string]*models.Device) {
 }
 
 func (server *ServerHandler) connect(v []string) {
-	if len(v) < 1 {
+	if len(v) <= 1 {
 		fmt.Println(c.Yellow, "[!] You should specify a target index!")
 		return
 	}

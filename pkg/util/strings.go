@@ -5,6 +5,10 @@ import (
 	"strings"
 )
 
+const (
+	TempDirectory = `temp/`
+)
+
 var (
 	DelimiterString string = "\n"
 	DelimiterByte   byte   = '\n'

@@ -18,6 +18,7 @@ vendor/
 
 # CHAOS
 build/
+temp/
 
 # IDE
 .idea

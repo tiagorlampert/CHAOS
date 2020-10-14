@@ -50,12 +50,12 @@ func executor(input string) {
 }
 
 func serverHandler(v []string) {
-	if !util.Contains(v, "port=") {
-		fmt.Println(c.Yellow, "[!] You should specify a port!")
-		return
-	}
 	if !util.Contains(v, "address=") {
 		fmt.Println(c.Yellow, "[!] You should specify a address!")
+		return
+	}
+	if !util.Contains(v, "port=") {
+		fmt.Println(c.Yellow, "[!] You should specify a port!")
 		return
 	}
 

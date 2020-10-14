@@ -1,6 +1,8 @@
 package client
 
 import (
+	"bufio"
+	"encoding/base64"
 	"fmt"
 	"github.com/c-bata/go-prompt"
 	log "github.com/sirupsen/logrus"
@@ -27,7 +29,7 @@ func (c ClientHandler) HandleConnection(hostname, user string) {
 		c.executor,
 		completer.ClientCompleter,
 		prompt.OptionPrefix(fmt.Sprintf("%s@%s > ", hostname, user)),
-		prompt.OptionPrefixTextColor(prompt.White),
+		prompt.OptionPrefixTextColor(prompt.Yellow),
 	)
 	p.Run()
 }
@@ -39,12 +41,30 @@ func (c ClientHandler) executor(input string) {
 		case "exit":
 			system.QuitApp()
 		default:
-			if err := Write(c.Connection, input); err != nil {
-				log.WithField("cause", err.Error()).Error("error sending command to client")
-			}
+			SendCommand(c.Connection, input)
 			return
 		}
 	}
+}
+
+func SendCommand(conn net.Conn, input string) {
+	if err := Write(conn, input); err != nil {
+		log.WithField("cause", err.Error()).Error("error sending command to client")
+		return
+	}
+
+	message, err := bufio.NewReader(conn).ReadString('\n')
+	if err != nil {
+		log.WithField("cause", err.Error()).Error("error reading response from connection")
+		return
+	}
+
+	decoded, err := base64.StdEncoding.DecodeString(message)
+	if err != nil {
+		log.WithField("cause", err.Error()).Error("error decoding response from connection")
+		return
+	}
+	fmt.Println(string(decoded))
 }
 
 func Write(conn net.Conn, v string) error {

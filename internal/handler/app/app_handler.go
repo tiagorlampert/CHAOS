@@ -5,7 +5,7 @@ import (
 	"github.com/c-bata/go-prompt"
 	"github.com/tiagorlampert/CHAOS/internal/handler"
 	"github.com/tiagorlampert/CHAOS/internal/handler/server"
-	"github.com/tiagorlampert/CHAOS/internal/ui/completer"
+	"github.com/tiagorlampert/CHAOS/internal/util/ui/completer"
 	c "github.com/tiagorlampert/CHAOS/pkg/color"
 	"github.com/tiagorlampert/CHAOS/pkg/system"
 	"github.com/tiagorlampert/CHAOS/pkg/util"

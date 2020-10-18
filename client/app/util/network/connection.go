@@ -3,9 +3,18 @@ package network
 import (
 	"bufio"
 	"encoding/base64"
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"net"
 )
+
+func NewConnection(address, port string) net.Conn {
+	conn, err := net.Dial("tcp", fmt.Sprintf("%s:%s", address, port))
+	if err != nil {
+		log.WithField("cause", err.Error()).Fatal("error creating new connection")
+	}
+	return conn
+}
 
 func Send(conn net.Conn, input []byte) error {
 	encoded := base64.StdEncoding.EncodeToString(input)

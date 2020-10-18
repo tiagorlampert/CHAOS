@@ -6,12 +6,7 @@ import (
 )
 
 const (
-	TempDirectory = `temp/`
-)
-
-var (
-	DelimiterString string = "\n"
-	DelimiterByte   byte   = '\n'
+	TempDirectory = "temp"
 )
 
 func SplitAfterIndex(str string, index byte) string {

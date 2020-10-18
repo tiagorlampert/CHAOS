@@ -7,15 +7,13 @@ type UseCase struct {
 }
 
 type Download interface {
-	Validate(param []string)
-	Prepare(command string)
-	File(path string)
+	File()
 }
 
 type Upload interface {
-	File(input string)
+	File()
 }
 
 type Screenshot interface {
-	TakeScreenshot(input string)
+	TakeScreenshot()
 }

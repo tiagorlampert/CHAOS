@@ -24,12 +24,19 @@ func NewScreenshotUseCase(conn net.Conn) usecase.Screenshot {
 
 func (s ScreenshotUseCase) TakeScreenshot(input string) {
 	fmt.Println(color.Green, "[*] Getting Screenshot...")
-	response, err := network.SendCommand(s.Connection, input)
+	err := network.Send(s.Connection, []byte(input))
 	if err != nil {
-		log.WithField("cause", err.Error()).Error("error taking screenshot")
+		log.WithField("cause", err.Error()).Error("error sending request")
+		return
 	}
 
-	if err := saveScreenshot(response); err != nil {
+	data, err := network.Read(s.Connection)
+	if err != nil {
+		log.WithField("cause", err.Error()).Error("error reading screenshot")
+		return
+	}
+
+	if err := saveScreenshot(data); err != nil {
 		log.WithField("cause", err.Error()).Error("error saving screenshot")
 	}
 }

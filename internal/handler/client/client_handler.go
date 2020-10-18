@@ -38,13 +38,19 @@ func (c ClientHandler) executor(input string) {
 	values := strings.Fields(input)
 	for _, v := range values {
 		switch strings.TrimSpace(v) {
+		case "download":
+			c.UseCase.Download.Validate(values)
+			c.UseCase.Download.Prepare(values[0])
+			c.UseCase.Download.File(values[1])
+			return
 		case "screenshot":
 			c.UseCase.Screenshot.TakeScreenshot(input)
 			return
 		case "exit":
 			system.QuitApp()
 		default:
-			response, _ := network.SendCommand(c.Connection, input)
+			_ = network.Send(c.Connection, []byte(input))
+			response, _ := network.Read(c.Connection)
 			fmt.Println(string(response))
 			return
 		}

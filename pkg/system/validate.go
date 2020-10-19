@@ -10,7 +10,6 @@ func ValidateOS() {
 	switch osType {
 	case Linux:
 		log.Info("Linux detected!")
-		util.Sleep(1)
 	case Darwin:
 		log.Warn("MacOS is only supported to compile to itself...")
 		util.Sleep(5)

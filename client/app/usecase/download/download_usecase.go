@@ -21,8 +21,10 @@ func NewDownloadUseCase(conn net.Conn) usecase.Download {
 func (d DownloadUseCase) File() {
 	_ = network.Send(d.Connection, []byte("ok"))
 
-	// read file path
-	path, _ := network.Read(d.Connection)
+	path, err := network.Read(d.Connection)
+	if err != nil {
+		log.WithField("cause", err.Error()).Error("error reading file path")
+	}
 
 	file, err := os.ReadFile(string(path))
 	if err != nil {

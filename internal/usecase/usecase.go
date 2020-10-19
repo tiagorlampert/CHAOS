@@ -9,13 +9,14 @@ type UseCase struct {
 type Download interface {
 	Validate(param []string)
 	Prepare(command string)
-	File(path string)
+	ReceiveFile(path string)
 }
 
 type Upload interface {
 	Validate(param []string)
 	Prepare(command string)
-	File(path string)
+	SendPath(savePath string)
+	SendFile(filepath string)
 }
 
 type Screenshot interface {

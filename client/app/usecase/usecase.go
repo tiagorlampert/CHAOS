@@ -1,10 +1,19 @@
 package usecase
 
 type UseCase struct {
+	Information Information
+	Screenshot  Screenshot
 	Download    Download
 	Upload      Upload
-	Screenshot  Screenshot
-	Information Information
+	Terminal    Terminal
+}
+
+type Information interface {
+	Collect()
+}
+
+type Screenshot interface {
+	TakeScreenshot()
 }
 
 type Download interface {
@@ -12,13 +21,10 @@ type Download interface {
 }
 
 type Upload interface {
-	File()
+	ValidatePath()
+	StoreFile()
 }
 
-type Screenshot interface {
-	TakeScreenshot()
-}
-
-type Information interface {
-	Collect()
+type Terminal interface {
+	Run(cmd string)
 }

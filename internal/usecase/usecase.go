@@ -13,7 +13,9 @@ type Download interface {
 }
 
 type Upload interface {
-	File(input string)
+	Validate(param []string)
+	Prepare(command string)
+	File(path string)
 }
 
 type Screenshot interface {

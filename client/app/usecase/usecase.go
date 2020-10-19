@@ -1,9 +1,10 @@
 package usecase
 
 type UseCase struct {
-	Download   Download
-	Upload     Upload
-	Screenshot Screenshot
+	Download    Download
+	Upload      Upload
+	Screenshot  Screenshot
+	Information Information
 }
 
 type Download interface {
@@ -16,4 +17,8 @@ type Upload interface {
 
 type Screenshot interface {
 	TakeScreenshot()
+}
+
+type Information interface {
+	Collect()
 }

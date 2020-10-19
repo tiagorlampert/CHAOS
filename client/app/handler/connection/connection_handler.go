@@ -25,7 +25,7 @@ func NewConnectionHandler(conn net.Conn, useCase *usecase.UseCase) handler.Handl
 }
 
 func (c ConnectionHandler) Handle() error {
-	sendDeviceSpecs(c.Connection)
+	c.UseCase.Information.Collect()
 
 	for {
 		message, err := network.Read(c.Connection)
@@ -40,9 +40,8 @@ func (c ConnectionHandler) Handle() error {
 		}
 
 		switch strings.TrimSpace(string(message)) {
-		case "get_device":
-			device, _ := util.PrettyEncode(util.LoadDeviceSpecs())
-			_ = network.Send(c.Connection, device)
+		case "information":
+			c.UseCase.Information.Collect()
 		case "download":
 			c.UseCase.Download.File()
 		case "screenshot":
@@ -54,14 +53,4 @@ func (c ConnectionHandler) Handle() error {
 		}
 	}
 	return nil
-}
-
-func sendDeviceSpecs(conn net.Conn) {
-	device, err := util.Encode(util.LoadDeviceSpecs())
-	if err != nil {
-		log.WithField("cause", err.Error()).Fatal("error encoding device specs")
-	}
-	if err := network.Send(conn, device); err != nil {
-		log.WithField("cause", err.Error()).Fatal("error writing device specs")
-	}
 }

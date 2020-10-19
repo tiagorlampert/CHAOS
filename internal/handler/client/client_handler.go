@@ -43,6 +43,11 @@ func (c ClientHandler) executor(input string) {
 			c.UseCase.Download.Prepare(values[0])
 			c.UseCase.Download.File(values[1])
 			return
+		case "upload":
+			c.UseCase.Upload.Validate(values)
+			c.UseCase.Upload.Prepare(values[0])
+			c.UseCase.Upload.File(values[1])
+			return
 		case "screenshot":
 			c.UseCase.Screenshot.TakeScreenshot(input)
 			return

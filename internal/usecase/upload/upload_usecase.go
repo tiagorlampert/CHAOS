@@ -91,6 +91,6 @@ func (u UploadUseCase) SendFile(filepath string) {
 		log.Error(err)
 	}
 	if response.Error {
-		fmt.Println(c.Red, "[!] Error sending file! %s", response.Message)
+		fmt.Println(c.Red, "[!] Error sending file! %s", response.Data)
 	}
 }

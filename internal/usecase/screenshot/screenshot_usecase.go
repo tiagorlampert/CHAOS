@@ -1,7 +1,6 @@
 package screenshot
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
@@ -28,15 +27,10 @@ func NewScreenshotUseCase(conn net.Conn) usecase.Screenshot {
 func (s ScreenshotUseCase) TakeScreenshot(input string) {
 	fmt.Println(color.Green, "[*] Getting Screenshot...")
 
-	request, err := json.Marshal(models.Request{
+	err := network.Send(s.Connection, models.Request{
 		Runnable: false,
 		Command:  "screenshot",
 	})
-	if err != nil {
-		log.Error(err)
-	}
-
-	err = network.Send(s.Connection, request)
 	if err != nil {
 		log.WithField("cause", err.Error()).Error("error sending request")
 		return
@@ -48,7 +42,13 @@ func (s ScreenshotUseCase) TakeScreenshot(input string) {
 		return
 	}
 
-	if err := saveScreenshot(response); err != nil {
+	if response.Error {
+		fmt.Println(color.Green, "[!] Error processing screenshot!")
+		return
+
+	}
+
+	if err := saveScreenshot(response.Data); err != nil {
 		log.WithField("cause", err.Error()).Error("error saving screenshot")
 	}
 }
@@ -61,7 +61,7 @@ func saveScreenshot(response []byte) error {
 		return err
 	}
 
-	fmt.Println(color.Green, "[*] ReceiveFile saved at", filename)
+	fmt.Println(color.Green, "[*] File saved at", filename)
 	system.RunCmd(fmt.Sprintf("eog %s", filename), 5)
 	return nil
 }

@@ -25,7 +25,6 @@ func NewUploadUseCase(conn net.Conn) usecase.Upload {
 
 func (u UploadUseCase) Validate(param []string) error {
 	if len(param) != 3 || !util.Contains(param, "upload") {
-		fmt.Println(c.Yellow, "[!] Invalid parameters to upload!")
 		return fmt.Errorf("invalid parameters")
 	}
 	return nil

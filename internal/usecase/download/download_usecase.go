@@ -27,7 +27,6 @@ func NewDownloadUseCase(conn net.Conn) usecase.Download {
 
 func (d DownloadUseCase) Validate(param []string) error {
 	if len(param) != 2 || !util.Contains(param, "download") {
-		fmt.Println(c.Yellow, "[!] Invalid parameters to download!")
 		return fmt.Errorf("invalid parameters")
 	}
 	return nil

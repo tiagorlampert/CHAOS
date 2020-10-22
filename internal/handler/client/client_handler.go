@@ -6,6 +6,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/handler"
 	"github.com/tiagorlampert/CHAOS/internal/usecase"
 	"github.com/tiagorlampert/CHAOS/internal/util/ui/completer"
+	"github.com/tiagorlampert/CHAOS/pkg/color"
 	"github.com/tiagorlampert/CHAOS/pkg/system"
 	"net"
 	"strings"
@@ -42,12 +43,14 @@ func (c ClientHandler) executor(input string) {
 			return
 		case "download":
 			if err := c.UseCase.Download.Validate(values); err != nil {
+				fmt.Println(color.Yellow, "[!] Invalid parameters to download!")
 				return
 			}
 			c.UseCase.Download.File(values[1])
 			return
 		case "upload":
 			if err := c.UseCase.Upload.Validate(values); err != nil {
+				fmt.Println(color.Yellow, "[!] Invalid parameters to upload!")
 				return
 			}
 			c.UseCase.Upload.File(values[1], values[2])

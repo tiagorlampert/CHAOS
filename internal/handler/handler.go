@@ -1,8 +1,6 @@
 package handler
 
-import (
-	"github.com/tiagorlampert/CHAOS/pkg/models"
-)
+import "github.com/tiagorlampert/CHAOS/internal/models"
 
 type App interface {
 	Handle()

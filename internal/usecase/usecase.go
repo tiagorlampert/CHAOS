@@ -1,24 +1,31 @@
 package usecase
 
 type UseCase struct {
-	Download   Download
-	Upload     Upload
-	Screenshot Screenshot
+	Terminal    Terminal
+	Information Information
+	Download    Download
+	Upload      Upload
+	Screenshot  Screenshot
+}
+
+type Information interface {
+	Collect()
+}
+
+type Terminal interface {
+	Run(cmd string)
 }
 
 type Download interface {
-	Validate(param []string)
-	Prepare(command string)
-	ReceiveFile(path string)
+	Validate(param []string) error
+	File(filepath string)
 }
 
 type Upload interface {
-	Validate(param []string)
-	Prepare(command string)
-	SendPath(savePath string)
-	SendFile(filepath string)
+	Validate(param []string) error
+	File(filepathFrom string, filepathTo string)
 }
 
 type Screenshot interface {
-	TakeScreenshot(input string)
+	TakeScreenshot()
 }

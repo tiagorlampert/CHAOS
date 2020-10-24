@@ -27,5 +27,5 @@ type Upload interface {
 }
 
 type Screenshot interface {
-	TakeScreenshot()
+	TakeScreenshot() error
 }

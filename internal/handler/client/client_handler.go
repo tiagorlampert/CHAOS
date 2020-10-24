@@ -56,7 +56,9 @@ func (c ClientHandler) executor(input string) {
 			c.UseCase.Upload.File(values[1], values[2])
 			return
 		case "screenshot":
-			c.UseCase.Screenshot.TakeScreenshot()
+			if err := c.UseCase.Screenshot.TakeScreenshot(); err != nil {
+				fmt.Println(color.Yellow, "[!] Error processing screenshot!", err.Error())
+			}
 			return
 		case "exit":
 			system.QuitApp()

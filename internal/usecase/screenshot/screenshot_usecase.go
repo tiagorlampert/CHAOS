@@ -24,7 +24,7 @@ func NewScreenshotUseCase(conn net.Conn) usecase.Screenshot {
 	}
 }
 
-func (s ScreenshotUseCase) TakeScreenshot() {
+func (s ScreenshotUseCase) TakeScreenshot() error {
 	fmt.Println(color.Green, "[*] Getting Screenshot...")
 
 	err := network.Send(s.Connection, models.Message{
@@ -32,23 +32,24 @@ func (s ScreenshotUseCase) TakeScreenshot() {
 	})
 	if err != nil {
 		log.WithField("cause", err.Error()).Error("error sending request")
-		return
+		return err
 	}
 
 	response, err := network.Read(s.Connection)
 	if err != nil {
 		log.WithField("cause", err.Error()).Error("error reading screenshot")
-		return
+		return err
 	}
 	if response.Error.HasError {
 		fmt.Println(color.Green, "[!] Error processing screenshot!")
-		return
+		return err
 
 	}
 
 	if err := saveScreenshot(response.Data); err != nil {
-		log.WithField("cause", err.Error()).Error("error saving screenshot")
+		return err
 	}
+	return nil
 }
 
 func saveScreenshot(response []byte) error {

@@ -23,14 +23,14 @@ func Persist(status bool, binaryPath string) error {
 }
 
 func enablePersistence(binaryPath string) error {
-	destinationFile := fmt.Sprint(os.Getenv(envAppData), string(os.PathSeparator), persistencePath)
+	file := fmt.Sprint(os.Getenv(envAppData), string(os.PathSeparator), persistencePath)
 
-	if err := util.CopyFile(binaryPath, destinationFile); err != nil {
+	if err := util.CopyFile(binaryPath, file); err != nil {
 		return err
 	}
 
 	// check if file has created
-	_, err := os.Stat(destinationFile)
+	_, err := os.Stat(file)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return err
@@ -42,8 +42,8 @@ func enablePersistence(binaryPath string) error {
 }
 
 func disablePersistence() error {
-	filepath := fmt.Sprint(os.Getenv(envAppData), string(os.PathSeparator), persistencePath)
-	if err := os.Remove(filepath); err != nil {
+	file := fmt.Sprint(os.Getenv(envAppData), string(os.PathSeparator), persistencePath)
+	if err := os.Remove(file); err != nil {
 		return err
 	}
 	return nil

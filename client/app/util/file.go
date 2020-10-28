@@ -26,14 +26,14 @@ func WriteFile(path string, data []byte) error {
 	return nil
 }
 
-func CreateTextFile(path string, content string) error {
-	create, err := os.Create(path)
+func CopyFile(source, destination string) error {
+	data, err := ioutil.ReadFile(source)
 	if err != nil {
 		return err
 	}
-	_, err = create.WriteString(content)
-	if err != nil {
+
+	if err := ioutil.WriteFile(destination, data, os.ModePerm); err != nil {
 		return err
 	}
-	return create.Close()
+	return nil
 }

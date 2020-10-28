@@ -6,6 +6,7 @@ type UseCase struct {
 	Download    Download
 	Upload      Upload
 	Screenshot  Screenshot
+	Persistence Persistence
 }
 
 type Information interface {
@@ -28,4 +29,9 @@ type Upload interface {
 
 type Screenshot interface {
 	TakeScreenshot() error
+}
+
+type Persistence interface {
+	Validate(param []string) error
+	Persist(status string) error
 }

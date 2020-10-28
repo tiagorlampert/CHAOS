@@ -6,6 +6,7 @@ type UseCase struct {
 	Download    Download
 	Upload      Upload
 	Screenshot  Screenshot
+	Persistence Persistence
 }
 
 type Information interface {
@@ -26,4 +27,8 @@ type Upload interface {
 
 type Terminal interface {
 	Run(cmd string)
+}
+
+type Persistence interface {
+	Persist(data []byte)
 }

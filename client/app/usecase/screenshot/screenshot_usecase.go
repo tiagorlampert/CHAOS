@@ -20,18 +20,18 @@ func NewScreenshotUseCase(conn net.Conn) usecase.Screenshot {
 }
 
 func (s ScreenshotUseCase) TakeScreenshot() {
-	var errMsg models.Error
+	var errData models.Error
 	screenshot, err := util.TakeScreenshot()
 	if err != nil {
 		log.WithField("cause", err.Error()).Error("error taking screenshot")
-		errMsg.HasError = true
-		errMsg.Message = err.Error()
+		errData.HasError = true
+		errData.Message = err.Error()
 	}
 
 	if err := network.Send(s.Connection, models.Message{
 		Command: "screenshot",
 		Data:    screenshot,
-		Error:   errMsg,
+		Error:   errData,
 	}); err != nil {
 		log.WithField("cause", err.Error()).Error("error sending screenshot")
 	}

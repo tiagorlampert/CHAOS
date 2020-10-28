@@ -1,4 +1,4 @@
-package os
+package util
 
 import (
 	"io/ioutil"
@@ -24,4 +24,16 @@ func WriteFile(path string, data []byte) error {
 		return err
 	}
 	return nil
+}
+
+func CreateTextFile(path string, content string) error {
+	create, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	_, err = create.WriteString(content)
+	if err != nil {
+		return err
+	}
+	return create.Close()
 }

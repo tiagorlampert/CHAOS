@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/internal/handler"
 	"github.com/tiagorlampert/CHAOS/internal/handler/app"
+	"github.com/tiagorlampert/CHAOS/internal/usecase/generate"
 	"github.com/tiagorlampert/CHAOS/internal/util/ui"
 	"github.com/tiagorlampert/CHAOS/pkg/system"
 )
@@ -27,7 +28,10 @@ func main() {
 }
 
 func NewApp() *App {
-	appHandler := app.NewAppHandler()
+	// Use Case
+	generateUseCase := generate.NewGenerateUseCase()
+
+	appHandler := app.NewAppHandler(generateUseCase)
 
 	return &App{
 		handler: appHandler,

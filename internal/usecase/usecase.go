@@ -18,12 +18,12 @@ type Terminal interface {
 }
 
 type Download interface {
-	Validate(param []string) error
+	Validate(params []string) error
 	File(filepath string)
 }
 
 type Upload interface {
-	Validate(param []string) error
+	Validate(params []string) error
 	File(filepathFrom string, filepathTo string)
 }
 
@@ -32,6 +32,10 @@ type Screenshot interface {
 }
 
 type Persistence interface {
-	Validate(param []string) error
+	Validate(params []string) error
 	Persist(status string) error
+}
+
+type Build interface {
+	BuildClientBinary(params []string) error
 }

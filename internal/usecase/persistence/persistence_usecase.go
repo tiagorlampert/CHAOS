@@ -23,8 +23,8 @@ func NewPersistenceUseCase(conn net.Conn) usecase.Persistence {
 	}
 }
 
-func (p PersistenceUseCase) Validate(param []string) error {
-	if !util.Contains(param, "enable") && !util.Contains(param, "disable") {
+func (p PersistenceUseCase) Validate(params []string) error {
+	if !util.Contains(params, "enable") && !util.Contains(params, "disable") {
 		return fmt.Errorf("invalid parameters")
 	}
 	return nil

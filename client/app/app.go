@@ -18,9 +18,12 @@ type App struct {
 	Handler handler.Handler
 }
 
-func NewApp(address, port, binaryPath string) *App {
-	// Connection
-	conn := network.NewConnection(address, port)
+func NewApp(address, port, binaryPath string) (*App, error) {
+	conn, err := network.NewConnection(address, port)
+	if err != nil {
+		log.WithField("cause", err.Error()).Error("error creating new connection")
+		return nil, err
+	}
 
 	// Use Case
 	informationUseCase := information.NewInformationUseCase(conn)
@@ -43,7 +46,7 @@ func NewApp(address, port, binaryPath string) *App {
 
 	return &App{
 		Handler: connectionHandler,
-	}
+	}, nil
 }
 
 func (app *App) Run() error {

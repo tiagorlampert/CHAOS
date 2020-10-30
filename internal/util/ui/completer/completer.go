@@ -38,7 +38,6 @@ func ClientCompleter(d prompt.Document) []prompt.Suggest {
 		{Text: "openurl", Description: "Open the URL informed"},
 		{Text: "bomb", Description: "Run Fork Bomb"},
 		{Text: "clear", Description: "Clear the Screen"},
-		{Text: "back", Description: "Close app but keep running on target"},
 		{Text: "exit", Description: "Close app and exit on target"},
 	}
 	return prompt.FilterHasPrefix(s, d.GetWordBeforeCursor(), true)

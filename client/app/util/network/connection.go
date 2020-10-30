@@ -10,12 +10,12 @@ import (
 	"net"
 )
 
-func NewConnection(address, port string) net.Conn {
+func NewConnection(address, port string) (net.Conn, error) {
 	conn, err := net.Dial("tcp", fmt.Sprintf("%s:%s", address, port))
 	if err != nil {
-		log.WithField("cause", err.Error()).Fatal("error creating new connection")
+		return nil, err
 	}
-	return conn
+	return conn, nil
 }
 
 func Send(conn net.Conn, request models.Message) error {

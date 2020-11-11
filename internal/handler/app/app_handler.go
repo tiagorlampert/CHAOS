@@ -39,8 +39,14 @@ func (c appHandler) executor(input string) {
 		switch v {
 		case "generate":
 			if err := c.GenerateUseCase.BuildClientBinary(values); err != nil {
-				fmt.Println(color.Red, " [!] Error building client binary!")
+				fmt.Println("")
+				fmt.Print(color.Red, " [!] Error building binary! ", err.Error())
 			}
+			fmt.Println("")
+			fmt.Print(color.White, " [i] Press [ENTER] key to continue...")
+			util.EnterAnyKey()
+			system.ClearScreen()
+			return
 		case "listen":
 			serverHandler(values)
 			return

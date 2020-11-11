@@ -6,7 +6,8 @@ import (
 )
 
 const (
-	TempDirectory = "temp"
+	TempDirectory  = "temp"
+	BuildDirectory = "build"
 )
 
 func SplitAfterIndex(str string, index byte) string {

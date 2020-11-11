@@ -1,5 +1,12 @@
 package usecase
 
+import "errors"
+
+var (
+	ErrRequiredParam    = errors.New("required param")
+	ErrUnsupportedParam = errors.New("unsupported param")
+)
+
 type UseCase struct {
 	Terminal    Terminal
 	Information Information

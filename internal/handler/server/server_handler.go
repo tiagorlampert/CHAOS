@@ -35,7 +35,7 @@ type ServerHandler struct {
 func NewServerHandler(address, port string) handler.Server {
 	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", address, port))
 	if err != nil {
-		log.WithField("cause", err.Error()).Error("error starting server")
+		log.WithField("cause", err.Error()).Fatal("error starting server")
 	}
 
 	return &ServerHandler{

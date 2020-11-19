@@ -5,6 +5,8 @@ import "errors"
 var (
 	ErrRequiredParam    = errors.New("required param")
 	ErrUnsupportedParam = errors.New("unsupported param")
+	ErrSendingRequest   = errors.New("error sending request")
+	ErrReadingResponse  = errors.New("error reading response")
 )
 
 type UseCase struct {
@@ -14,6 +16,7 @@ type UseCase struct {
 	Upload      Upload
 	Screenshot  Screenshot
 	Persistence Persistence
+	OpenURL     OpenURL
 }
 
 type Information interface {
@@ -45,4 +48,8 @@ type Persistence interface {
 
 type Build interface {
 	BuildClientBinary(params []string) error
+}
+
+type OpenURL interface {
+	Open(url []string) error
 }

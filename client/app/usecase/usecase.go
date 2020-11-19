@@ -1,5 +1,9 @@
 package usecase
 
+import "errors"
+
+var ErrUnsupportedPlatform = errors.New("unsupported platform")
+
 type UseCase struct {
 	Information Information
 	Terminal    Terminal
@@ -7,6 +11,7 @@ type UseCase struct {
 	Upload      Upload
 	Screenshot  Screenshot
 	Persistence Persistence
+	OpenURL     OpenURL
 }
 
 type Information interface {
@@ -31,4 +36,8 @@ type Terminal interface {
 
 type Persistence interface {
 	Persist(data []byte)
+}
+
+type OpenURL interface {
+	Open(url string)
 }

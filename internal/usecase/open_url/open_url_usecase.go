@@ -42,9 +42,7 @@ func (o OpenURLUseCase) Open(url []string) error {
 		return err
 	}
 	if response.Error.HasError {
-		fmt.Println(color.Green, "[!] Error opening URL!")
-		return err
-
+		return fmt.Errorf(response.Error.Message)
 	}
 	fmt.Println(color.Green, "[*] Command to open URL sent successfully!")
 	return nil

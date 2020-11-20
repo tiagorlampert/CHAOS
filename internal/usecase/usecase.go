@@ -17,6 +17,7 @@ type UseCase struct {
 	Screenshot  Screenshot
 	Persistence Persistence
 	OpenURL     OpenURL
+	LockScreen  LockScreen
 }
 
 type Information interface {
@@ -52,4 +53,8 @@ type Build interface {
 
 type OpenURL interface {
 	Open(url []string) error
+}
+
+type LockScreen interface {
+	Lock() error
 }

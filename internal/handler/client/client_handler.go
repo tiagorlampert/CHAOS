@@ -74,6 +74,11 @@ func (c ClientHandler) executor(input string) {
 				fmt.Println(color.Red, "[!] Error opening URL!", err.Error())
 			}
 			return
+		case "lockscreen":
+			if err := c.UseCase.LockScreen.Lock(); err != nil {
+				fmt.Println(color.Red, "[!] Error locking screen!", err.Error())
+			}
+			return
 		case "exit":
 			system.QuitApp()
 		default:

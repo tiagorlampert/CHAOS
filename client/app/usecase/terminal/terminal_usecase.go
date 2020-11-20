@@ -23,10 +23,20 @@ func NewTerminalUseCase(conn net.Conn) usecase.Terminal {
 func (t TerminalUseCase) Run(cmd string) {
 	fmt.Println("Command from server: " + cmd)
 
-	output := util.RunCmd(cmd, 10)
-	err := network.Send(t.Connection, models.Message{
+	output, err := util.RunCmd(cmd, 10)
+
+	var errData models.Error
+	if err != nil {
+		errData = models.Error{
+			HasError: true,
+			Message:  err.Error(),
+		}
+	}
+
+	err = network.Send(t.Connection, models.Message{
 		Command: "terminal",
 		Data:    output,
+		Error:   errData,
 	})
 	if err != nil {
 		log.WithField("cause", err.Error()).Error("error sending command output")

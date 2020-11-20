@@ -25,7 +25,7 @@ func (o OpenURLUseCase) Open(url string) {
 	var err error
 	switch util.DetectOS() {
 	case util.Windows:
-		util.RunCmd(fmt.Sprintf("rundll32 url.dll,FileProtocolHandler %s", url), 10)
+		err = exec.Command(fmt.Sprintf("rundll32 url.dll,FileProtocolHandler %s", url)).Start()
 	case util.Linux:
 		err = exec.Command(fmt.Sprintf("xdg-open %s", url)).Start()
 	case util.Darwin:

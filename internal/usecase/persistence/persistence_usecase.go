@@ -61,8 +61,7 @@ func (p PersistenceUseCase) Persist(status string) error {
 	}
 	if response.Error.HasError {
 		fmt.Println(color.Red, "[!] Error on", status, "persistence!", response.Error.Message)
-		return err
-
+		return fmt.Errorf(response.Error.Message)
 	}
 
 	switch strings.TrimSpace(status) {

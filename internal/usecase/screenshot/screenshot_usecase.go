@@ -41,9 +41,7 @@ func (s ScreenshotUseCase) TakeScreenshot() error {
 		return err
 	}
 	if response.Error.HasError {
-		fmt.Println(color.Green, "[!] Error processing screenshot!")
-		return err
-
+		return fmt.Errorf(response.Error.Message)
 	}
 
 	if err := saveScreenshot(response.Data); err != nil {

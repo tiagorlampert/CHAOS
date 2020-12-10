@@ -37,7 +37,6 @@ func ClientCompleter(d prompt.Document) []prompt.Suggest {
 		{Text: "information", Description: "Get device information"},
 		{Text: "lockscreen", Description: "Lock the OS screen"},
 		{Text: "open-url", Description: "Open the URL informed"},
-		{Text: "clear", Description: "Clear the Screen"},
 		{Text: "exit", Description: "Close app"},
 	}
 	return prompt.FilterHasPrefix(s, d.GetWordBeforeCursor(), true)

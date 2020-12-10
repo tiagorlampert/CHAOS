@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	ServerAddress = "192.168.15.6"
-	ServerPort    = "8081"
+	ServerAddress = ""
+	ServerPort    = ""
 )
 
 func main() {

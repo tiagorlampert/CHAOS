@@ -15,11 +15,13 @@ import (
 
 type appHandler struct {
 	GenerateUseCase usecase.Build
+	ServeUseCase    usecase.Serve
 }
 
-func NewAppHandler(generateUseCase usecase.Build) handler.App {
+func NewAppHandler(generateUseCase usecase.Build, serveUseCase usecase.Serve) handler.App {
 	return &appHandler{
 		GenerateUseCase: generateUseCase,
+		ServeUseCase:    serveUseCase,
 	}
 }
 
@@ -50,8 +52,9 @@ func (c appHandler) executor(input string) {
 		case "listen":
 			serverHandler(values)
 			return
-		case "devices":
 		case "serve":
+			c.ServeUseCase.ServeDirectory(values)
+			return
 		case "exit":
 			system.QuitApp()
 		default:

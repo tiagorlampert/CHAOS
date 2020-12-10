@@ -58,3 +58,7 @@ type OpenURL interface {
 type LockScreen interface {
 	Lock() error
 }
+
+type Serve interface {
+	ServeDirectory(values []string)
+}

@@ -6,6 +6,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/handler"
 	"github.com/tiagorlampert/CHAOS/internal/handler/app"
 	"github.com/tiagorlampert/CHAOS/internal/usecase/generate"
+	"github.com/tiagorlampert/CHAOS/internal/usecase/serve"
 	"github.com/tiagorlampert/CHAOS/internal/util/ui"
 	"github.com/tiagorlampert/CHAOS/pkg/system"
 )
@@ -30,8 +31,9 @@ func main() {
 func NewApp() *App {
 	// Use Case
 	generateUseCase := generate.NewGenerateUseCase()
+	serveUseCase := serve.NewServeUseCase()
 
-	appHandler := app.NewAppHandler(generateUseCase)
+	appHandler := app.NewAppHandler(generateUseCase, serveUseCase)
 
 	return &App{
 		handler: appHandler,

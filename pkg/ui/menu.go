@@ -7,7 +7,7 @@ import (
 
 func ShowMenuHeader(version string) {
 	fmt.Println("")
-	fmt.Println(c.Yellow, "                                                 CHAOS v"+version)
+	fmt.Println(c.Yellow, "                                                 CHAOS "+version)
 	fmt.Println(c.Cyan, "                                             by tiagorlampert")
 	fmt.Println("")
 	fmt.Println(c.White, " Please use `tab` to autocomplete commands,")

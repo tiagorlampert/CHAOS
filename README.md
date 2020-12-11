@@ -2,16 +2,15 @@
   <img src="https://raw.githubusercontent.com/tiagorlampert/CHAOS/master/content/logo.png">
 </p>
 
-<h1 align="center">CHAOS Payload Generator</h1>
 <p align="center">
   <a href="https://golang.org/">
-    <img src="https://img.shields.io/badge/Golang-1.11-blue.svg">
+    <img src="https://img.shields.io/badge/Golang-1.15-blue.svg">
   </a>
   <a href="https://github.com/tiagorlampert/CHAOS/blob/master/LICENSE">
     <img src="https://img.shields.io/badge/License-BSD%203-lightgrey.svg">
   </a>
   <a href="https://github.com/tiagorlampert/CHAOS/blob/master/main.go">
-    <img src="https://img.shields.io/badge/Release-3.0-red.svg">
+    <img src="https://img.shields.io/badge/Release-4.X-red.svg">
   </a>
     <a href="https://opensource.org">
     <img src="https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg">
@@ -19,7 +18,7 @@
 </p>
 
 <p align="center">
-  CHAOS is a PoC that allow generate payloads and control remote operating systems.
+  CHAOS is a Remote Administration Tool that allow generate binaries to control remote operating systems.
 </p>
 
 ## Disclaimer
@@ -37,86 +36,64 @@ THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS
 | `Download File`          |    X    |    X   |   X   |
 | `Upload File`            |    X    |    X   |   X   |
 | `Screenshot`             |    X    |    X   |   X   |
-| `Keylogger`              |    X    |        |       |
 | `Persistence`            |    X    |        |       |
 | `Open URL`               |    X    |    X   |   X   |
 | `Get OS Info`            |    X    |    X   |   X   |
-| `Fork Bomb`              |    X    |    X   |   X   |
 | `Run Hidden`             |    X    |        |       |
-
-## Tested On
-[![Kali)](https://www.google.com/s2/favicons?domain=https://www.kali.org/)](https://www.kali.org) **Kali Linux - ROLLING EDITION**
 
 ## How to Install
 ```bash
 # Install dependencies
-$ sudo apt install golang git go-dep -y
+$ sudo apt install golang git -y
 
 # Get this repository
-$ go get github.com/tiagorlampert/CHAOS
+$ git clone https://github.com/tiagorlampert/CHAOS
 
 # Go into the repository
-$ cd ~/go/src/github.com/tiagorlampert/CHAOS
-
-# Get project dependencies
-$ dep ensure
+$ cd CHAOS/
 
 # Run
-$ go run main.go
+$ go run cmd/chaos/main.go
 ```
 
 ## How to Use
 
 Command     | On HOST does...
 :-----      |:-----
-`generate`  |Generate a payload (e.g. `generate lhost=192.168.0.100 lport=8080 fname=chaos --windows`)
-`lhost=`    |Specify a ip for connection
-`lport=`    |Specify a port for connection
-`fname=`    |Specify a filename to output
+`generate`  |Generate a binary (e.g. `generate address=192.168.0.100 port=8080 filename=chaos --windows --hidden`)
+`address=`  |Specify a ip for connection
+`port=`     |Specify a port for connection
+`filename=` |Specify a filename to output binary
 `--windows` |Target Windows
 `--macos`   |Target Mac OS
 `--linux`   |Target Linux
-`listen`    |Listen for a new connection (e.g. `listen lport=8080`)
-`serve`     |Serve files
+`--hidden`  |Run a hidden binary (only for Windows)
+`listen`    |Listen for a new connection (e.g. `listen port=8080`)
+`serve`     |Serve directory files
 `exit`      |Quit this program
 
 Command                 | On TARGET does...
 :-----                  |:-----
-`download`              |File Download
-`upload`                |File Upload
+`download {filePath}`   |File Download
+`upload {filePath}`     |File Upload
 `screenshot`            |Take a Screenshot
-`keylogger_start`       |Start Keylogger session
-`keylogger_show`        |Show Keylogger session logs
-`persistence_enable`    |Install at Startup
-`persistence_disable`   |Remove from Startup
-`getos`                 |Get OS name
+`persistence enable`    |Install at Startup
+`persistence disable`   |Remove from Startup
+`information`           |Get OS information
 `lockscreen`            |Lock the OS screen
-`openurl`               |Open the URL informed
-`bomb`                  |Run Fork Bomb
-`clear`                 |Clear the Screen
-`back`                  |Close connection but keep running on target
-`exit`                  |Close connection and exit on target
+`open-url {url}`              |Open the URL informed
+`exit`                  |Quit app
 
-## Video
+## Video (out of date)
 <p align="center">
 <a href="https://www.youtube.com/watch?v=Fq_0yDPFjYE">
   <img src="https://img.youtube.com/vi/Fq_0yDPFjYE/maxresdefault.jpg" width="700"/>
 </a></p>
 
-## Gif
+## Gif (out of date)
 <p align="center">
 <img src="https://github.com/tiagorlampert/CHAOS/blob/master/content/screenshot.gif">
 </p>
-
-## FAQ
-> #### Why does Keylogger capture all uppercase letters?
-> All the letters obtained using the keylogger are uppercase letters. It is a known issue, in case anyone knows how to fix the Keylogger function using golang, please contact me or open an issue.
-
-> #### Why are necessary get and install external libraries?
-> To implement the screenshot function i used a third-party library, you can check it in https://github.com/kbinani/screenshot and https://github.com/lxn/win. You must download and install it to generate the payload.
-
-## Contact
-:email: **tiagorlampert@gmail.com**
 
 ## Donate
 If you enjoyed this project, give me a cup of coffee. :)

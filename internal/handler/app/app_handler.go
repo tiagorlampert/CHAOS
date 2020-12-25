@@ -42,7 +42,7 @@ func (c appHandler) executor(input string) {
 		case "generate":
 			if err := c.GenerateUseCase.BuildClientBinary(values); err != nil {
 				fmt.Println("")
-				fmt.Print(color.Red, " [!] Error building binary! ", err.Error())
+				fmt.Print(color.Red, " [!] Error building binary!\n", err.Error())
 			}
 			fmt.Println("")
 			fmt.Print(color.White, " [i] Press [ENTER] key to continue...")

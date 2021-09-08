@@ -110,7 +110,7 @@ If you enjoyed this project, give me a cup of coffee. :)
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=SG83FSKPKCRJ6&currency_code=USD&source=url)
 
 ## Sponsors
-<img src="https://raw.githubusercontent.com/tiagorlampert/CHAOS/master/content/jetbrains.png" width="30" height="30" /> Sponsored by [JetBrains Open Source License](https://www.jetbrains.com/buy/opensource/).
+<img src="https://raw.githubusercontent.com/tiagorlampert/CHAOS/master/public/jetbrains.png" width="30" height="30" /> Sponsored by [JetBrains Open Source License](https://www.jetbrains.com/buy/opensource/).
 
 ## Copyright and license
 

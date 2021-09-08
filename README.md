@@ -4,7 +4,7 @@
   </a>
 </p>
 
-<h1 align="center">CHAOS: Remote Administration Tool</h3>
+<h1 align="center">CHAOS: Remote Administration Tool</h1>
 <p align="center">
   <a href="https://golang.org/">
     <img src="https://img.shields.io/badge/Golang-1.16-blue.svg?style=flat-square">

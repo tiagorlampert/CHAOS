@@ -1,11 +1,16 @@
 module github.com/tiagorlampert/CHAOS
 
-go 1.15
+go 1.16
 
 require (
-	github.com/c-bata/go-prompt v0.2.5
-	github.com/go-openapi/strfmt v0.19.6 // indirect
+	github.com/appleboy/gin-jwt/v2 v2.6.3
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/gin-contrib/multitemplate v0.0.0-20200514145638-4955c9347179
+	github.com/gin-gonic/gin v1.7.4
+	github.com/go-playground/validator/v10 v10.4.1
 	github.com/google/uuid v1.1.1
-	github.com/jedib0t/go-pretty v4.3.0+incompatible
-	github.com/sirupsen/logrus v1.7.0
+	github.com/jinzhu/gorm v1.9.12
+	github.com/sirupsen/logrus v1.5.0
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
+	golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae // indirect
 )

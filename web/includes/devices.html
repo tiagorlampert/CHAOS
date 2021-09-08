@@ -1,0 +1,90 @@
+{{ define "content" }}
+    <div class="container">
+        <div class="card shadow border-2">
+            <div class="card-body">
+
+                <div class="panel-heading mb-4">
+                    <div class="row border-bottom pb-2">
+                        <div class="col col-xs-6">
+                            <h1 class="h2">Connected Devices</h1>
+                        </div>
+                        <div class="col col-xs-6 text-right">
+                            <a class="btn btn-lg btn-primary" href="/devices" role="button" data-placement="bottom" data-toggle="tooltip" title="Refresh connected devices">Refresh</a>
+                        </div>
+                    </div>
+                </div>
+
+                <table id="default-table" class="table table-striped table-bordered table-responsive-sm">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Hostname</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">OS</th>
+                        <th scope="col">Local IP</th>
+                        <th scope="col">Mac Address</th>
+                        <th scope="col" class="text-center">Management</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {{ with .Devices }}
+                        {{ range . }}
+                            <tr>
+                                {{ if (eq .OSName "linux") }}<td><i class="fab fa-linux"></i></td>{{ end }}
+                                {{ if (eq .OSName "windows") }}<td><i class="fab fa-windows"></i></td>{{ end }}
+                                {{ if (eq .OSName "darwin") }}<td><i class="fab fa-apple"></i></td>{{ end }}
+                                {{ if and (ne .OSName "linux") (ne .OSName "windows") (ne .OSName "darwin") }}<td><i class="fas fa-desktop"></i></td>{{ end }}
+
+                                <td>{{ .Hostname }}</td>
+                                <td>{{ .Username }} ({{.UserID}})</td>
+
+                                {{ if (eq .OSName "linux") }}<td><span class="badge badge-warning"> {{ .OSName }}</span></td>{{ end }}
+                                {{ if (eq .OSName "windows") }}<td><span class="badge badge-primary"> {{ .OSName }}</span></td>{{ end }}
+                                {{ if (eq .OSName "darwin") }}<td><span class="badge badge-success"> {{ .OSName }}</span></td>{{ end }}
+                                {{ if and (ne .OSName "linux") (ne .OSName "windows") (ne .OSName "darwin") }}<td><a class="badge badge-info"> {{ .OSName }}</a></td>{{ end }}
+
+                                <td>{{ .LocalIPAddress }}</td>
+                                <td>{{ .MacAddress }}</td>
+                                <td class="py-2 text-center">
+                                    <div class="btn-group" role="group">
+                                        <button id="btnGroupDrop1" type="button"
+                                                class="btn btn-secondary dropdown-toggle"
+                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                            <a class="dropdown-item" href="/shell?address={{ .MacAddressBase64 }}"><i class="fas fa-terminal"></i> Remote Shell</a>
+                                            <a class="dropdown-item" href="#" onclick="TakeScreenshot({{ .MacAddressBase64 }})"><i class="fas fa-camera"></i> Take Screenshot</a>
+                                            <a class="dropdown-item" href="/explorer?address={{ .MacAddressBase64 }}"><i class="far fa-folder-open"></i> File Explorer</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" onclick="RestartDevice({{ .MacAddressBase64 }})"><i class="fas fa-sync-alt"></i> Restart</a>
+                                            <a class="dropdown-item" onclick="ShutdownDevice({{ .MacAddressBase64 }})"><i class="fa fa-power-off"></i> Shutdown</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {{ end }}
+                    {{ end }}
+
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        {{ $length := len .Devices }} {{ if eq $length 0 }}
+                            <td colspan="12" class="text-center"><h6>No connected devices.</h6></td>
+                        {{ $length := len .Devices }} {{ else if eq $length 1 }}
+                            <td colspan="12" class="text-center"><h6>Showing {{ $length }} connected device.</h6></td>
+                        {{ else }}
+                            <td colspan="12" class="text-center"><h6>Showing {{ $length }} connected devices.</h6></td>
+                        {{ end }}
+                    </tr>
+                    </tfoot>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="static/js/app/screenshot.js"></script>
+    <script src="static/js/app/restart.js"></script>
+    <script src="static/js/app/shutdown.js"></script>
+{{ end }}

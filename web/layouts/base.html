@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>CHAOS</title>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon"
+          href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
+
+    <!-- Bootstrap Theme -->
+    <link rel="stylesheet" href="static/css/bootstrap.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="static/css/main_custom.css">
+
+    <!-- Font Awesome -->
+    <link href="static/css/font_awesome.css" rel="stylesheet">
+
+    <!-- Footer Bottom CSS -->
+    <link href="static/css/footer.css" rel="stylesheet">
+
+    <!-- Datatables Bootstrap 4 Theme -->
+    <link href="static/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+    <!-- SweetAlert2 Bootstrap 4 Theme -->
+    <link href="static/css/bootstrap-4.css" rel="stylesheet">
+
+    <!-- Toggle -->
+    <link href="static/css/bootstrap4-toggle.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-white">
+{{ template "header" . }}
+
+<main class="container-fluid">
+    {{ template "content" . }}
+</main>
+
+{{ template "footer" . }}
+</body>
+
+<!-- JavaScript -->
+<script src="static/js/jquery-3.5.1.js"></script>
+<script src="static/js/popper.min.js"></script>
+<script src="static/js/bootstrap.min.js"></script>
+
+<!-- Common -->
+<script src="static/js/app/common.js"></script>
+
+<!-- SweetAlert2 -->
+<script src="static/js/sweetalert2.min.js"></script>
+
+<!-- Bootstrap Notify -->
+<script src="static/js/bootstrap-notify.js"></script>
+<script src="static/js/app/notify.js"></script>
+
+<!-- Toggle -->
+<script src="static/js/bootstrap4-toggle.min.js"></script>
+
+<!-- Custom Scripts -->
+<script>
+    // Bootstrap enable tooltip
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+</script>
+</html>

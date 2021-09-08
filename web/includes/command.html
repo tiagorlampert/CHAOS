@@ -1,0 +1,30 @@
+{{ define "content" }}
+    <div class="container">
+        <main role="main" class="col-md-12 shadow card-body">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+                <h1 class="h2">Remote Shell</h1>
+            </div>
+            <hr>
+
+            <ul class="list-group list-group-flush" style="height: 250px; overflow-y: auto;">
+            </ul>
+
+            <footer>
+                <br/>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Enter the command to run"
+                           id="sendCommandInput" autofocus>
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="button" id="sendCommandBtn" onclick="PerformCommand()">
+                            Send
+                        </button>
+                    </div>
+                </div>
+                <br>
+            </footer>
+
+        </main>
+    </div>
+
+    <script src="static/js/app/command.js"></script>
+{{ end }}

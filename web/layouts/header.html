@@ -1,0 +1,61 @@
+{{ define "header" }}
+    <header class="site-header mb-4">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand mr-4" href="/">CHAOS</a>
+
+                {{ if .unauthorized }}
+                <div class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/tiagorlampert/CHAOS" target="_blank">About</a>
+                    </li>
+                </div>
+                {{else}}
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
+                        aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarToggle">
+                    <div class="navbar-nav mr-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Manage
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/devices"><i class="fas fa-network-wired"></i> Connected
+                                    Devices</a>
+                                <a class="dropdown-item" href="/generate"><i class="fas fa-plug"></i> Generate
+                                    Client</a>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://github.com/tiagorlampert/CHAOS" target="_blank">About</a>
+                        </li>
+                    </div>
+
+                    <!-- Navbar Right Side -->
+                    <div class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
+                                        class="far fa-user"></i>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/settings"><i class="fas fa-cog"></i>
+                                    Settings</a>
+                                <a class="dropdown-item" href="/profile"><i class="fas fa-user-cog"></i>
+                                    Profile</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i>
+                                    Sign out</a>
+                            </div>
+                        </li>
+                    </div>
+                    {{ end }}
+                </div>
+            </div>
+        </nav>
+    </header>
+{{ end }}

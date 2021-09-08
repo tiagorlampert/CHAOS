@@ -9,7 +9,7 @@
   <a href="https://golang.org/">
     <img src="https://img.shields.io/badge/Golang-1.16-blue.svg?style=flat-square">
   </a>
-    <a href="https://github.com/tiagorlampert/CHAOS/blob/master/main.go">
+    <a href="https://github.com/tiagorlampert/CHAOS/releases">
     <img src="https://img.shields.io/badge/Release-v5-red.svg?style=flat-square">
   </a>
   <a href="https://github.com/tiagorlampert/CHAOS/blob/master/LICENSE">

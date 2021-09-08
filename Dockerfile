@@ -1,7 +1,7 @@
 # BUILD STAGE
 FROM golang:1.16-alpine AS build
 
-ARG APP_VERSION="v5.0"
+ARG APP_VERSION="v5.0.0"
 ARG CGO=1
 ENV CGO_ENABLED=${CGO}
 ENV GOOS=linux

@@ -23,7 +23,7 @@ import (
 
 const AppName = "CHAOS"
 
-var Version = "dev "
+var Version = "dev   "
 
 type App struct {
 	Configuration  *environment.Configuration

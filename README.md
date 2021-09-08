@@ -10,7 +10,7 @@
     <img src="https://img.shields.io/badge/Golang-1.16-blue.svg?style=flat-square">
   </a>
     <a href="https://github.com/tiagorlampert/CHAOS/blob/master/main.go">
-    <img src="https://img.shields.io/badge/Release-v5.0-red.svg?style=flat-square">
+    <img src="https://img.shields.io/badge/Release-v5-red.svg?style=flat-square">
   </a>
   <a href="https://github.com/tiagorlampert/CHAOS/blob/master/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square">
@@ -72,7 +72,7 @@ Some install options are available:
 $ mkdir ~/chaos-container
 
 $ docker run -it -v ~/chaos-container:/database/ -v ~/chaos-container:/temp/ \
-  -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0
+  -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0.0
 ```
 
 ### 2. Local Development

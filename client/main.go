@@ -8,14 +8,14 @@ import (
 )
 
 var (
-	Version       = "dev "
+	Version       = "dev"
 	ServerPort    = ""
 	ServerAddress = ""
 	Token         = ""
 )
 
 func main() {
-	ui.ShowLogo(Version)
+	ui.ShowMenu(Version)
 	appConfiguration := environment.LoadConfiguration(ServerAddress, ServerPort, Token)
 
 	httpClient := network.NewHttpClient(10)

@@ -38,7 +38,7 @@ $ PORT=8080 DATABASE_NAME=chaos go run cmd/chaos/main.go
 # Build Docker Image:
 
 ```bash
-docker build -t tiagorlampert/chaos:v5.0 --build-arg APP_VERSION=v5.0 .
+docker build -t tiagorlampert/chaos:v5.0.0 --build-arg APP_VERSION=v5.0.0 .
 
-docker run -it --rm -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0
+docker run -it --rm -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0.0
 ```

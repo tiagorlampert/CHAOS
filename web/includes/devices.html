@@ -56,6 +56,7 @@
                                             <a class="dropdown-item" href="/shell?address={{ .MacAddressBase64 }}"><i class="fas fa-terminal"></i> Remote Shell</a>
                                             <a class="dropdown-item" href="#" onclick="TakeScreenshot({{ .MacAddressBase64 }})"><i class="fas fa-camera"></i> Take Screenshot</a>
                                             <a class="dropdown-item" href="/explorer?address={{ .MacAddressBase64 }}"><i class="far fa-folder-open"></i> File Explorer</a>
+                                            <a class="dropdown-item" href="#" onclick="OpenURL()"><i class="fas fa-external-link-alt"></i> Open URL</a>
                                             <div class="dropdown-divider"></div>
                                             <a class="dropdown-item" onclick="RestartDevice({{ .MacAddressBase64 }})"><i class="fas fa-sync-alt"></i> Restart</a>
                                             <a class="dropdown-item" onclick="ShutdownDevice({{ .MacAddressBase64 }})"><i class="fa fa-power-off"></i> Shutdown</a>

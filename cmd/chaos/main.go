@@ -70,6 +70,7 @@ func NewApp(log *logrus.Logger, config *environment.Configuration, database *gor
 	userService := services.NewUser(userRepository)
 	deviceService := services.NewDevice(deviceRepository)
 	clientService := services.NewClient(Version, systemRepository, payloadService, systemService)
+	urlService := services.NewURLService(clientService)
 
 	//router
 	router := gin.Default()
@@ -86,7 +87,8 @@ func NewApp(log *logrus.Logger, config *environment.Configuration, database *gor
 		log.WithField(`cause`, err).Fatal(`error creating jwt middleware`)
 	}
 
-	httpDelivery.NewController(config, router, log, jwtMiddleware, clientService, systemService, payloadService, userService, deviceService)
+	httpDelivery.NewController(config, router, log, jwtMiddleware, clientService, systemService, payloadService,
+		userService, deviceService, urlService)
 
 	return &App{
 		Configuration:  config,

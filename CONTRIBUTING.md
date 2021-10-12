@@ -17,7 +17,7 @@
 - [x] ~~Shutdown~~
 - [ ] Persistence (install at startup)
 - [ ] Lock screen
-- [ ] Open URL
+- [X] ~~Open URL~~
 - [ ] Kill process
 
 # Local Development

@@ -61,6 +61,7 @@ THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS
 | `Run Hidden`             |    X    |        |
 | `Restart`                |    X    |    X   |
 | `Shutdown`               |    X    |    X   |
+| `Open URL`               |    X    |    X   |
 
 ## Quick start
 

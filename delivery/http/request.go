@@ -29,3 +29,8 @@ type GenerateClientRequestForm struct {
 	Filename  string `form:"filename"`
 	RunHidden string `form:"run_hidden"`
 }
+
+type OpenUrlRequestForm struct {
+	Address string `form:"address" binding:"required"`
+	URL     string `form:"url"  binding:"required"`
+}

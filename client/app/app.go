@@ -11,6 +11,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/services/screenshot"
 	"github.com/tiagorlampert/CHAOS/client/app/services/terminal"
 	"github.com/tiagorlampert/CHAOS/client/app/services/upload"
+	"github.com/tiagorlampert/CHAOS/client/app/services/url"
 	"github.com/tiagorlampert/CHAOS/client/app/shared/environment"
 	"net/http"
 )
@@ -31,6 +32,7 @@ func NewApp(httpClient *http.Client, configuration *environment.Configuration) *
 		Upload:      upload.NewUploadService(configuration, httpClient),
 		Explorer:    explorer.NewExplorerService(),
 		OS:          os.NewOperatingSystemService(configuration, terminalService),
+		URL:         url.NewURLService(terminalService),
 	}
 	return &App{
 		Handler: handler.NewHandler(configuration, clientGateway, clientServices),

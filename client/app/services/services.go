@@ -19,6 +19,7 @@ type Services struct {
 	Upload
 	Explorer
 	OS
+	URL
 }
 
 type Information interface {
@@ -48,4 +49,8 @@ type Explorer interface {
 type OS interface {
 	Restart() error
 	Shutdown() error
+}
+
+type URL interface {
+	OpenURL(url string) error
 }

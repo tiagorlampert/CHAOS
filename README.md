@@ -100,7 +100,7 @@ $ cd CHAOS/
 $ PORT=8080 DATABASE_NAME=chaos go run cmd/chaos/main.go
 ```
 
-After running go to http://localhost:8080 and login with the default username: ***admin*** and password: ***chaos***.
+After running go to http://localhost:8080 and login with the default username: ***admin*** and password: ***changeme***.
 
 ## Screenshots
 ![generate](public/generate.png)

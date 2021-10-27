@@ -7,6 +7,8 @@ import (
 	"github.com/tiagorlampert/CHAOS/shared/utils"
 )
 
+const defaultPassword = `changeme`
+
 type systemService struct {
 	systemRepository repo.System
 	userRepository   repo.User
@@ -24,7 +26,6 @@ func (s systemService) Setup() (*entities.System, error) {
 	if err := s.systemRepository.Insert(system); err != nil {
 		return nil, err
 	}
-	defaultPassword := "chaos"
 	hashedPassword, err := utils.HashAndSalt(defaultPassword)
 	if err != nil {
 		return nil, err

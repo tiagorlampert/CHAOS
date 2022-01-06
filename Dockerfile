@@ -15,8 +15,7 @@ COPY . .
 RUN go build -v -a -tags 'netgo' -ldflags '-w -X 'main.Version=${APP_VERSION}' -extldflags "-static"' -o chaos cmd/chaos/*
 
 # FINAL STAGE
-FROM golang:1.16-alpine
-RUN apk update && apk add --no-cache gcc g++
+FROM golang:1.17.5
 
 MAINTAINER tiagorlampert@gmail.com
 

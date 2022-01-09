@@ -74,7 +74,7 @@ Some install options are available:
 $ mkdir ~/chaos-container
 
 $ docker run -it -v ~/chaos-container:/database/ -v ~/chaos-container:/temp/ \
-  -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0.1
+  -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0.2
 ```
 
 #### 1.2 Windows
@@ -82,7 +82,7 @@ $ docker run -it -v ~/chaos-container:/database/ -v ~/chaos-container:/temp/ \
 # Create a shared directory between the host and container
 $ md c:\chaos-container
 
-$ docker run -it -v c:/chaos-container:/database/ -v c:/chaos-container:/temp/ -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0.1
+$ docker run -it -v c:/chaos-container:/database/ -v c:/chaos-container:/temp/ -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0.2
 ```
 
 ### 2. Local Development

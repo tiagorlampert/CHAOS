@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	repo "github.com/tiagorlampert/CHAOS/repositories"
 	"github.com/tiagorlampert/CHAOS/shared/utils"
-	"github.com/tiagorlampert/CHAOS/shared/utils/constant"
+	"github.com/tiagorlampert/CHAOS/shared/utils/constants"
 	"github.com/tiagorlampert/CHAOS/shared/utils/image"
 	"github.com/tiagorlampert/CHAOS/shared/utils/jwt"
 	"github.com/tiagorlampert/CHAOS/shared/utils/system"
@@ -61,7 +61,7 @@ func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) 
 		return SendCommandOutput{}, fmt.Errorf(res)
 	}
 	if len(strings.TrimSpace(res)) == 0 {
-		return SendCommandOutput{Response: constant.NoContent}, nil
+		return SendCommandOutput{Response: constants.NoContent}, nil
 	}
 	return SendCommandOutput{Response: res}, nil
 }

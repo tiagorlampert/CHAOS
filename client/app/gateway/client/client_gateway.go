@@ -30,7 +30,7 @@ func (c ClientGateway) NewRequest(method string, url string, body []byte) (*gate
 
 	//TODO print request url
 	//fmt.Printf("request: %s %s\n", strings.ToUpper(method), req.URL)
-	//fmt.Println(c.Configuration.Connection.CookieHeader, c.Configuration.Connection.Token)
+	//fmt.Println(c.configuration.Connection.CookieHeader, c.configuration.Connection.Token)
 
 	res, err := c.HttpClient.Do(req)
 	if err != nil {

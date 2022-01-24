@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/database"
@@ -12,24 +11,21 @@ import (
 	"github.com/tiagorlampert/CHAOS/repositories/sqlite"
 	"github.com/tiagorlampert/CHAOS/services"
 	"github.com/tiagorlampert/CHAOS/shared/environment"
-	"github.com/tiagorlampert/CHAOS/shared/utils/constant"
+	"github.com/tiagorlampert/CHAOS/shared/utils/constants"
 	"github.com/tiagorlampert/CHAOS/shared/utils/system"
 	"github.com/tiagorlampert/CHAOS/shared/utils/template"
 	"github.com/tiagorlampert/CHAOS/shared/utils/ui"
 	"net/http"
-	"strings"
-	"time"
 )
 
 const AppName = "CHAOS"
 
-var Version = "dev   "
+var Version = "dev"
 
 type App struct {
-	Configuration  *environment.Configuration
-	Logger         *logrus.Logger
-	TimeoutHandler http.Handler
-	ClientService  services.Client
+	logger        *logrus.Logger
+	configuration *environment.Configuration
+	router        *gin.Engine
 }
 
 func init() {
@@ -37,32 +33,29 @@ func init() {
 }
 
 func main() {
-	log := logrus.New()
-	log.Info(`Loading environment variables`)
+	logger := logrus.New()
+	logger.Info(`Loading environment variables`)
 
-	cfg := environment.LoadEnv()
-	validate := validator.New()
-	if err := validate.Struct(cfg); err != nil {
-		log.WithField(`cause`, err.Error()).Fatal(`error validating environment config variables`)
+	cfg := environment.Load()
+	if err := cfg.Validate(); err != nil {
+		logger.WithField(`cause`, err.Error()).Fatal(`error validating environment config variables`)
 	}
 
-	ui.ShowMenu(Version, cfg.Server.Port)
-
-	db, err := database.NewSQLiteClient(cfg.Database.Name)
+	dbClient, err := database.NewSQLiteClient(constants.DatabaseDirectory, cfg.Database.Name)
 	if err != nil {
-		log.WithField(`cause`, err).Fatal(`error connecting with database`)
+		logger.WithField(`cause`, err).Fatal(`error connecting with database`)
 	}
 
-	if err := NewApp(log, cfg, db.Conn).Run(); err != nil {
-		log.WithField(`cause`, err).Fatal(fmt.Sprintf("failed to start %s Application", AppName))
+	if err := NewApp(logger, cfg, dbClient.Conn).Run(); err != nil {
+		logger.WithField(`cause`, err).Fatal(fmt.Sprintf("failed to start %s Application", AppName))
 	}
 }
 
-func NewApp(log *logrus.Logger, config *environment.Configuration, database *gorm.DB) *App {
+func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbClient *gorm.DB) *App {
 	//repositories
-	systemRepository := sqlite.NewSystemRepository(database)
-	userRepository := sqlite.NewUserRepository(database)
-	deviceRepository := sqlite.NewDeviceRepository(database)
+	systemRepository := sqlite.NewSystemRepository(dbClient)
+	userRepository := sqlite.NewUserRepository(dbClient)
+	deviceRepository := sqlite.NewDeviceRepository(dbClient)
 
 	//services
 	payloadService := services.NewPayload()
@@ -80,48 +73,40 @@ func NewApp(log *logrus.Logger, config *environment.Configuration, database *gor
 
 	params, err := systemService.Load()
 	if err != nil {
-		log.WithField(`cause`, err).Fatal(`error loading system params`)
+		logger.WithField(`cause`, err).Fatal(`error loading system params`)
 	}
 	jwtMiddleware, err := middleware.NewJWTMiddleware(params.SecretKey, userService)
 	if err != nil {
-		log.WithField(`cause`, err).Fatal(`error creating jwt middleware`)
+		logger.WithField(`cause`, err).Fatal(`error creating jwt middleware`)
 	}
 
-	httpDelivery.NewController(config, router, log, jwtMiddleware, clientService, systemService, payloadService,
+	httpDelivery.NewController(configuration, router, logger, jwtMiddleware, clientService, systemService, payloadService,
 		userService, deviceService, urlService)
 
+	ui.ShowMenu(configuration.Server.Port)
+
 	return &App{
-		Configuration:  config,
-		Logger:         log,
-		TimeoutHandler: http.TimeoutHandler(router, time.Second*60, constant.TimeoutExceeded),
-		ClientService:  clientService,
+		configuration: configuration,
+		logger:        logger,
+		router:        router,
 	}
 }
 
 func (a *App) Setup() error {
-	if err := system.CreateDirectory(constant.TempDirectory); err != nil {
-		return fmt.Errorf("error creating temp directory: %w", err)
+	if err := system.CreateDirectory(constants.TempDirectory); err != nil {
+		return fmt.Errorf("error creating %s directory: %w", constants.TempDirectory, err)
 	}
-	if err := system.CreateDirectory(constant.DatabaseDirectory); err != nil {
-		return fmt.Errorf("error creating database directory: %w", err)
+	if err := system.CreateDirectory(constants.DatabaseDirectory); err != nil {
+		return fmt.Errorf("error creating %s directory: %w", constants.DatabaseDirectory, err)
 	}
-
-	//first time building binary take some time
-	//handle issue running at startup
-	go a.ClientService.BuildClient(services.BuildClientBinaryInput{
-		ServerAddress: "localhost",
-		ServerPort:    "8080",
-		Filename:      "test",
-		RunHidden:     false,
-		OSTarget:      system.Windows,
-	})
 	return nil
 }
 
 func (a *App) Run() error {
-	if err := a.Setup(); err != nil {
-		return err
-	}
-	a.Logger.WithFields(logrus.Fields{`version`: strings.TrimSpace(Version), `port`: a.Configuration.Server.Port}).Info(`Starting `, AppName)
-	return http.ListenAndServe(fmt.Sprintf(":%s", a.Configuration.Server.Port), a.TimeoutHandler)
+	a.logger.WithFields(
+		logrus.Fields{`version`: Version, `port`: a.configuration.Server.Port}).Info(`Starting `, AppName)
+
+	return http.ListenAndServe(
+		fmt.Sprintf(":%s", a.configuration.Server.Port),
+		http.TimeoutHandler(a.router, constants.TimeoutDuration, constants.TimeoutExceeded))
 }

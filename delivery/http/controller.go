@@ -12,7 +12,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/services"
 	"github.com/tiagorlampert/CHAOS/shared/environment"
 	"github.com/tiagorlampert/CHAOS/shared/utils"
-	"github.com/tiagorlampert/CHAOS/shared/utils/constant"
+	"github.com/tiagorlampert/CHAOS/shared/utils/constants"
 	"github.com/tiagorlampert/CHAOS/shared/utils/network"
 	"github.com/tiagorlampert/CHAOS/shared/utils/system"
 	"net/http"
@@ -243,7 +243,7 @@ func (h *httpController) sendCommandHandler(c *gin.Context) {
 		return
 	}
 	if len(strings.TrimSpace(form.Command)) == 0 {
-		c.String(http.StatusOK, constant.NoContent)
+		c.String(http.StatusOK, constants.NoContent)
 		return
 	}
 
@@ -335,8 +335,8 @@ func (h *httpController) shellHandler(c *gin.Context) {
 
 func (h *httpController) downloadFileHandler(c *gin.Context) {
 	fileName := c.Param("filename")
-	targetPath := filepath.Join(constant.TempDirectory, fileName)
-	if !strings.HasPrefix(filepath.Clean(targetPath), constant.TempDirectory) {
+	targetPath := filepath.Join(constants.TempDirectory, fileName)
+	if !strings.HasPrefix(filepath.Clean(targetPath), constants.TempDirectory) {
 		c.String(403, "Forbidden")
 		return
 	}
@@ -388,7 +388,7 @@ func (h *httpController) uploadFileHandler(c *gin.Context) {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-	if err := c.SaveUploadedFile(file, fmt.Sprint(constant.TempDirectory, file.Filename)); err != nil {
+	if err := c.SaveUploadedFile(file, fmt.Sprint(constants.TempDirectory, file.Filename)); err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}

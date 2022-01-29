@@ -63,7 +63,7 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 	userService := services.NewUser(userRepository)
 	deviceService := services.NewDevice(deviceRepository)
 	clientService := services.NewClient(Version, authRepository, payloadService, authService)
-	urlService := services.NewURLService(clientService)
+	urlService := services.NewUrlService(clientService)
 
 	//router
 	router := gin.Default()
@@ -93,8 +93,6 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 		urlService,
 	)
 
-	ui.ShowMenu(configuration.Server.Port)
-
 	return &App{
 		configuration: configuration,
 		logger:        logger,
@@ -108,12 +106,14 @@ func (a *App) Setup() error {
 }
 
 func (a *App) Run() error {
-	if err := a.Setup(); err != nil {
-		a.logger.Error(err)
-	}
+	ui.ShowMenu(a.configuration.Server.Port)
 
 	a.logger.WithFields(
 		logrus.Fields{`version`: Version, `port`: a.configuration.Server.Port}).Info(`Starting `, AppName)
+
+	if err := a.Setup(); err != nil {
+		a.logger.Error(err)
+	}
 
 	return http.ListenAndServe(
 		fmt.Sprintf(":%s", a.configuration.Server.Port),

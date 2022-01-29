@@ -2,8 +2,8 @@ package services
 
 import (
 	"github.com/tiagorlampert/CHAOS/entities"
+	"github.com/tiagorlampert/CHAOS/internal/utilities"
 	repo "github.com/tiagorlampert/CHAOS/repositories"
-	"github.com/tiagorlampert/CHAOS/shared/utilities"
 )
 
 type userService struct {

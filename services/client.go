@@ -2,7 +2,7 @@ package services
 
 import (
 	"context"
-	"github.com/tiagorlampert/CHAOS/shared/utilities/system"
+	"github.com/tiagorlampert/CHAOS/internal/utilities/system"
 )
 
 type (

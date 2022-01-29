@@ -2,8 +2,8 @@ package services
 
 import (
 	"github.com/tiagorlampert/CHAOS/entities"
+	"github.com/tiagorlampert/CHAOS/internal/utilities"
 	"github.com/tiagorlampert/CHAOS/repositories"
-	"github.com/tiagorlampert/CHAOS/shared/utilities"
 )
 
 const defaultPassword = "admin"

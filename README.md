@@ -70,7 +70,7 @@ Some install options are available:
 ### 1. Docker
 #### 1.1 Linux
 ```bash
-# Create a shared directory between the host and container
+# Create a internal directory between the host and container
 $ mkdir ~/chaos-container
 
 $ docker run -it -v ~/chaos-container:/database/ -v ~/chaos-container:/temp/ \
@@ -79,7 +79,7 @@ $ docker run -it -v ~/chaos-container:/database/ -v ~/chaos-container:/temp/ \
 
 #### 1.2 Windows
 ```bash
-# Create a shared directory between the host and container
+# Create a internal directory between the host and container
 $ md c:\chaos-container
 
 $ docker run -it -v c:/chaos-container:/database/ -v c:/chaos-container:/temp/ -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0.2

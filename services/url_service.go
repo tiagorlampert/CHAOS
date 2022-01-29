@@ -15,6 +15,7 @@ func NewUrlService(clientService Client) URL {
 }
 
 func (u urlService) OpenUrl(ctx context.Context, address string, rawUrl string) error {
+	//TODO add http protocol on url if doesnt contains
 	uri, err := url.ParseRequestURI(rawUrl)
 	if err != nil {
 		return err

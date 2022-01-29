@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -103,7 +104,7 @@ func (h *httpController) updateUserPasswordHandler(c *gin.Context) {
 		OldPassword: body.OldPassword,
 		NewPassword: body.NewPassword,
 	}); err != nil {
-		if err == services.ErrInvalidPassword {
+		if errors.Is(err, services.ErrInvalidPassword) {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			return
 		}

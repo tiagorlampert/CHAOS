@@ -24,5 +24,5 @@ type Device interface {
 	Insert(device entities.Device) error
 	Update(device entities.Device) error
 	GetByMacAddress(address string) (*entities.Device, error)
-	List(updatedAt time.Time) ([]entities.Device, error)
+	FindAll(updatedAt time.Time) ([]entities.Device, error)
 }

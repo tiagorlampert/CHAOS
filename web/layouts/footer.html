@@ -1,7 +1,9 @@
 {{ define "footer" }}
 <footer id="sticky-footer" class="footer">
     <div class="container text-center">
-        <span class="text-muted">CHAOS by tiagorlampert (2022)</span>
+        <span id="footer" class="text-muted">CHAOS (</span>
+        <script>document.getElementById('footer').appendChild(
+            document.createTextNode(new Date().getFullYear().toString() + ")"))</script>
     </div>
 </footer>
 {{ end }}

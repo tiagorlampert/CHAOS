@@ -25,7 +25,7 @@ func (d deviceService) Insert(input entities.Device) error {
 }
 
 func (d deviceService) FindAll() ([]entities.Device, error) {
-	devices, err := d.repository.List(time.Now().Add(time.Minute * time.Duration(-3)))
+	devices, err := d.repository.FindAll(time.Now().Add(time.Minute * time.Duration(-3)))
 	if err != nil {
 		return nil, err
 	}

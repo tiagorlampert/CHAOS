@@ -10,7 +10,7 @@ type urlService struct {
 	Client
 }
 
-func NewUrlService(clientService Client) URL {
+func NewUrlService(clientService Client) Url {
 	return &urlService{clientService}
 }
 

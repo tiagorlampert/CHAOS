@@ -2,6 +2,6 @@ package services
 
 import "context"
 
-type URL interface {
+type Url interface {
 	OpenUrl(ctx context.Context, address string, rawUrl string) error
 }

@@ -17,7 +17,7 @@ type httpController struct {
 	UserService    services.User
 	DeviceService  services.Device
 	PayloadService services.Payload
-	UrlService     services.URL
+	UrlService     services.Url
 }
 
 func NewController(
@@ -30,7 +30,7 @@ func NewController(
 	payloadService services.Payload,
 	userService services.User,
 	deviceService services.Device,
-	urlService services.URL) {
+	urlService services.Url) {
 	handler := &httpController{
 		Configuration:  configuration,
 		AuthMiddleware: authMiddleware,

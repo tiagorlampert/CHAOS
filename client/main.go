@@ -4,7 +4,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app"
 	"github.com/tiagorlampert/CHAOS/client/app/shared/environment"
 	"github.com/tiagorlampert/CHAOS/client/app/ui"
-	"github.com/tiagorlampert/CHAOS/client/app/util/network"
+	"github.com/tiagorlampert/CHAOS/client/app/utilities/network"
 )
 
 var (
@@ -16,7 +16,7 @@ var (
 
 func main() {
 	ui.ShowMenu(Version)
-	appConfiguration := environment.LoadConfiguration(ServerAddress, ServerPort, Token)
+	appConfiguration := environment.Load(ServerAddress, ServerPort, Token)
 
 	httpClient := network.NewHttpClient(10)
 	app.NewApp(httpClient, appConfiguration).Run()

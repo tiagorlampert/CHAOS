@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/internal/environment"
-	"github.com/tiagorlampert/CHAOS/middleware"
+	"github.com/tiagorlampert/CHAOS/internal/middleware"
 	"github.com/tiagorlampert/CHAOS/services"
 )
 

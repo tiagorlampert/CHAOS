@@ -8,42 +8,52 @@ import (
 	"time"
 )
 
-type deviceRepository struct {
-	database *gorm.DB
+type deviceSqliteRepository struct {
+	dbClient *gorm.DB
 }
 
-func NewDeviceRepository(database *gorm.DB) repositories.Device {
-	return &deviceRepository{database: database}
+func NewDeviceRepository(dbClient *gorm.DB) repositories.Device {
+	return &deviceSqliteRepository{dbClient: dbClient}
 }
 
-func (r deviceRepository) Insert(input entities.Device) error {
-	rowsAffected := r.database.Create(&input).RowsAffected
-	if rowsAffected <= 0 {
+func (r deviceSqliteRepository) Insert(input entities.Device) error {
+	result := r.dbClient.Create(&input)
+	if result.Error != nil {
+		return handleError(result.Error)
+	}
+	if result.RowsAffected <= 0 {
 		return errors.New("error saving device")
 	}
 	return nil
 }
 
-func (r deviceRepository) Update(device entities.Device) error {
-	return r.database.Model(&device).Where(entities.Device{MacAddress: device.MacAddress}).Update(&device).Error
+func (r deviceSqliteRepository) Update(device entities.Device) error {
+	return r.dbClient.Model(&device).Where(
+		entities.Device{MacAddress: device.MacAddress}).Update(&device).Error
 }
 
-func (r deviceRepository) Get(macAddress string) (*entities.Device, error) {
+func (r deviceSqliteRepository) GetByMacAddress(address string) (*entities.Device, error) {
 	var device entities.Device
-	err := r.database.Where(entities.Device{MacAddress: macAddress}).First(&device).Error
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, repositories.ErrNotFound
-		}
-		return nil, err
+	if err := r.dbClient.Where(entities.Device{MacAddress: address}).First(&device).Error; err != nil {
+		return nil, handleError(err)
 	}
 	return &device, nil
 }
 
-func (r deviceRepository) List(dateTime time.Time) ([]entities.Device, error) {
+func (r deviceSqliteRepository) FindAll(updatedAt time.Time) ([]entities.Device, error) {
 	var devices []entities.Device
-	if err := r.database.Where("updated_at > ?", dateTime.String()).Find(&devices).Error; err != nil {
+	if err := r.dbClient.Where(
+		"updated_at > ?", updatedAt.String()).Find(&devices).Error; err != nil {
 		return nil, err
 	}
 	return devices, nil
+}
+
+func handleError(err error) error {
+	switch err {
+	case gorm.ErrRecordNotFound:
+		return repositories.ErrNotFound
+	default:
+		return err
+	}
 }

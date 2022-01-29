@@ -1,6 +1,9 @@
 package environment
 
-import "os"
+import (
+	"github.com/go-playground/validator/v10"
+	"os"
+)
 
 type Configuration struct {
 	Server   Server
@@ -15,7 +18,7 @@ type Database struct {
 	Name string `validate:"required"`
 }
 
-func LoadEnv() *Configuration {
+func Load() *Configuration {
 	return &Configuration{
 		Server: Server{
 			Port: os.Getenv(`PORT`),
@@ -24,4 +27,8 @@ func LoadEnv() *Configuration {
 			Name: os.Getenv(`DATABASE_NAME`),
 		},
 	}
+}
+
+func (c Configuration) Validate() error {
+	return validator.New().Struct(c)
 }

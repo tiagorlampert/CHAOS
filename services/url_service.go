@@ -10,12 +10,13 @@ type urlService struct {
 	Client
 }
 
-func NewURLService(clientService Client) URL {
+func NewUrlService(clientService Client) Url {
 	return &urlService{clientService}
 }
 
-func (u urlService) OpenURL(ctx context.Context, address string, rawURL string) error {
-	uri, err := url.ParseRequestURI(rawURL)
+func (u urlService) OpenUrl(ctx context.Context, address string, rawUrl string) error {
+	//TODO add http protocol on url if doesnt contains
+	uri, err := url.ParseRequestURI(rawUrl)
 	if err != nil {
 		return err
 	}

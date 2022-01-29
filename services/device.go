@@ -6,5 +6,5 @@ import (
 
 type Device interface {
 	Insert(entities.Device) error
-	GetAllAvailable() ([]entities.Device, error)
+	FindAll() ([]entities.Device, error)
 }

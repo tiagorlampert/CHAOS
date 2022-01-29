@@ -7,7 +7,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/gateway"
 	"github.com/tiagorlampert/CHAOS/client/app/services"
 	"github.com/tiagorlampert/CHAOS/client/app/shared/environment"
-	"github.com/tiagorlampert/CHAOS/client/app/util/encode"
+	"github.com/tiagorlampert/CHAOS/client/app/utilities/encode"
 	"log"
 	"net/http"
 	"strings"

@@ -1,48 +1,36 @@
 package services
 
 import (
+	"errors"
 	"github.com/tiagorlampert/CHAOS/entities"
-	repo "github.com/tiagorlampert/CHAOS/repositories"
-	"github.com/tiagorlampert/CHAOS/shared/utils"
+	"github.com/tiagorlampert/CHAOS/internal/utilities"
+	"github.com/tiagorlampert/CHAOS/repositories"
 	"time"
 )
 
 type deviceService struct {
-	repository repo.Device
+	repository repositories.Device
 }
 
-func NewDevice(repository repo.Device) Device {
-	return &deviceService{
-		repository: repository,
-	}
+func NewDevice(repository repositories.Device) Device {
+	return &deviceService{repository: repository}
 }
 
 func (d deviceService) Insert(input entities.Device) error {
-	_, err := d.repository.Get(input.MacAddress)
-	if err != nil {
-		if err == repo.ErrNotFound {
-			if err := d.repository.Insert(input); err != nil {
-				return err
-			}
-			return nil
-		}
-		return err
+	_, err := d.repository.GetByMacAddress(input.MacAddress)
+	if errors.Is(err, repositories.ErrNotFound) {
+		return d.repository.Insert(input)
 	}
-
-	if err := d.repository.Update(input); err != nil {
-		return err
-	}
-	return nil
+	return d.repository.Update(input)
 }
 
-func (d deviceService) GetAllAvailable() ([]entities.Device, error) {
-	devices, err := d.repository.List(utils.GetTimeWith(time.Minute, -3))
+func (d deviceService) FindAll() ([]entities.Device, error) {
+	devices, err := d.repository.FindAll(time.Now().Add(time.Minute * time.Duration(-3)))
 	if err != nil {
 		return nil, err
 	}
-
-	for pos, device := range devices {
-		devices[pos].MacAddressBase64 = utils.EncodeBase64(device.MacAddress)
+	for index, device := range devices {
+		devices[index].MacAddressBase64 = utilities.EncodeBase64(device.MacAddress)
 	}
 	return devices, nil
 }

@@ -8,10 +8,10 @@ import (
 
 var ErrNotFound = errors.New("not found")
 
-type System interface {
-	Insert(system entities.System) error
-	Update(system entities.System) (*entities.System, error)
-	Get() (*entities.System, error)
+type Auth interface {
+	Insert(auth entities.Auth) error
+	Update(auth entities.Auth) error
+	First() (*entities.Auth, error)
 }
 
 type User interface {
@@ -23,6 +23,6 @@ type User interface {
 type Device interface {
 	Insert(device entities.Device) error
 	Update(device entities.Device) error
-	Get(macAddress string) (*entities.Device, error)
-	List(dateTime time.Time) ([]entities.Device, error)
+	GetByMacAddress(address string) (*entities.Device, error)
+	FindAll(updatedAt time.Time) ([]entities.Device, error)
 }

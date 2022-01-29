@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func LoadConfiguration(serverAddress, serverPort, token string) *Configuration {
+func Load(serverAddress, serverPort, token string) *Configuration {
 	return &Configuration{
 		Connection: Connection{
 			Token:             fmt.Sprint("jwt=", token),

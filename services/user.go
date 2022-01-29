@@ -15,7 +15,7 @@ type UpdateUserPasswordInput struct {
 }
 
 type User interface {
-	Create(entities.User) error
+	Insert(entities.User) error
 	Login(username, password string) bool
 	UpdatePassword(UpdateUserPasswordInput) error
 }

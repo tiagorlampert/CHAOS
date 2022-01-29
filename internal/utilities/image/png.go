@@ -3,7 +3,7 @@ package image
 import (
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/tiagorlampert/CHAOS/shared/utils/constant"
+	"github.com/tiagorlampert/CHAOS/internal/utilities/constants"
 	"os"
 )
 
@@ -11,7 +11,7 @@ import (
 func WritePNG(content []byte) (string, error) {
 	filename := fmt.Sprint(uuid.New().String(), ".png")
 	file, err := os.OpenFile(
-		fmt.Sprint(constant.TempDirectory, filename),
+		fmt.Sprint(constants.TempDirectory, filename),
 		os.O_WRONLY|os.O_TRUNC|os.O_CREATE,
 		os.ModePerm,
 	)

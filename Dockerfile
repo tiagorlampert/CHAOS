@@ -1,7 +1,7 @@
 # BUILD STAGE
-FROM golang:1.16-alpine AS build
+FROM golang:1.17-alpine AS build
 
-ARG APP_VERSION="v5.0.0"
+ARG APP_VERSION
 ARG CGO=1
 ENV CGO_ENABLED=${CGO}
 ENV GOOS=linux
@@ -27,5 +27,5 @@ COPY --from=build /build/chaos /
 COPY ./web /web
 COPY ./client /client
 
-EXPOSE 8080 3000
+EXPOSE 8080
 ENTRYPOINT ["/chaos"]

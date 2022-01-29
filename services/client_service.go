@@ -19,17 +19,21 @@ const secretKeySize = 50
 
 type clientService struct {
 	appVersion     string
-	repository     repo.System
+	repository     repo.Auth
 	payloadService Payload
-	systemService  System
+	authService    Auth
 }
 
-func NewClient(appVersion string, repository repo.System, payloadCache Payload, systemService System) Client {
+func NewClient(
+	appVersion string,
+	repository repo.Auth,
+	payloadCache Payload,
+	authService Auth) Client {
 	return &clientService{
 		repository:     repository,
 		payloadService: payloadCache,
 		appVersion:     appVersion,
-		systemService:  systemService,
+		authService:    authService,
 	}
 }
 
@@ -101,11 +105,11 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 }
 
 func (c clientService) generateNewToken() (string, error) {
-	params, err := c.systemService.GetParams()
+	auth, err := c.authService.First()
 	if err != nil {
 		return "", err
 	}
-	return jwt.NewToken(params.SecretKey, jwt.IdentityDefaultUser)
+	return jwt.NewToken(auth.SecretKey, jwt.IdentityDefaultUser)
 }
 
 func handleOSType(osType system.OSType) string {

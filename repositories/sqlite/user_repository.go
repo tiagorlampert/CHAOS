@@ -6,29 +6,27 @@ import (
 	"github.com/tiagorlampert/CHAOS/repositories"
 )
 
-type userRepository struct {
-	database *gorm.DB
+type userSqliteRepository struct {
+	dbClient *gorm.DB
 }
 
 func NewUserRepository(database *gorm.DB) repositories.User {
-	return &userRepository{database: database}
+	return &userSqliteRepository{dbClient: database}
 }
 
-func (u userRepository) Insert(user entities.User) error {
-	return u.database.Create(&user).Error
+func (u userSqliteRepository) Insert(user entities.User) error {
+	return u.dbClient.Create(&user).Error
 }
 
-func (u userRepository) Update(user *entities.User) error {
-	return u.database.Model(&user).Where(entities.User{Username: user.Username}).Update(&user).Error
+func (u userSqliteRepository) Update(user *entities.User) error {
+	return u.dbClient.Model(&user).Where(
+		entities.User{Username: user.Username}).Update(&user).Error
 }
 
-func (u userRepository) Get(username string) (*entities.User, error) {
+func (u userSqliteRepository) Get(username string) (*entities.User, error) {
 	var user entities.User
-	if err := u.database.Where("username = ?", username).First(&user).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, repositories.ErrNotFound
-		}
-		return nil, err
+	if err := u.dbClient.Where("username = ?", username).First(&user).Error; err != nil {
+		return nil, handleError(err)
 	}
 	return &user, nil
 }

@@ -36,33 +36,33 @@ func main() {
 	logger := logrus.New()
 	logger.Info(`Loading environment variables`)
 
-	cfg := environment.Load()
-	if err := cfg.Validate(); err != nil {
+	configuration := environment.Load()
+	if err := configuration.Validate(); err != nil {
 		logger.WithField(`cause`, err.Error()).Fatal(`error validating environment config variables`)
 	}
 
-	dbClient, err := database.NewSQLiteClient(constants.DatabaseDirectory, cfg.Database.Name)
+	dbClient, err := database.NewSQLiteClient(constants.DatabaseDirectory, configuration.Database.Name)
 	if err != nil {
 		logger.WithField(`cause`, err).Fatal(`error connecting with database`)
 	}
 
-	if err := NewApp(logger, cfg, dbClient.Conn).Run(); err != nil {
+	if err := NewApp(logger, configuration, dbClient.Conn).Run(); err != nil {
 		logger.WithField(`cause`, err).Fatal(fmt.Sprintf("failed to start %s Application", AppName))
 	}
 }
 
 func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbClient *gorm.DB) *App {
 	//repositories
-	systemRepository := sqlite.NewSystemRepository(dbClient)
+	authRepository := sqlite.NewAuthRepository(dbClient)
 	userRepository := sqlite.NewUserRepository(dbClient)
 	deviceRepository := sqlite.NewDeviceRepository(dbClient)
 
 	//services
 	payloadService := services.NewPayload()
-	systemService := services.NewSystem(systemRepository, userRepository)
+	authService := services.NewAuth(authRepository, userRepository)
 	userService := services.NewUser(userRepository)
 	deviceService := services.NewDevice(deviceRepository)
-	clientService := services.NewClient(Version, systemRepository, payloadService, systemService)
+	clientService := services.NewClient(Version, authRepository, payloadService, authService)
 	urlService := services.NewURLService(clientService)
 
 	//router
@@ -71,17 +71,27 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 	router.Static("/static", "web/static")
 	router.HTMLRender = template.LoadTemplates("web")
 
-	params, err := systemService.Load()
+	auth, err := authService.Setup()
 	if err != nil {
-		logger.WithField(`cause`, err).Fatal(`error loading system params`)
+		logger.WithField(`cause`, err).Fatal(`error preparing authentication`)
 	}
-	jwtMiddleware, err := middleware.NewJWTMiddleware(params.SecretKey, userService)
+	jwtMiddleware, err := middleware.NewJWTMiddleware(auth.SecretKey, userService)
 	if err != nil {
 		logger.WithField(`cause`, err).Fatal(`error creating jwt middleware`)
 	}
 
-	httpDelivery.NewController(configuration, router, logger, jwtMiddleware, clientService, systemService, payloadService,
-		userService, deviceService, urlService)
+	httpDelivery.NewController(
+		configuration,
+		router,
+		logger,
+		jwtMiddleware,
+		clientService,
+		authService,
+		payloadService,
+		userService,
+		deviceService,
+		urlService,
+	)
 
 	ui.ShowMenu(configuration.Server.Port)
 
@@ -93,16 +103,15 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 }
 
 func (a *App) Setup() error {
-	if err := system.CreateDirectory(constants.TempDirectory); err != nil {
-		return fmt.Errorf("error creating %s directory: %w", constants.TempDirectory, err)
-	}
-	if err := system.CreateDirectory(constants.DatabaseDirectory); err != nil {
-		return fmt.Errorf("error creating %s directory: %w", constants.DatabaseDirectory, err)
-	}
-	return nil
+	return system.CreateDirs(
+		constants.TempDirectory, constants.DatabaseDirectory)
 }
 
 func (a *App) Run() error {
+	if err := a.Setup(); err != nil {
+		a.logger.Error(err)
+	}
+
 	a.logger.WithFields(
 		logrus.Fields{`version`: Version, `port`: a.configuration.Server.Port}).Info(`Starting `, AppName)
 

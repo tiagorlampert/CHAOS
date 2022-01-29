@@ -27,7 +27,7 @@ type httpController struct {
 	Logger         *logrus.Logger
 	AuthMiddleware *middleware.JWT
 	ClientService  services.Client
-	SystemService  services.System
+	AuthService    services.Auth
 	UserService    services.User
 	DeviceService  services.Device
 	PayloadService services.Payload
@@ -40,7 +40,7 @@ func NewController(
 	log *logrus.Logger,
 	authMiddleware *middleware.JWT,
 	clientService services.Client,
-	systemService services.System,
+	systemService services.Auth,
 	payloadService services.Payload,
 	userService services.User,
 	deviceService services.Device,
@@ -51,7 +51,7 @@ func NewController(
 		Logger:         log,
 		ClientService:  clientService,
 		PayloadService: payloadService,
-		SystemService:  systemService,
+		AuthService:    systemService,
 		UserService:    userService,
 		DeviceService:  deviceService,
 		UrlService:     urlService,
@@ -118,20 +118,20 @@ func (h *httpController) loginHandler(c *gin.Context) {
 }
 
 func (h *httpController) getSettingsHandler(c *gin.Context) {
-	config, err := h.SystemService.GetParams()
+	auth, err := h.AuthService.First()
 	if err != nil {
 		h.Logger.Error(err)
 		c.Status(http.StatusInternalServerError)
 		return
 	}
 	c.HTML(http.StatusOK, "settings.html", gin.H{
-		"SecretKey": config.SecretKey,
+		"SecretKey": auth.SecretKey,
 	})
 	return
 }
 
 func (h *httpController) refreshTokenHandler(c *gin.Context) {
-	secret, err := h.SystemService.RefreshSecretKey()
+	secret, err := h.AuthService.RefreshSecret()
 	if err != nil {
 		h.Logger.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

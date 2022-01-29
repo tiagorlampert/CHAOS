@@ -33,6 +33,6 @@ func (d *Database) Migrate() {
 	d.Conn.AutoMigrate(
 		&entities.User{},
 		&entities.Device{},
-		&entities.System{},
+		&entities.Auth{},
 	)
 }

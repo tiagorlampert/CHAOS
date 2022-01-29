@@ -18,7 +18,7 @@ func NewDevice(repository repo.Device) Device {
 }
 
 func (d deviceService) Insert(input entities.Device) error {
-	_, err := d.repository.Get(input.MacAddress)
+	_, err := d.repository.GetByMacAddress(input.MacAddress)
 	if err != nil {
 		if err == repo.ErrNotFound {
 			if err := d.repository.Insert(input); err != nil {

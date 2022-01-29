@@ -42,8 +42,8 @@ func DetectOS() OSType {
 }
 
 // ClearScreen clean the terminal
-func ClearScreen() {
+func ClearScreen() error {
 	cmd := exec.Command("clear")
 	cmd.Stdout = os.Stdout
-	cmd.Run()
+	return cmd.Run()
 }

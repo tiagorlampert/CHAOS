@@ -1,6 +1,6 @@
 package entities
 
-type System struct {
+type Auth struct {
 	DBModel
 	SecretKey string
 }

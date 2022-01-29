@@ -14,22 +14,22 @@ const (
 	dbExtension = `.db`
 )
 
-type Database struct {
+type SqliteClient struct {
 	Conn *gorm.DB
 }
 
-func NewSQLiteClient(dir, dbName string) (*Database, error) {
+func NewSqliteClient(dir, dbName string) (*SqliteClient, error) {
 	dir = strings.TrimSuffix(dir, string(os.PathSeparator))
 	dbConn, err := gorm.Open(dialect, fmt.Sprint(dir, string(os.PathSeparator), dbName, dbExtension))
 	if err != nil {
 		return nil, err
 	}
-	conn := &Database{Conn: dbConn}
+	conn := &SqliteClient{Conn: dbConn}
 	conn.Migrate()
 	return conn, nil
 }
 
-func (d *Database) Migrate() {
+func (d *SqliteClient) Migrate() {
 	d.Conn.AutoMigrate(
 		&entities.User{},
 		&entities.Device{},

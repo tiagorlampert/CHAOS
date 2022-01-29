@@ -3,7 +3,7 @@ package image
 import (
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/tiagorlampert/CHAOS/shared/utils/constants"
+	"github.com/tiagorlampert/CHAOS/shared/utilities/constants"
 	"os"
 )
 

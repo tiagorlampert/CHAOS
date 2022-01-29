@@ -3,7 +3,7 @@ package services
 import (
 	"github.com/tiagorlampert/CHAOS/entities"
 	"github.com/tiagorlampert/CHAOS/repositories"
-	"github.com/tiagorlampert/CHAOS/shared/utils"
+	"github.com/tiagorlampert/CHAOS/shared/utilities"
 )
 
 const defaultPassword = "admin"
@@ -28,12 +28,12 @@ func (s authService) Setup() (*entities.Auth, error) {
 		return auth, nil
 	}
 	if err := s.authRepository.Insert(
-		entities.Auth{SecretKey: utils.GenerateRandomString(secretKeySize)},
+		entities.Auth{SecretKey: utilities.GenerateRandomString(secretKeySize)},
 	); err != nil {
 		return nil, err
 	}
 
-	passwordHash, err := utils.HashAndSalt(defaultPassword)
+	passwordHash, err := utilities.HashAndSalt(defaultPassword)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (s authService) RefreshSecret() (string, error) {
 	}
 	if err := s.authRepository.Update(entities.Auth{
 		DBModel:   auth.DBModel,
-		SecretKey: utils.GenerateRandomString(secretKeySize),
+		SecretKey: utilities.GenerateRandomString(secretKeySize),
 	}); err != nil {
 		return "", err
 	}

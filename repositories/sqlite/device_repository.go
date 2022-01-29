@@ -32,9 +32,9 @@ func (r deviceSqliteRepository) Update(device entities.Device) error {
 		entities.Device{MacAddress: device.MacAddress}).Update(&device).Error
 }
 
-func (r deviceSqliteRepository) GetByMacAddress(macAddr string) (*entities.Device, error) {
+func (r deviceSqliteRepository) GetByMacAddress(address string) (*entities.Device, error) {
 	var device entities.Device
-	if err := r.dbClient.Where(entities.Device{MacAddress: macAddr}).First(&device).Error; err != nil {
+	if err := r.dbClient.Where(entities.Device{MacAddress: address}).First(&device).Error; err != nil {
 		return nil, handleError(err)
 	}
 	return &device, nil

@@ -11,10 +11,10 @@ import (
 	"github.com/tiagorlampert/CHAOS/repositories/sqlite"
 	"github.com/tiagorlampert/CHAOS/services"
 	"github.com/tiagorlampert/CHAOS/shared/environment"
-	"github.com/tiagorlampert/CHAOS/shared/utils/constants"
-	"github.com/tiagorlampert/CHAOS/shared/utils/system"
-	"github.com/tiagorlampert/CHAOS/shared/utils/template"
-	"github.com/tiagorlampert/CHAOS/shared/utils/ui"
+	"github.com/tiagorlampert/CHAOS/shared/utilities/constants"
+	"github.com/tiagorlampert/CHAOS/shared/utilities/system"
+	"github.com/tiagorlampert/CHAOS/shared/utilities/template"
+	"github.com/tiagorlampert/CHAOS/shared/utilities/ui"
 	"net/http"
 )
 
@@ -41,7 +41,7 @@ func main() {
 		logger.WithField(`cause`, err.Error()).Fatal(`error validating environment config variables`)
 	}
 
-	dbClient, err := database.NewSQLiteClient(constants.DatabaseDirectory, configuration.Database.Name)
+	dbClient, err := database.NewSqliteClient(constants.DatabaseDirectory, configuration.Database.Name)
 	if err != nil {
 		logger.WithField(`cause`, err).Fatal(`error connecting with database`)
 	}

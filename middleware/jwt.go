@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tiagorlampert/CHAOS/entities"
 	"github.com/tiagorlampert/CHAOS/services"
-	jwtUtil "github.com/tiagorlampert/CHAOS/shared/utils/jwt"
+	jwtUtil "github.com/tiagorlampert/CHAOS/shared/utilities/jwt"
 	"net/http"
 	"time"
 )

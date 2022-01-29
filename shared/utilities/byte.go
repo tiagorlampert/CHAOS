@@ -1,4 +1,4 @@
-package utils
+package utilities
 
 func ByteToString(value []byte) string {
 	return string(value)

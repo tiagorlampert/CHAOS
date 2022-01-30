@@ -16,8 +16,8 @@
 
 # CHAOS
 *.db
+database/
 temp/
-tmp/
 build/
 
 # IDE

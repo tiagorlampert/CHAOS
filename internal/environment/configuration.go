@@ -6,8 +6,9 @@ import (
 )
 
 type Configuration struct {
-	Server   Server
-	Database Database
+	Server    Server
+	Database  Database
+	SecretKey string
 }
 
 type Server struct {
@@ -26,6 +27,7 @@ func Load() *Configuration {
 		Database: Database{
 			Name: os.Getenv(`DATABASE_NAME`),
 		},
+		SecretKey: os.Getenv(`SECRET_KEY`),
 	}
 }
 

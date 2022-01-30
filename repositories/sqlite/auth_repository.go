@@ -22,10 +22,10 @@ func (s authSqliteRepository) Update(auth entities.Auth) error {
 	return s.dbClient.Model(&auth).Update(&auth).Error
 }
 
-func (s authSqliteRepository) First() (*entities.Auth, error) {
+func (s authSqliteRepository) First() (entities.Auth, error) {
 	var auth entities.Auth
 	if err := s.dbClient.Find(&auth).Error; err != nil {
-		return nil, handleError(err)
+		return entities.Auth{}, handleError(err)
 	}
-	return &auth, nil
+	return auth, nil
 }

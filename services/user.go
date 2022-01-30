@@ -18,4 +18,5 @@ type User interface {
 	Insert(entities.User) error
 	Login(username, password string) bool
 	UpdatePassword(UpdateUserPasswordInput) error
+	CreateDefaultUser() error
 }

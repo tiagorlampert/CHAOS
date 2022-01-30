@@ -42,3 +42,18 @@ docker build -t tiagorlampert/chaos:v5.0.0 --build-arg APP_VERSION=v5.0.0 .
 
 docker run -it --rm -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0.0
 ```
+
+# Deploy on heroku (manual deployment)
+```bash
+$ git clone https://github.com/tiagorlampert/CHAOS
+$ cd CHAOS/
+
+$ heroku container:login
+$ heroku create
+$ heroku container:push web
+$ heroku container:release web
+$ heroku open
+
+# Can be called from a url to test
+# https://dashboard.heroku.com/new?button-url=https://github.com/tiagorlampert/CHAOS&template=https://github.com/tiagorlampert/CHAOS/tree/{branch_with_deploy}
+```

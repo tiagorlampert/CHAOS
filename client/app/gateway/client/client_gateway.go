@@ -28,6 +28,10 @@ func (c ClientGateway) NewRequest(method string, url string, body []byte) (*gate
 	req.Header.Set(c.Configuration.Connection.ContentTypeHeader, c.Configuration.Connection.ContentTypeJSON)
 	req.Header.Set(c.Configuration.Connection.CookieHeader, c.Configuration.Connection.Token)
 
+	//print request url
+	//fmt.Printf("request: %s %s\n", strings.ToUpper(method), req.URL)
+	//fmt.Println(c.Configuration.Connection.CookieHeader, c.Configuration.Connection.Token)
+
 	res, err := c.HttpClient.Do(req)
 	if err != nil {
 		return nil, err

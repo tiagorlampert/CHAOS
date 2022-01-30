@@ -6,6 +6,11 @@ import (
 	repo "github.com/tiagorlampert/CHAOS/repositories"
 )
 
+const (
+	defaultUser     = "admin"
+	defaultPassword = "admin"
+)
+
 type userService struct {
 	repository repo.User
 }
@@ -47,4 +52,23 @@ func (u userService) UpdatePassword(input UpdateUserPasswordInput) error {
 	}
 	user.Password = passwordHash
 	return u.repository.Update(user)
+}
+
+func (u userService) CreateDefaultUser() error {
+	_, err := u.repository.Get(defaultUser)
+	switch err {
+	case repo.ErrNotFound:
+		break
+	default:
+		return err
+	}
+
+	passwordHash, err := utilities.HashAndSalt(defaultPassword)
+	if err != nil {
+		return err
+	}
+	return u.repository.Insert(entities.User{
+		Username: defaultUser,
+		Password: passwordHash,
+	})
 }

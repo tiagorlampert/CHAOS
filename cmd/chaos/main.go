@@ -30,6 +30,10 @@ type App struct {
 
 func init() {
 	system.ClearScreen()
+
+	if err := Setup(); err != nil {
+		logrus.Error(err)
+	}
 }
 
 func main() {
@@ -59,7 +63,7 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 
 	//services
 	payloadService := services.NewPayload()
-	authService := services.NewAuth(authRepository, userRepository)
+	authService := services.NewAuth(logger, configuration.SecretKey, authRepository)
 	userService := services.NewUser(userRepository)
 	deviceService := services.NewDevice(deviceRepository)
 	clientService := services.NewClient(Version, authRepository, payloadService, authService)
@@ -78,6 +82,9 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 	jwtMiddleware, err := middleware.NewJWTMiddleware(auth.SecretKey, userService)
 	if err != nil {
 		logger.WithField(`cause`, err).Fatal(`error creating jwt middleware`)
+	}
+	if err := userService.CreateDefaultUser(); err != nil {
+		logger.WithField(`cause`, err).Fatal(`error creating default user`)
 	}
 
 	httpDelivery.NewController(
@@ -100,7 +107,7 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 	}
 }
 
-func (a *App) Setup() error {
+func Setup() error {
 	return system.CreateDirs(
 		constants.TempDirectory, constants.DatabaseDirectory)
 }
@@ -110,10 +117,6 @@ func (a *App) Run() error {
 
 	a.logger.WithFields(
 		logrus.Fields{`version`: Version, `port`: a.configuration.Server.Port}).Info(`Starting `, AppName)
-
-	if err := a.Setup(); err != nil {
-		a.logger.Error(err)
-	}
 
 	return http.ListenAndServe(
 		fmt.Sprintf(":%s", a.configuration.Server.Port),

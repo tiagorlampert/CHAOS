@@ -91,7 +91,7 @@ $ PORT=8080 DATABASE_NAME=chaos go run cmd/chaos/main.go
 <details>
   <summary>See more:</summary>
 
-#### 2.1 Linux
+#### Linux
 ```bash
 # Create a shared directory between the host and container
 $ mkdir ~/chaos-container
@@ -100,7 +100,7 @@ $ docker run -it -v ~/chaos-container:/database/ -v ~/chaos-container:/temp/ \
   -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0.2
 ```
 
-#### 2.2 Windows
+#### Windows
 ```bash
 # Create a shared directory between the host and container
 $ md c:\chaos-container

@@ -39,7 +39,7 @@ func (s authService) Setup() (*entities.Auth, error) {
 	hasProvidedSecretKey := len(s.secretKey) > 0
 	if hasProvidedSecretKey {
 		defer s.logger.WithFields(logrus.Fields{"key": s.secretKey}).
-			Info("Using a provided Secret Key from environment variable")
+			Info("Using a provided secret key from environment variable")
 	}
 
 	if errors.Is(err, repositories.ErrNotFound) {

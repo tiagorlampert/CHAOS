@@ -19,8 +19,8 @@ FROM golang:1.17.5
 
 MAINTAINER tiagorlampert@gmail.com
 
-ENV DATABASE_NAME=chaos
 ENV GIN_MODE=release
+ENV DATABASE_NAME=chaos
 
 WORKDIR /
 COPY --from=build /build/chaos /

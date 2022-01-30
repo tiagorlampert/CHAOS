@@ -100,6 +100,11 @@ $ cd CHAOS/
 $ PORT=8080 DATABASE_NAME=chaos go run cmd/chaos/main.go
 ```
 
+### 3. Deploy on heroku 
+Try it now on [Heroku](https://www.heroku.com/) with a single click:
+
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
 After running go to http://localhost:8080 and login with the default username: ***admin*** and password: ***admin***.
 
 ## Screenshots

@@ -50,18 +50,18 @@ THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS
 
 ## Features
 
-| Feature                  |  <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"/>   |  <img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black"/> |
-|:-------------------------|:-------:|:------:|
-| `Reverse Shell`          |    X    |    X   |
-| `Download File`          |    X    |    X   |
-| `Upload File`            |    X    |    X   |
-| `Screenshot`             |    X    |    X   |
-| `File Explorer`          |    X    |    X   |
-| `Get OS Info`            |    X    |    X   |
-| `Run Hidden`             |    X    |        |
-| `Restart`                |    X    |    X   |
-| `Shutdown`               |    X    |    X   |
-| `Open URL`               |    X    |    X   |
+| Feature         |  <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"/>   |  <img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black"/> |
+|:----------------|:-------:|:------:|
+| `Reverse Shell` |    X    |    X   |
+| `Download File` |    X    |    X   |
+| `Upload File`   |    X    |    X   |
+| `Screenshot`    |    X    |    X   |
+| `File Explorer` |    X    |    X   |
+| `Get OS Info`   |    X    |    X   |
+| `Run Hidden`    |    X    |        |
+| `Restart`       |    X    |    X   |
+| `Shutdown`      |    X    |    X   |
+| `Open Url`      |    X    |    X   |
 
 ## Quick start
 

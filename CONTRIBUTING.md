@@ -16,9 +16,10 @@
 - [x] ~~Restart~~
 - [x] ~~Shutdown~~
 - [ ] Persistence (install at startup)
-- [ ] Lock screen
+- [x] Lock screen
 - [X] ~~Open URL~~
 - [ ] Kill process
+- [ ] Delete file
 
 # Local Development
 ```bash

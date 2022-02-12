@@ -65,6 +65,13 @@
                                 {{ range .Files }}
                                     <div class="file-box">
                                         <div class="file">
+                                            <div class="btn-group">
+                                                <button class="btn btn-sm dropdown-toggle" style="background-color:transparent" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item" onclick="DeleteFile({{.Filename}})"><i class="fas fa-trash"></i> Delete</a>
+                                                </div>
+                                            </div>
                                             <a href="#" onclick="DownloadFile({{.Filename}})">
                                                 <span class="corner"></span>
 
@@ -79,7 +86,6 @@
                                                 </div>
                                             </a>
                                         </div>
-
                                     </div>
                                 {{end}}
                             {{end}}
@@ -94,6 +100,7 @@
     <script src="static/js/app/explorer.js"></script>
     <script src="static/js/app/download.js"></script>
     <script src="static/js/app/upload.js"></script>
+    <script src="static/js/app/delete.js"></script>
 
     <link rel="stylesheet" type="text/css" href="static/css/explorer.css">
 {{end}}

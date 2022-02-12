@@ -4,6 +4,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/gateway/client"
 	"github.com/tiagorlampert/CHAOS/client/app/handler"
 	"github.com/tiagorlampert/CHAOS/client/app/services"
+	"github.com/tiagorlampert/CHAOS/client/app/services/delete"
 	"github.com/tiagorlampert/CHAOS/client/app/services/download"
 	"github.com/tiagorlampert/CHAOS/client/app/services/explorer"
 	"github.com/tiagorlampert/CHAOS/client/app/services/information"
@@ -33,6 +34,7 @@ func NewApp(httpClient *http.Client, configuration *environment.Configuration) *
 			Screenshot:  screenshot.NewScreenshotService(),
 			Download:    download.NewDownloadService(configuration, clientGateway),
 			Upload:      upload.NewUploadService(configuration, httpClient),
+			Delete:      delete.NewDeleteService(),
 			Explorer:    explorer.NewExplorerService(),
 			OS:          os.NewOperatingSystemService(configuration, terminalService, osType),
 			URL:         url.NewURLService(terminalService, osType),

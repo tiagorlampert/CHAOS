@@ -55,6 +55,7 @@ THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS
 | `Reverse Shell` |    X    |    X   |
 | `Download File` |    X    |    X   |
 | `Upload File`   |    X    |    X   |
+| `Delete File`   |    X    |    X   |
 | `Screenshot`    |    X    |    X   |
 | `File Explorer` |    X    |    X   |
 | `Get OS Info`   |    X    |    X   |

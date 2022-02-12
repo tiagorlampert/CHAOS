@@ -13,13 +13,13 @@
 - [x] ~~File Explorer~~
 - [x] ~~Download File~~
 - [x] ~~Upload File~~
+- [X] ~~Delete file~~
 - [x] ~~Restart~~
 - [x] ~~Shutdown~~
 - [ ] Persistence (install at startup)
-- [x] Lock screen
+- [x] ~~Lock screen~~
 - [X] ~~Open URL~~
 - [ ] Kill process
-- [ ] Delete file
 
 # Local Development
 ```bash

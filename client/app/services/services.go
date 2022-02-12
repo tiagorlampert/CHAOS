@@ -49,6 +49,8 @@ type Explorer interface {
 type OS interface {
 	Restart() error
 	Shutdown() error
+	Lock() error
+	SignOut() error
 }
 
 type URL interface {

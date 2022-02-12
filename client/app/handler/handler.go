@@ -153,6 +153,18 @@ func (h *Handler) HandleServerRequest() {
 					response = encode.StringToByte(err.Error())
 				}
 				break
+			case "lock":
+				if err := h.Services.OS.Lock(); err != nil {
+					hasErr = true
+					response = encode.StringToByte(err.Error())
+				}
+				break
+			case "sign-out":
+				if err := h.Services.OS.SignOut(); err != nil {
+					hasErr = true
+					response = encode.StringToByte(err.Error())
+				}
+				break
 			default:
 				//FILE EXPLORER
 				if strings.Contains(payload.Request, h.Configuration.CommandHandler.CommandFileExplorer) &&

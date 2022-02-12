@@ -14,3 +14,21 @@ async function SendCommand(address, command) {
     let data = await response;
     return data;
 }
+
+function HandleError(err){
+    if (err.message === "unsupported platform") {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Ops...',
+            text: 'Error processing command!',
+            footer: err
+        });
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Ops...',
+            text: 'Error processing command!',
+            footer: err
+        });
+    }
+}

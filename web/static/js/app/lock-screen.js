@@ -19,7 +19,9 @@ function LockScreen(address) {
             SendCommand(address, "lock")
                 .then(response => {
                     if (!response.ok) {
-                        throw Error(response.statusText);
+                        return response.text().then(err => {
+                            throw new Error(err);
+                        });
                     }
                     return response.text();
                 })
@@ -31,12 +33,7 @@ function LockScreen(address) {
                     });
                 }).catch(err => {
                 console.log('Error: ', err);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Ops...',
-                    text: 'Error processing command!',
-                    footer: err
-                });
+                HandleError(err);
             });
         }
     });

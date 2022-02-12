@@ -65,12 +65,14 @@
                                 {{ range .Files }}
                                     <div class="file-box">
                                         <div class="file">
+                                            <div class="d-flex justify-content-end">
                                             <div class="btn-group">
                                                 <button class="btn btn-sm dropdown-toggle" style="background-color:transparent" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 </button>
                                                 <div class="dropdown-menu">
                                                     <a class="dropdown-item" onclick="DeleteFile({{.Filename}})"><i class="fas fa-trash"></i> Delete</a>
                                                 </div>
+                                            </div>
                                             </div>
                                             <a href="#" onclick="DownloadFile({{.Filename}})">
                                                 <span class="corner"></span>

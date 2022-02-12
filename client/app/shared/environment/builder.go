@@ -30,6 +30,7 @@ func Load(serverAddress, serverPort, token string) *Configuration {
 			CommandFileExplorer: "explore",
 			CommandDownload:     "download",
 			CommandUpload:       "upload",
+			CommandDelete:       "delete",
 			CommandOpenURL:      "open-url",
 		},
 	}

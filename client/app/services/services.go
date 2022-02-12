@@ -17,6 +17,7 @@ type Services struct {
 	Screenshot
 	Download
 	Upload
+	Delete
 	Explorer
 	OS
 	URL
@@ -36,6 +37,10 @@ type Screenshot interface {
 
 type Upload interface {
 	UploadFile(path string, uri string, paramName string) ([]byte, error)
+}
+
+type Delete interface {
+	DeleteFile(filepath string) error
 }
 
 type Download interface {

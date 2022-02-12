@@ -35,5 +35,6 @@ type CommandHandler struct {
 	CommandFileExplorer string
 	CommandDownload     string
 	CommandUpload       string
+	CommandDelete       string
 	CommandOpenURL      string
 }

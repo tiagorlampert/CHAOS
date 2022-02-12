@@ -37,6 +37,7 @@ function DeleteFile(filename) {
                         text: 'Deleted successfully!',
                         icon: 'success'
                     });
+                    location.reload();
                 }).catch(err => {
                 console.log('Error: ', err);
                 Swal.fire({

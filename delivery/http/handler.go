@@ -242,6 +242,7 @@ func (h *httpController) generateBinaryPostHandler(c *gin.Context) {
 		RunHidden:     utilities.ParseCheckboxBoolean(req.RunHidden),
 	})
 	if err != nil {
+		h.Logger.Error(err)
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}

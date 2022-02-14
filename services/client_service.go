@@ -97,9 +97,9 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 	cmd := exec.Command("sh", "-c", buildCmd)
 	cmd.Dir = "client/"
 
-	err = cmd.Run()
+	outputErr, err := cmd.CombinedOutput()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("%w:%s", err, outputErr)
 	}
 	return filename, nil
 }

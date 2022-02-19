@@ -113,7 +113,7 @@ func Setup() error {
 }
 
 func (a *App) Run() error {
-	ui.ShowMenu(a.configuration.Server.Port)
+	ui.ShowMenu(Version, a.configuration.Server.Port)
 
 	a.logger.WithFields(
 		logrus.Fields{`version`: Version, `port`: a.configuration.Server.Port}).Info(`Starting `, AppName)

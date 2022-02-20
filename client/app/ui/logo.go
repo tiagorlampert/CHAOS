@@ -8,6 +8,10 @@ import (
 const spaceLength = 60
 
 func ShowMenu(version, host, port string) {
+	if len(port) > 0 {
+		port = fmt.Sprint(":", port)
+	}
+
 	fmt.Printf(`
  ┌%s┐ 
  │%s│ 
@@ -16,7 +20,7 @@ func ShowMenu(version, host, port string) {
   `,
 		fillSpace("", "─"),
 		fillSpace(fmt.Sprintf("CHAOS (%s)", version), " "),
-		fillSpace(host+":"+port, " "),
+		fillSpace(host+port, " "),
 		fillSpace("", "─"),
 	)
 }

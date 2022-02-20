@@ -15,7 +15,7 @@ var (
 )
 
 func main() {
-	ui.ShowMenu(Version)
+	ui.ShowMenu(Version, ServerAddress, ServerPort)
 
 	app.NewApp(network.NewHttpClient(10),
 		environment.Load(ServerAddress, ServerPort, Token)).Run()

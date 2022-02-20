@@ -1,10 +1,45 @@
 package ui
 
-import "fmt"
+import (
+	"fmt"
+	"unicode/utf8"
+)
 
-func ShowMenu(version string) {
-	fmt.Println(" ┌───────────────────────────────────────────────────┐ ")
-	fmt.Println(" │                     CHAOS                         │ ")
-	fmt.Println(" │                by tiagorlampert                   │ ")
-	fmt.Println(" └───────────────────────────────────────────────────┘")
+const spaceLength = 60
+
+func ShowMenu(version, host, port string) {
+	fmt.Printf(`
+ ┌%s┐ 
+ │%s│ 
+ │%s│ 
+ └%s┘
+  `,
+		fillSpace("", "─"),
+		fillSpace(fmt.Sprintf("CHAOS (%s)", version), " "),
+		fillSpace(host+":"+port, " "),
+		fillSpace("", "─"),
+	)
+}
+
+func fillSpace(content, filler string) string {
+	spaceToFillSize := spaceLength - utf8.RuneCountInString(content)
+	spaceBothSide := spaceToFillSize / 2
+
+	var finalStr string
+	for i := 0; i < spaceBothSide; i++ {
+		finalStr += filler
+	}
+	finalStr += content
+	for i := 0; i < spaceBothSide; i++ {
+		finalStr += filler
+	}
+
+	finalStrCount := utf8.RuneCountInString(finalStr)
+	if finalStrCount < spaceLength {
+		diff := spaceLength - finalStrCount
+		for i := 0; i < diff; i++ {
+			finalStr += filler
+		}
+	}
+	return finalStr
 }

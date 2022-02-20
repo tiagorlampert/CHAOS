@@ -3,9 +3,8 @@ package environment
 import "time"
 
 type Configuration struct {
-	Connection     Connection
-	Server         Server
-	CommandHandler CommandHandler
+	Connection Connection
+	Server     Server
 }
 
 type Connection struct {
@@ -29,12 +28,4 @@ type Endpoint struct {
 	Command  string
 	Upload   string
 	Download string
-}
-
-type CommandHandler struct {
-	CommandFileExplorer string
-	CommandDownload     string
-	CommandUpload       string
-	CommandDelete       string
-	CommandOpenURL      string
 }

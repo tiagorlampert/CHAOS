@@ -42,25 +42,27 @@ func NewHandler(
 func (h *Handler) HandleServer() {
 	sleepTime := 5 * time.Second
 	for {
-		if h.ServerIsAvailable() {
-			if err := h.SendDeviceSpecs(); err != nil {
-				sleepTime = 20 * time.Second
-				h.Connected = false
-				return
-			}
-			sleepTime = 2 * time.Minute
-			h.Connected = true
-			return
+		if h.Connected {
+			time.Sleep(10 * time.Second)
+			continue
 		}
-		sleepTime = 5 * time.Second
-		h.Connected = false
-		time.Sleep(sleepTime)
+		if !h.ServerIsAvailable() {
+			h.Connected = false
+			time.Sleep(sleepTime)
+			continue
+		}
+
+		if err := h.SendDeviceSpecs(); err != nil {
+			h.Connected = false
+			continue
+		}
+		h.Connected = true
 	}
 }
 
 func (h *Handler) ServerIsAvailable() bool {
-	url := fmt.Sprint(h.Configuration.Server.URL, h.Configuration.Server.Health)
-	res, err := h.Gateway.NewRequest(http.MethodGet, url, nil)
+	res, err := h.Gateway.NewRequest(http.MethodGet,
+		fmt.Sprint(h.Configuration.Server.URL, h.Configuration.Server.Health), nil)
 	if err != nil {
 		return false
 	}
@@ -87,6 +89,22 @@ func (h *Handler) SendDeviceSpecs() error {
 	return nil
 }
 
+func (h *Handler) ReceiveCommand() (entities.Payload, error) {
+	url := fmt.Sprint(h.CommandUrl, "?address=", encode.Base64Encode(h.MacAddress))
+	res, err := h.Gateway.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return entities.Payload{}, err
+	}
+	if res.StatusCode == http.StatusNoContent {
+		return entities.Payload{}, err
+	}
+	var payload entities.Payload
+	if err := json.Unmarshal(res.ResponseBody, &payload); err != nil {
+		return entities.Payload{}, err
+	}
+	return payload, err
+}
+
 func (h *Handler) HandleCommand() {
 	for {
 		time.Sleep(2 * time.Second)
@@ -99,6 +117,10 @@ func (h *Handler) HandleCommand() {
 			h.DoingRequest = true
 
 			requestCommand, err := h.ReceiveCommand()
+			if err != nil {
+				h.Connected = false
+				return
+			}
 			if len(strings.TrimSpace(requestCommand.Request)) == 0 {
 				return
 			}
@@ -217,20 +239,4 @@ func (h *Handler) HandleCommand() {
 			}
 		}()
 	}
-}
-
-func (h *Handler) ReceiveCommand() (entities.Payload, error) {
-	url := fmt.Sprint(h.CommandUrl, "?address=", encode.Base64Encode(h.MacAddress))
-	res, err := h.Gateway.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return entities.Payload{}, err
-	}
-	if res.StatusCode == http.StatusNoContent {
-		return entities.Payload{}, err
-	}
-	var payload entities.Payload
-	if err := json.Unmarshal(res.ResponseBody, &payload); err != nil {
-		return entities.Payload{}, err
-	}
-	return payload, err
 }

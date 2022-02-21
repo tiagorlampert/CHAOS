@@ -23,7 +23,7 @@ func (u userSqliteRepository) Update(user *entities.User) error {
 		entities.User{Username: user.Username}).Update(&user).Error
 }
 
-func (u userSqliteRepository) Get(username string) (*entities.User, error) {
+func (u userSqliteRepository) FindByUsername(username string) (*entities.User, error) {
 	var user entities.User
 	if err := u.dbClient.Where("username = ?", username).First(&user).Error; err != nil {
 		return nil, handleError(err)

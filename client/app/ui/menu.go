@@ -2,24 +2,25 @@ package ui
 
 import (
 	"fmt"
-	"time"
 	"unicode/utf8"
 )
 
 const spaceLength = 60
 
-func ShowMenu(version, port string) {
+func ShowMenu(version, host, port string) {
+	if len(port) > 0 {
+		port = fmt.Sprint(":", port)
+	}
+
 	fmt.Printf(`
  ┌%s┐ 
  │%s│ 
  │%s│ 
- │%s│ 
  └%s┘
-  `,
+`,
 		fillSpace("", "─"),
 		fillSpace(fmt.Sprintf("CHAOS (%s)", version), " "),
-		fillSpace("http://127.0.0.1:"+port, " "),
-		fillSpace(fmt.Sprintf("by tiagorlampert (%d)", time.Now().UTC().Year()), " "),
+		fillSpace(host+port, " "),
 		fillSpace("", "─"),
 	)
 }

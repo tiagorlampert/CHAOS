@@ -36,7 +36,7 @@ type Screenshot interface {
 }
 
 type Upload interface {
-	UploadFile(path string, uri string, paramName string) ([]byte, error)
+	UploadFile(path string) ([]byte, error)
 }
 
 type Delete interface {

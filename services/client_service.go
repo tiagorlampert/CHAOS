@@ -86,7 +86,7 @@ func HandleResponse(payload *PayloadData) (*PayloadData, error) {
 }
 
 func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error) {
-	token, err := c.generateNewToken()
+	token, err := c.GenerateNewToken()
 	if err != nil {
 		return "", err
 	}
@@ -104,7 +104,7 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 	return filename, nil
 }
 
-func (c clientService) generateNewToken() (string, error) {
+func (c clientService) GenerateNewToken() (string, error) {
 	auth, err := c.authService.First()
 	if err != nil {
 		return "", err

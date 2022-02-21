@@ -20,7 +20,7 @@ func NewUser(repository repo.User) User {
 }
 
 func (u userService) Login(username, password string) bool {
-	user, err := u.repository.Get(username)
+	user, err := u.repository.FindByUsername(username)
 	if err != nil {
 		return false
 	}
@@ -28,7 +28,7 @@ func (u userService) Login(username, password string) bool {
 }
 
 func (u userService) Insert(input entities.User) error {
-	_, err := u.repository.Get(input.Username)
+	_, err := u.repository.FindByUsername(input.Username)
 	switch err {
 	case repo.ErrNotFound:
 		return u.repository.Insert(input)
@@ -38,7 +38,7 @@ func (u userService) Insert(input entities.User) error {
 }
 
 func (u userService) UpdatePassword(input UpdateUserPasswordInput) error {
-	user, err := u.repository.Get(input.Username)
+	user, err := u.repository.FindByUsername(input.Username)
 	if err != nil {
 		return err
 	}
@@ -55,7 +55,7 @@ func (u userService) UpdatePassword(input UpdateUserPasswordInput) error {
 }
 
 func (u userService) CreateDefaultUser() error {
-	_, err := u.repository.Get(defaultUser)
+	_, err := u.repository.FindByUsername(defaultUser)
 	switch err {
 	case repo.ErrNotFound:
 		break

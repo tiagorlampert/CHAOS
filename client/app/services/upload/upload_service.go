@@ -23,7 +23,7 @@ func NewUploadService(configuration *environment.Configuration, httpClient *http
 	}
 }
 
-func (u UploadService) UploadFile(path string, uri string, paramName string) ([]byte, error) {
+func (u UploadService) UploadFile(path string) ([]byte, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (u UploadService) UploadFile(path string, uri string, paramName string) ([]
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	part, err := writer.CreateFormFile(paramName, fi.Name())
+	part, err := writer.CreateFormFile("file", fi.Name())
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,8 @@ func (u UploadService) UploadFile(path string, uri string, paramName string) ([]
 		return nil, err
 	}
 
-	request, err := http.NewRequest(http.MethodPost, uri, body)
+	urlStr := fmt.Sprint(u.Configuration.Server.URL, u.Configuration.Server.Upload)
+	request, err := http.NewRequest(http.MethodPost, urlStr, body)
 	request.Header.Set(u.Configuration.Connection.CookieHeader, u.Configuration.Connection.Token)
 	request.Header.Set(u.Configuration.Connection.ContentTypeHeader, writer.FormDataContentType())
 	if err != nil {

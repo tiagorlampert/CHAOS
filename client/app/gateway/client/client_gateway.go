@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/tiagorlampert/CHAOS/client/app/gateway"
 	"github.com/tiagorlampert/CHAOS/client/app/shared/environment"
 	"io"
@@ -28,20 +29,20 @@ func (c ClientGateway) NewRequest(method string, url string, body []byte) (*gate
 	req.Header.Set(c.Configuration.Connection.ContentTypeHeader, c.Configuration.Connection.ContentTypeJSON)
 	req.Header.Set(c.Configuration.Connection.CookieHeader, c.Configuration.Connection.Token)
 
-	//print request url
-	//fmt.Printf("request: %s %s\n", strings.ToUpper(method), req.URL)
-	//fmt.Println(c.Configuration.Connection.CookieHeader, c.Configuration.Connection.Token)
-
 	res, err := c.HttpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer res.Body.Close()
 
+	if res.StatusCode > 299 {
+		return nil, fmt.Errorf("failed with status code %d", res.StatusCode)
+	}
 	bodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}
+
 	return &gateway.HttpResponse{
 		ResponseBody: bodyBytes,
 		StatusCode:   res.StatusCode,

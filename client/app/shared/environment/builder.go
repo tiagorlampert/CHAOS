@@ -26,13 +26,6 @@ func Load(serverAddress, serverPort, token string) *Configuration {
 				Download: "download",
 			},
 		},
-		CommandHandler: CommandHandler{
-			CommandFileExplorer: "explore",
-			CommandDownload:     "download",
-			CommandUpload:       "upload",
-			CommandDelete:       "delete",
-			CommandOpenURL:      "open-url",
-		},
 	}
 }
 

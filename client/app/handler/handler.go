@@ -46,27 +46,38 @@ func (h *Handler) HandleServer() {
 			time.Sleep(10 * time.Second)
 			continue
 		}
-		if !h.ServerIsAvailable() {
+		if err := h.ServerIsAvailable(); err != nil {
+			h.Log("[!] Error connecting with server: " + err.Error())
 			h.Connected = false
 			time.Sleep(sleepTime)
 			continue
 		}
 
 		if err := h.SendDeviceSpecs(); err != nil {
+			h.Log("[!] Error connecting with server: " + err.Error())
 			h.Connected = false
+			time.Sleep(sleepTime)
 			continue
 		}
+		h.Log("[*] Successfully connected")
 		h.Connected = true
 	}
 }
 
-func (h *Handler) ServerIsAvailable() bool {
+func (h *Handler) Log(v string) {
+	fmt.Printf(" %s\n", v)
+}
+
+func (h *Handler) ServerIsAvailable() error {
 	res, err := h.Gateway.NewRequest(http.MethodGet,
 		fmt.Sprint(h.Configuration.Server.URL, h.Configuration.Server.Health), nil)
 	if err != nil {
-		return false
+		return err
 	}
-	return res.StatusCode == http.StatusOK
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("error with status code: %d (%s)", res.StatusCode, string(res.ResponseBody))
+	}
+	return nil
 }
 
 func (h *Handler) SendDeviceSpecs() error {

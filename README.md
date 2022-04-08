@@ -15,6 +15,9 @@
   <a href="https://github.com/tiagorlampert/CHAOS/blob/master/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square">
   </a>
+  <a href="https://hub.docker.com/r/tiagorlampert/chaos">
+    <img src="https://img.shields.io/docker/pulls/tiagorlampert/chaos.svg?style=flat-square">
+  </a>
     <a href="https://opensource.org">
     <img src="https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg?style=flat-square">
   </a>
@@ -100,7 +103,7 @@ $ PORT=8080 DATABASE_NAME=chaos go run cmd/chaos/main.go
 $ mkdir ~/chaos-container
 
 $ docker run -it -v ~/chaos-container:/database/ -v ~/chaos-container:/temp/ \
-  -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0.2
+  -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:latest
 ```
 
 #### Windows
@@ -108,7 +111,7 @@ $ docker run -it -v ~/chaos-container:/database/ -v ~/chaos-container:/temp/ \
 # Create a shared directory between the host and container
 $ md c:\chaos-container
 
-$ docker run -it -v c:/chaos-container:/database/ -v c:/chaos-container:/temp/ -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0.2
+$ docker run -it -v c:/chaos-container:/database/ -v c:/chaos-container:/temp/ -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:latest
 ```
 
 </details>

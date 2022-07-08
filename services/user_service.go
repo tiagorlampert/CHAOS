@@ -2,7 +2,7 @@ package services
 
 import (
 	"github.com/tiagorlampert/CHAOS/entities"
-	"github.com/tiagorlampert/CHAOS/internal/utilities"
+	"github.com/tiagorlampert/CHAOS/internal/utils"
 	repo "github.com/tiagorlampert/CHAOS/repositories"
 )
 
@@ -24,7 +24,7 @@ func (u userService) Login(username, password string) bool {
 	if err != nil {
 		return false
 	}
-	return utilities.PasswordsMatch(user.Password, password)
+	return utils.PasswordsMatch(user.Password, password)
 }
 
 func (u userService) Insert(input entities.User) error {
@@ -42,11 +42,11 @@ func (u userService) UpdatePassword(input UpdateUserPasswordInput) error {
 	if err != nil {
 		return err
 	}
-	if !utilities.PasswordsMatch(user.Password, input.OldPassword) {
+	if !utils.PasswordsMatch(user.Password, input.OldPassword) {
 		return ErrInvalidPassword
 	}
 
-	passwordHash, err := utilities.HashAndSalt(input.NewPassword)
+	passwordHash, err := utils.HashAndSalt(input.NewPassword)
 	if err != nil {
 		return err
 	}
@@ -63,7 +63,7 @@ func (u userService) CreateDefaultUser() error {
 		return err
 	}
 
-	passwordHash, err := utilities.HashAndSalt(defaultPassword)
+	passwordHash, err := utils.HashAndSalt(defaultPassword)
 	if err != nil {
 		return err
 	}

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/entities"
-	"github.com/tiagorlampert/CHAOS/internal/utilities"
+	"github.com/tiagorlampert/CHAOS/internal/utils"
 	"github.com/tiagorlampert/CHAOS/repositories"
 	"strings"
 )
@@ -47,7 +47,7 @@ func (s authService) Setup() (*entities.Auth, error) {
 		if hasProvidedSecretKey {
 			dummyAuth.SecretKey = s.secretKey
 		} else {
-			dummyAuth.SecretKey = utilities.GenerateRandomString(secretKeySize)
+			dummyAuth.SecretKey = utils.GenerateRandomString(secretKeySize)
 		}
 		return &dummyAuth, s.authRepository.Insert(dummyAuth)
 	}
@@ -74,7 +74,7 @@ func (s authService) RefreshSecret() (string, error) {
 	}
 	if err := s.authRepository.Update(entities.Auth{
 		DBModel:   auth.DBModel,
-		SecretKey: utilities.GenerateRandomString(secretKeySize),
+		SecretKey: utils.GenerateRandomString(secretKeySize),
 	}); err != nil {
 		return "", err
 	}

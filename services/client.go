@@ -2,7 +2,8 @@ package services
 
 import (
 	"context"
-	"github.com/tiagorlampert/CHAOS/internal/utilities/system"
+	"errors"
+	"github.com/tiagorlampert/CHAOS/internal/utils/system"
 )
 
 type (
@@ -19,6 +20,11 @@ type (
 		RunHidden                           bool
 		OSTarget                            system.OSType
 	}
+)
+
+var (
+	ErrInvalidServerAddress = errors.New("the server address provided is invalid")
+	ErrInvalidServerPort    = errors.New("the server port provided is invalid")
 )
 
 type Client interface {

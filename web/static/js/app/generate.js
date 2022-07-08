@@ -21,7 +21,7 @@ async function GenerateBinary() {
         .then(response => {
             if (!response.ok) {
                 return response.text().then(err => {
-                    throw new Error(err.message);
+                    throw new Error(err);
                 });
             }
             return response.text();
@@ -32,6 +32,7 @@ async function GenerateBinary() {
         })
         .catch(err => {
             console.log('Error: ', err);
+            Swal.close();
             ShowNotification('danger', 'Ops!', 'Failed building client binary.\n' + JSON.parse(err.message).error)
         });
 }

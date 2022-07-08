@@ -3,7 +3,7 @@ package services
 import (
 	"errors"
 	"github.com/tiagorlampert/CHAOS/entities"
-	"github.com/tiagorlampert/CHAOS/internal/utilities"
+	"github.com/tiagorlampert/CHAOS/internal/utils"
 	"github.com/tiagorlampert/CHAOS/repositories"
 	"time"
 )
@@ -30,7 +30,7 @@ func (d deviceService) FindAll() ([]entities.Device, error) {
 		return nil, err
 	}
 	for index, device := range devices {
-		devices[index].MacAddressBase64 = utilities.EncodeBase64(device.MacAddress)
+		devices[index].MacAddressBase64 = utils.EncodeBase64(device.MacAddress)
 	}
 	return devices, nil
 }

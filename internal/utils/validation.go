@@ -10,9 +10,7 @@ func IsValidIPAddress(s string) bool {
 }
 
 func IsValidURL(s string) bool {
-	u, err := url.ParseRequestURI(s)
-	_ = u
-	if err != nil {
+	if _, err := url.ParseRequestURI(s); err != nil {
 		return false
 	}
 	return true

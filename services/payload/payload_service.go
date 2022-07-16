@@ -4,7 +4,7 @@ type payloadService struct {
 	Payload map[string]*Data
 }
 
-func NewPayload() Service {
+func NewPayloadService() Service {
 	return &payloadService{
 		Payload: make(map[string]*Data, 0),
 	}

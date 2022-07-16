@@ -24,7 +24,7 @@ type clientService struct {
 	AuthService    auth.Service
 }
 
-func NewClient(
+func NewClientService(
 	appVersion string,
 	repository repositories.Auth,
 	payloadCache payload.Service,

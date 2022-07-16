@@ -67,11 +67,11 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 	deviceRepository := sqlite.NewDeviceRepository(dbClient)
 
 	//services
-	payloadService := payload.NewPayload()
+	payloadService := payload.NewPayloadService()
 	authService := auth.NewAuthService(logger, configuration.SecretKey, authRepository)
-	userService := user.NewUser(userRepository)
-	deviceService := device.NewDevice(deviceRepository)
-	clientService := client.NewClient(Version, authRepository, payloadService, authService)
+	userService := user.NewUserService(userRepository)
+	deviceService := device.NewDeviceService(deviceRepository)
+	clientService := client.NewClientService(Version, authRepository, payloadService, authService)
 	urlService := url.NewUrlService(clientService)
 
 	//router

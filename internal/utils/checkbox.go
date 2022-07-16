@@ -1,4 +1,4 @@
-package utilities
+package utils
 
 func ParseCheckboxBoolean(value string) bool {
 	if value == "true" {

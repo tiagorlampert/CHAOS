@@ -4,7 +4,7 @@ import (
 	"github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/tiagorlampert/CHAOS/entities"
-	jwtUtil "github.com/tiagorlampert/CHAOS/internal/utilities/jwt"
+	jwtUtil "github.com/tiagorlampert/CHAOS/internal/utils/jwt"
 	"github.com/tiagorlampert/CHAOS/services"
 	"net/http"
 	"time"

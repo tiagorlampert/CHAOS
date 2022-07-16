@@ -20,6 +20,12 @@
 - [x] ~~Lock screen~~
 - [X] ~~Open URL~~
 - [ ] Kill process
+- [ ] Add Postgres support
+- [ ] Client connection using Websocket
+- [ ] Clipboard Monitor
+- [ ] Live stream from camera
+- [ ] Take photos (webcam)
+- [ ] Voice recording
 
 # Local Development
 ```bash
@@ -45,6 +51,9 @@ docker build \
   --tag tiagorlampert/chaos:latest -f Dockerfile .
             
 docker run -it --rm -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0.0
+
+docker push tiagorlampert/chaos:latest
+docker push tiagorlampert/chaos:v5.0.0
 ```
 
 # Deploy on heroku (manual deployment)

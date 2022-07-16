@@ -1,14 +1,14 @@
-package services
+package payload
 
-type PayloadData struct {
+type Data struct {
 	Request     string `json:"request,omitempty"`
 	Response    []byte `json:"response,omitempty"`
 	HasError    bool   `json:"has_error,omitempty"`
 	HasResponse bool   `json:"has_response,omitempty"`
 }
 
-type Payload interface {
-	Set(string, *PayloadData)
-	Get(string) (*PayloadData, bool)
+type Service interface {
+	Set(string, *Data)
+	Get(string) (*Data, bool)
 	Remove(string)
 }

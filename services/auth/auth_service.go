@@ -1,4 +1,4 @@
-package services
+package auth
 
 import (
 	"errors"
@@ -10,25 +10,28 @@ import (
 	"strings"
 )
 
+const secretKeySize = 50
+
 type authService struct {
-	logger         *logrus.Logger
-	secretKey      string
-	authRepository repositories.Auth
+	Logger         *logrus.Logger
+	SecretKey      string
+	AuthRepository repositories.Auth
 }
 
-func NewAuth(
+func NewAuthService(
 	logger *logrus.Logger,
 	secretKey string,
-	authRepository repositories.Auth) Auth {
+	authRepository repositories.Auth,
+) Service {
 	return &authService{
-		logger:         logger,
-		authRepository: authRepository,
-		secretKey:      strings.TrimSpace(secretKey),
+		Logger:         logger,
+		AuthRepository: authRepository,
+		SecretKey:      strings.TrimSpace(secretKey),
 	}
 }
 
 func (s authService) Setup() (*entities.Auth, error) {
-	auth, err := s.authRepository.First()
+	auth, err := s.AuthRepository.First()
 	switch err {
 	case nil, repositories.ErrNotFound:
 		break
@@ -36,49 +39,49 @@ func (s authService) Setup() (*entities.Auth, error) {
 		return nil, err
 	}
 
-	hasProvidedSecretKey := len(s.secretKey) > 0
+	hasProvidedSecretKey := len(s.SecretKey) > 0
 	if hasProvidedSecretKey {
-		defer s.logger.WithFields(logrus.Fields{"key": s.secretKey}).
+		defer s.Logger.WithFields(logrus.Fields{"key": s.SecretKey}).
 			Info("Using a provided secret key from environment variable")
 	}
 
 	if errors.Is(err, repositories.ErrNotFound) {
 		dummyAuth := entities.Auth{}
 		if hasProvidedSecretKey {
-			dummyAuth.SecretKey = s.secretKey
+			dummyAuth.SecretKey = s.SecretKey
 		} else {
 			dummyAuth.SecretKey = utils.GenerateRandomString(secretKeySize)
 		}
-		return &dummyAuth, s.authRepository.Insert(dummyAuth)
+		return &dummyAuth, s.AuthRepository.Insert(dummyAuth)
 	}
 
-	if hasProvidedSecretKey && auth.SecretKey != s.secretKey {
-		auth.SecretKey = s.secretKey
-		return &auth, s.authRepository.Update(auth)
+	if hasProvidedSecretKey && auth.SecretKey != s.SecretKey {
+		auth.SecretKey = s.SecretKey
+		return &auth, s.AuthRepository.Update(auth)
 	}
 	return &auth, nil
 }
 
 func (s authService) First() (entities.Auth, error) {
-	return s.authRepository.First()
+	return s.AuthRepository.First()
 }
 
 func (s authService) RefreshSecret() (string, error) {
-	if len(s.secretKey) != 0 {
+	if len(s.SecretKey) != 0 {
 		return "", fmt.Errorf("%s", ErrFailedRefreshProvidedSecretKey)
 	}
 
-	auth, err := s.authRepository.First()
+	auth, err := s.AuthRepository.First()
 	if err != nil {
 		return "", err
 	}
-	if err := s.authRepository.Update(entities.Auth{
+	if err := s.AuthRepository.Update(entities.Auth{
 		DBModel:   auth.DBModel,
 		SecretKey: utils.GenerateRandomString(secretKeySize),
 	}); err != nil {
 		return "", err
 	}
-	auth, err = s.authRepository.First()
+	auth, err = s.AuthRepository.First()
 	if err != nil {
 		return "", err
 	}

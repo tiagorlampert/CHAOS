@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
-	httpDelivery "github.com/tiagorlampert/CHAOS/delivery/http"
 	"github.com/tiagorlampert/CHAOS/infrastructure/database"
 	"github.com/tiagorlampert/CHAOS/internal/environment"
 	"github.com/tiagorlampert/CHAOS/internal/middleware"
@@ -13,8 +12,14 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
 	"github.com/tiagorlampert/CHAOS/internal/utils/template"
 	"github.com/tiagorlampert/CHAOS/internal/utils/ui"
+	httpDelivery "github.com/tiagorlampert/CHAOS/presentation/http"
 	"github.com/tiagorlampert/CHAOS/repositories/sqlite"
-	"github.com/tiagorlampert/CHAOS/services"
+	"github.com/tiagorlampert/CHAOS/services/auth"
+	"github.com/tiagorlampert/CHAOS/services/client"
+	"github.com/tiagorlampert/CHAOS/services/device"
+	"github.com/tiagorlampert/CHAOS/services/payload"
+	"github.com/tiagorlampert/CHAOS/services/url"
+	"github.com/tiagorlampert/CHAOS/services/user"
 	"net/http"
 )
 
@@ -23,13 +28,13 @@ const AppName = "CHAOS"
 var Version = "dev"
 
 type App struct {
-	logger        *logrus.Logger
-	configuration *environment.Configuration
-	router        *gin.Engine
+	Logger        *logrus.Logger
+	Configuration *environment.Configuration
+	Router        *gin.Engine
 }
 
 func init() {
-	system.ClearScreen()
+	_ = system.ClearScreen()
 
 	if err := Setup(); err != nil {
 		logrus.Error(err)
@@ -62,12 +67,12 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 	deviceRepository := sqlite.NewDeviceRepository(dbClient)
 
 	//services
-	payloadService := services.NewPayload()
-	authService := services.NewAuth(logger, configuration.SecretKey, authRepository)
-	userService := services.NewUser(userRepository)
-	deviceService := services.NewDevice(deviceRepository)
-	clientService := services.NewClient(Version, authRepository, payloadService, authService)
-	urlService := services.NewUrlService(clientService)
+	payloadService := payload.NewPayloadService()
+	authService := auth.NewAuthService(logger, configuration.SecretKey, authRepository)
+	userService := user.NewUserService(userRepository)
+	deviceService := device.NewDeviceService(deviceRepository)
+	clientService := client.NewClientService(Version, authRepository, payloadService, authService)
+	urlService := url.NewUrlService(clientService)
 
 	//router
 	router := gin.Default()
@@ -75,11 +80,11 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 	router.Static("/static", "web/static")
 	router.HTMLRender = template.LoadTemplates("web")
 
-	auth, err := authService.Setup()
+	authEntity, err := authService.Setup()
 	if err != nil {
 		logger.WithField(`cause`, err).Fatal(`error preparing authentication`)
 	}
-	jwtMiddleware, err := middleware.NewJWTMiddleware(auth.SecretKey, userService)
+	jwtMiddleware, err := middleware.NewJWTMiddleware(authEntity.SecretKey, userService)
 	if err != nil {
 		logger.WithField(`cause`, err).Fatal(`error creating jwt middleware`)
 	}
@@ -101,9 +106,9 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 	)
 
 	return &App{
-		configuration: configuration,
-		logger:        logger,
-		router:        router,
+		Configuration: configuration,
+		Logger:        logger,
+		Router:        router,
 	}
 }
 
@@ -113,12 +118,12 @@ func Setup() error {
 }
 
 func (a *App) Run() error {
-	ui.ShowMenu(Version, a.configuration.Server.Port)
+	ui.ShowMenu(Version, a.Configuration.Server.Port)
 
-	a.logger.WithFields(
-		logrus.Fields{`version`: Version, `port`: a.configuration.Server.Port}).Info(`Starting `, AppName)
+	a.Logger.WithFields(
+		logrus.Fields{`version`: Version, `port`: a.Configuration.Server.Port}).Info(`Starting `, AppName)
 
 	return http.ListenAndServe(
-		fmt.Sprintf(":%s", a.configuration.Server.Port),
-		http.TimeoutHandler(a.router, constants.TimeoutDuration, constants.TimeoutExceeded))
+		fmt.Sprintf(":%s", a.Configuration.Server.Port),
+		http.TimeoutHandler(a.Router, constants.TimeoutDuration, constants.TimeoutExceeded))
 }

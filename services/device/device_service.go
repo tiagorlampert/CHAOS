@@ -1,4 +1,4 @@
-package services
+package device
 
 import (
 	"errors"
@@ -9,23 +9,23 @@ import (
 )
 
 type deviceService struct {
-	repository repositories.Device
+	Repository repositories.Device
 }
 
-func NewDevice(repository repositories.Device) Device {
-	return &deviceService{repository: repository}
+func NewDeviceService(repository repositories.Device) Service {
+	return &deviceService{Repository: repository}
 }
 
 func (d deviceService) Insert(input entities.Device) error {
-	_, err := d.repository.FindByMacAddress(input.MacAddress)
+	_, err := d.Repository.FindByMacAddress(input.MacAddress)
 	if errors.Is(err, repositories.ErrNotFound) {
-		return d.repository.Insert(input)
+		return d.Repository.Insert(input)
 	}
-	return d.repository.Update(input)
+	return d.Repository.Update(input)
 }
 
 func (d deviceService) FindAll() ([]entities.Device, error) {
-	devices, err := d.repository.FindAll(time.Now().Add(time.Minute * time.Duration(-3)))
+	devices, err := d.Repository.FindAll(time.Now().Add(time.Minute * time.Duration(-3)))
 	if err != nil {
 		return nil, err
 	}

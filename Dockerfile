@@ -1,5 +1,5 @@
 # BUILD STAGE
-FROM golang:1.17-alpine AS build
+FROM golang:1.18-alpine AS build
 
 ARG APP_VERSION
 ARG CGO=1
@@ -15,7 +15,7 @@ COPY . .
 RUN go build -v -a -tags 'netgo' -ldflags '-w -X 'main.Version=${APP_VERSION}' -extldflags "-static"' -o chaos cmd/chaos/*
 
 # FINAL STAGE
-FROM golang:1.17.5
+FROM golang:1.18.4
 
 MAINTAINER tiagorlampert@gmail.com
 

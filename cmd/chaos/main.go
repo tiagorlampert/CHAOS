@@ -35,15 +35,15 @@ type App struct {
 
 func init() {
 	_ = system.ClearScreen()
-
-	if err := Setup(); err != nil {
-		logrus.Error(err)
-	}
 }
 
 func main() {
 	logger := logrus.New()
 	logger.Info(`Loading environment variables`)
+
+	if err := Setup(); err != nil {
+		logger.WithField(`cause`, err.Error()).Fatal(`error running setup`)
+	}
 
 	configuration := environment.Load()
 	if err := configuration.Validate(); err != nil {
@@ -80,11 +80,11 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 	router.Static("/static", "web/static")
 	router.HTMLRender = template.LoadTemplates("web")
 
-	authEntity, err := authService.Setup()
+	setup, err := authService.Setup()
 	if err != nil {
 		logger.WithField(`cause`, err).Fatal(`error preparing authentication`)
 	}
-	jwtMiddleware, err := middleware.NewJWTMiddleware(authEntity.SecretKey, userService)
+	jwtMiddleware, err := middleware.NewJWTMiddleware(setup.SecretKey, userService)
 	if err != nil {
 		logger.WithField(`cause`, err).Fatal(`error creating jwt middleware`)
 	}
@@ -113,8 +113,7 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 }
 
 func Setup() error {
-	return system.CreateDirs(
-		constants.TempDirectory, constants.DatabaseDirectory)
+	return system.CreateDirs(constants.TempDirectory, constants.DatabaseDirectory)
 }
 
 func (a *App) Run() error {

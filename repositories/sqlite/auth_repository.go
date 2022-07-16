@@ -22,7 +22,7 @@ func (s authSqliteRepository) Update(auth entities.Auth) error {
 	return s.dbClient.Model(&auth).Update(&auth).Error
 }
 
-func (s authSqliteRepository) First() (entities.Auth, error) {
+func (s authSqliteRepository) GetFirst() (entities.Auth, error) {
 	var auth entities.Auth
 	if err := s.dbClient.Find(&auth).Error; err != nil {
 		return entities.Auth{}, handleError(err)

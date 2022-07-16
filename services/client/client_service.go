@@ -122,11 +122,11 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 }
 
 func (c clientService) GenerateNewToken() (string, error) {
-	auth, err := c.AuthService.First()
+	authConfig, err := c.AuthService.GetAuthConfig()
 	if err != nil {
 		return "", err
 	}
-	return jwt.NewToken(auth.SecretKey, jwt.IdentityDefaultUser)
+	return jwt.NewToken(authConfig.SecretKey, jwt.IdentityDefaultUser)
 }
 
 func handleOSType(osType system.OSType) string {

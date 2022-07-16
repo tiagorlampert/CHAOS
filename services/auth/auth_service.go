@@ -31,7 +31,7 @@ func NewAuthService(
 }
 
 func (s authService) Setup() (*entities.Auth, error) {
-	auth, err := s.AuthRepository.First()
+	entry, err := s.AuthRepository.GetFirst()
 	switch err {
 	case nil, repositories.ErrNotFound:
 		break
@@ -39,31 +39,38 @@ func (s authService) Setup() (*entities.Auth, error) {
 		return nil, err
 	}
 
-	hasProvidedSecretKey := len(s.SecretKey) > 0
+	hasProvidedSecretKey := len(strings.TrimSpace(s.SecretKey)) > 0
 	if hasProvidedSecretKey {
 		defer s.Logger.WithFields(logrus.Fields{"key": s.SecretKey}).
 			Info("Using a provided secret key from environment variable")
 	}
 
 	if errors.Is(err, repositories.ErrNotFound) {
-		dummyAuth := entities.Auth{}
+		authEntry := entities.Auth{}
 		if hasProvidedSecretKey {
-			dummyAuth.SecretKey = s.SecretKey
+			authEntry.SecretKey = s.SecretKey
 		} else {
-			dummyAuth.SecretKey = utils.GenerateRandomString(secretKeySize)
+			authEntry.SecretKey = utils.GenerateRandomString(secretKeySize)
 		}
-		return &dummyAuth, s.AuthRepository.Insert(dummyAuth)
+
+		if err := s.AuthRepository.Insert(authEntry); err != nil {
+			return nil, err
+		}
+		return &authEntry, nil
 	}
 
-	if hasProvidedSecretKey && auth.SecretKey != s.SecretKey {
-		auth.SecretKey = s.SecretKey
-		return &auth, s.AuthRepository.Update(auth)
+	if hasProvidedSecretKey && entry.SecretKey != s.SecretKey {
+		entry.SecretKey = s.SecretKey
+
+		if err := s.AuthRepository.Update(entry); err != nil {
+			return nil, err
+		}
 	}
-	return &auth, nil
+	return &entry, nil
 }
 
-func (s authService) First() (entities.Auth, error) {
-	return s.AuthRepository.First()
+func (s authService) GetAuthConfig() (entities.Auth, error) {
+	return s.AuthRepository.GetFirst()
 }
 
 func (s authService) RefreshSecret() (string, error) {
@@ -71,7 +78,7 @@ func (s authService) RefreshSecret() (string, error) {
 		return "", fmt.Errorf("%s", ErrFailedRefreshProvidedSecretKey)
 	}
 
-	auth, err := s.AuthRepository.First()
+	auth, err := s.AuthRepository.GetFirst()
 	if err != nil {
 		return "", err
 	}
@@ -81,7 +88,7 @@ func (s authService) RefreshSecret() (string, error) {
 	}); err != nil {
 		return "", err
 	}
-	auth, err = s.AuthRepository.First()
+	auth, err = s.AuthRepository.GetFirst()
 	if err != nil {
 		return "", err
 	}

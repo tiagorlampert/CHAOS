@@ -41,7 +41,7 @@ func (h *httpController) loginHandler(c *gin.Context) {
 }
 
 func (h *httpController) getSettingsHandler(c *gin.Context) {
-	auth, err := h.AuthService.First()
+	auth, err := h.AuthService.GetAuthConfig()
 	if err != nil {
 		h.Logger.Error(err)
 		c.Status(http.StatusInternalServerError)

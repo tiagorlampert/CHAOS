@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tiagorlampert/CHAOS/entities"
 	jwtUtil "github.com/tiagorlampert/CHAOS/internal/utils/jwt"
-	"github.com/tiagorlampert/CHAOS/services"
+	"github.com/tiagorlampert/CHAOS/services/user"
 	"net/http"
 	"time"
 )
@@ -14,7 +14,7 @@ type JWT struct {
 	*jwt.GinJWTMiddleware
 }
 
-func NewJWTMiddleware(secretKey string, userService services.User) (*JWT, error) {
+func NewJWTMiddleware(secretKey string, userService user.Service) (*JWT, error) {
 	middleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:         "chaos",
 		Key:           []byte(secretKey),

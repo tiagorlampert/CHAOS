@@ -1,4 +1,4 @@
-package services
+package user
 
 import (
 	"errors"
@@ -11,10 +11,12 @@ var (
 )
 
 type UpdateUserPasswordInput struct {
-	Username, OldPassword, NewPassword string
+	Username    string
+	OldPassword string
+	NewPassword string
 }
 
-type User interface {
+type Service interface {
 	Insert(entities.User) error
 	Login(username, password string) bool
 	UpdatePassword(UpdateUserPasswordInput) error

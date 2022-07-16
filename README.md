@@ -7,7 +7,7 @@
 <h1 align="center">CHAOS: Remote Administration Tool</h1>
 <p align="center">
   <a href="https://golang.org/">
-    <img src="https://img.shields.io/badge/Golang-1.16-blue.svg?style=flat-square">
+    <img src="https://img.shields.io/badge/Golang-1.18-blue.svg?style=flat-square">
   </a>
     <a href="https://github.com/tiagorlampert/CHAOS/releases">
     <img src="https://img.shields.io/badge/Release-v5-red.svg?style=flat-square">

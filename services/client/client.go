@@ -1,4 +1,4 @@
-package services
+package client
 
 import (
 	"context"
@@ -27,7 +27,7 @@ var (
 	ErrInvalidServerPort    = errors.New("the server port provided is invalid")
 )
 
-type Client interface {
+type Service interface {
 	SendCommand(ctx context.Context, input SendCommandInput) (SendCommandOutput, error)
 	BuildClient(BuildClientBinaryInput) (string, error)
 }

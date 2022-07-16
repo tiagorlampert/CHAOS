@@ -1,4 +1,4 @@
-package services
+package user
 
 import (
 	"github.com/tiagorlampert/CHAOS/entities"
@@ -15,7 +15,7 @@ type userService struct {
 	repository repo.User
 }
 
-func NewUser(repository repo.User) User {
+func NewUser(repository repo.User) Service {
 	return &userService{repository: repository}
 }
 

@@ -1,4 +1,4 @@
-package services
+package auth
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 
 var ErrFailedRefreshProvidedSecretKey = errors.New("the secret key provided from environment variable cannot be redefined")
 
-type Auth interface {
+type Service interface {
 	Setup() (*entities.Auth, error)
 	First() (entities.Auth, error)
 	RefreshSecret() (string, error)

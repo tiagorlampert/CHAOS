@@ -9,7 +9,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/utils/image"
 	"github.com/tiagorlampert/CHAOS/internal/utils/jwt"
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
-	"github.com/tiagorlampert/CHAOS/repositories"
+	auth2 "github.com/tiagorlampert/CHAOS/repositories/auth"
 	"github.com/tiagorlampert/CHAOS/services/auth"
 	"github.com/tiagorlampert/CHAOS/services/payload"
 	"os/exec"
@@ -19,14 +19,14 @@ import (
 
 type clientService struct {
 	AppVersion     string
-	Repository     repositories.Auth
+	Repository     auth2.Repository
 	PayloadService payload.Service
 	AuthService    auth.Service
 }
 
 func NewClientService(
 	appVersion string,
-	repository repositories.Auth,
+	repository auth2.Repository,
 	payloadCache payload.Service,
 	authService auth.Service,
 ) Service {

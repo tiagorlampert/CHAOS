@@ -4,6 +4,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/entities"
 	"github.com/tiagorlampert/CHAOS/internal/utils"
 	repo "github.com/tiagorlampert/CHAOS/repositories"
+	"github.com/tiagorlampert/CHAOS/repositories/user"
 )
 
 const (
@@ -12,10 +13,10 @@ const (
 )
 
 type userService struct {
-	repository repo.User
+	repository user.Repository
 }
 
-func NewUserService(repository repo.User) Service {
+func NewUserService(repository user.Repository) Service {
 	return &userService{repository: repository}
 }
 

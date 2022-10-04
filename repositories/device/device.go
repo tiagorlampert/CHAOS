@@ -1,11 +1,11 @@
-package repositories
+package device
 
 import (
 	"github.com/tiagorlampert/CHAOS/entities"
 	"time"
 )
 
-type Device interface {
+type Repository interface {
 	Insert(device entities.Device) error
 	Update(device entities.Device) error
 	FindByMacAddress(address string) (*entities.Device, error)

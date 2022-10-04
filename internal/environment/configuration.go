@@ -2,35 +2,34 @@ package environment
 
 import (
 	"github.com/go-playground/validator/v10"
-	"os"
+	"github.com/kelseyhightower/envconfig"
 )
 
 type Configuration struct {
 	Server    Server
 	Database  Database
-	SecretKey string
+	SecretKey string `envconfig:"SECRET_KEY"`
 }
 
 type Server struct {
-	Port string `validate:"required"`
+	Port string `envconfig:"PORT" validate:"required"`
 }
 
 type Database struct {
-	Name string `validate:"required"`
+	Sqlite   Sqlite
+	Postgres Postgres
 }
 
 func Load() *Configuration {
-	return &Configuration{
-		Server: Server{
-			Port: os.Getenv(`PORT`),
-		},
-		Database: Database{
-			Name: os.Getenv(`DATABASE_NAME`),
-		},
-		SecretKey: os.Getenv(`SECRET_KEY`),
-	}
+	configuration := &Configuration{}
+	_ = readEnv(configuration)
+	return configuration
+}
+
+func readEnv(cfg interface{}) error {
+	return envconfig.Process("", cfg)
 }
 
 func (c Configuration) Validate() error {
-	return validator.New().Struct(c)
+	return validator.New().Struct(c.Server)
 }

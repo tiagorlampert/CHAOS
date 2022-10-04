@@ -20,7 +20,7 @@ FROM golang:1.18.4
 MAINTAINER tiagorlampert@gmail.com
 
 ENV GIN_MODE=release
-ENV DATABASE_NAME=chaos
+ENV SQLITE_DATABASE=chaos
 
 WORKDIR /
 COPY --from=build /build/chaos /

@@ -188,12 +188,12 @@ func (h *httpController) sendCommandHandler(c *gin.Context) {
 
 func (h *httpController) getCommandHandler(c *gin.Context) {
 	address := c.Query("address")
-	decoded, err := utils.DecodeBase64(address)
+	addr, err := utils.DecodeBase64(address)
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-	req, found := h.PayloadService.Get(decoded)
+	req, found := h.PayloadService.Get(addr)
 	if found {
 		c.JSON(http.StatusOK, req)
 		return
@@ -254,7 +254,20 @@ func (h *httpController) generateBinaryPostHandler(c *gin.Context) {
 }
 
 func (h *httpController) shellHandler(c *gin.Context) {
-	c.HTML(http.StatusOK, "command.html", gin.H{})
+	address, err := utils.DecodeBase64(c.Query("address"))
+	if err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	device, err := h.DeviceService.FindByMacAddress(address)
+	if err != nil {
+		h.Logger.Error(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.HTML(http.StatusOK, "command.html", gin.H{"Device": device})
 	return
 }
 
@@ -272,6 +285,18 @@ func (h *httpController) downloadFileHandler(c *gin.Context) {
 }
 
 func (h *httpController) fileExplorerHandler(c *gin.Context) {
+	address, err := utils.DecodeBase64(c.Query("address"))
+	if err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+	device, err := h.DeviceService.FindByMacAddress(address)
+	if err != nil {
+		h.Logger.Error(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	var req request.FileExplorerRequestForm
 	if err := c.ShouldBind(&req); err != nil {
 		c.String(http.StatusBadRequest, err.Error())
@@ -291,7 +316,7 @@ func (h *httpController) fileExplorerHandler(c *gin.Context) {
 	ctxWithTimeout, cancel := context.WithTimeout(c, 15*time.Second)
 	defer cancel()
 
-	command, err := h.ClientService.SendCommand(ctxWithTimeout, client.SendCommandInput{
+	explore, err := h.ClientService.SendCommand(ctxWithTimeout, client.SendCommandInput{
 		MacAddress: req.Address,
 		Request:    fmt.Sprint("explore ", path),
 	})
@@ -301,11 +326,13 @@ func (h *httpController) fileExplorerHandler(c *gin.Context) {
 	}
 
 	var fileExplorer entities.FileExplorer
-	if err := json.Unmarshal(utils.StringToByte(command.Response), &fileExplorer); err != nil {
+	if err := json.Unmarshal(utils.StringToByte(explore.Response), &fileExplorer); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
 	c.HTML(http.StatusOK, "explorer.html", gin.H{
+		"Device":       device,
 		"FileExplorer": fileExplorer,
 	})
 	return

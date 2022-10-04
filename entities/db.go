@@ -2,7 +2,7 @@ package entities
 
 import "time"
 
-// A custom model from gorm.Model to keep a JSON format
+// DBModel A custom model from gorm.Model to keep a JSON format
 type DBModel struct {
 	ID        uint       `gorm:"primary_key" json:"id"`
 	CreatedAt time.Time  `json:"created_at"`

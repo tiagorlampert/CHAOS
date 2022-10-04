@@ -34,3 +34,7 @@ func (d deviceService) FindAll() ([]entities.Device, error) {
 	}
 	return devices, nil
 }
+
+func (d deviceService) FindByMacAddress(address string) (*entities.Device, error) {
+	return d.Repository.FindByMacAddress(address)
+}

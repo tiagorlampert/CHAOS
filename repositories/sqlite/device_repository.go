@@ -2,9 +2,9 @@ package sqlite
 
 import (
 	"errors"
-	"github.com/jinzhu/gorm"
 	"github.com/tiagorlampert/CHAOS/entities"
 	"github.com/tiagorlampert/CHAOS/repositories"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -29,7 +29,7 @@ func (r deviceSqliteRepository) Insert(input entities.Device) error {
 
 func (r deviceSqliteRepository) Update(device entities.Device) error {
 	return r.dbClient.Model(&device).Where(
-		entities.Device{MacAddress: device.MacAddress}).Update(&device).Error
+		entities.Device{MacAddress: device.MacAddress}).Updates(&device).Error
 }
 
 func (r deviceSqliteRepository) FindByMacAddress(address string) (*entities.Device, error) {
@@ -43,7 +43,7 @@ func (r deviceSqliteRepository) FindByMacAddress(address string) (*entities.Devi
 func (r deviceSqliteRepository) FindAll(updatedAt time.Time) ([]entities.Device, error) {
 	var devices []entities.Device
 	if err := r.dbClient.Where(
-		"updated_at > ?", updatedAt.String()).Find(&devices).Error; err != nil {
+		"updated_at > ?", updatedAt).Find(&devices).Error; err != nil {
 		return nil, err
 	}
 	return devices, nil

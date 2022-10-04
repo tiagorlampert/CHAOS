@@ -39,7 +39,7 @@ $ git clone https://github.com/tiagorlampert/CHAOS
 $ cd CHAOS/
 
 # Run
-$ PORT=8080 DATABASE_NAME=chaos go run cmd/chaos/main.go
+$ PORT=8080 SQLITE_DATABASE=chaos go run cmd/chaos/main.go
 ```
 
 # Build Docker Image:

@@ -1,6 +1,6 @@
 async function OpenUrl(address) {
     Swal.fire({
-        title: 'Inform the URL to open',
+        title: 'Type the URL to open',
         input: 'text',
         reverseButtons: true,
         showCancelButton: true,

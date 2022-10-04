@@ -9,6 +9,6 @@ var ErrFailedRefreshProvidedSecretKey = errors.New("the secret key provided from
 
 type Service interface {
 	Setup() (*entities.Auth, error)
-	GetAuthConfig() (entities.Auth, error)
+	GetAuthConfig() (*entities.Auth, error)
 	RefreshSecret() (string, error)
 }

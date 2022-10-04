@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/infrastructure/database"
 	"github.com/tiagorlampert/CHAOS/internal/environment"
@@ -20,6 +19,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/services/payload"
 	"github.com/tiagorlampert/CHAOS/services/url"
 	"github.com/tiagorlampert/CHAOS/services/user"
+	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -50,12 +50,14 @@ func main() {
 		logger.WithField(`cause`, err.Error()).Fatal(`error validating environment config variables`)
 	}
 
-	dbClient, err := database.NewSqliteClient(constants.DatabaseDirectory, configuration.Database.Name)
+	dbProvider, err := database.NewProvider(configuration.Database)
 	if err != nil {
 		logger.WithField(`cause`, err).Fatal(`error connecting with database`)
 	}
 
-	if err := NewApp(logger, configuration, dbClient.Conn).Run(); err != nil {
+	dbProvider.Migrate()
+
+	if err := NewApp(logger, configuration, dbProvider.Conn).Run(); err != nil {
 		logger.WithField(`cause`, err).Fatal(fmt.Sprintf("failed to start %s Application", AppName))
 	}
 }

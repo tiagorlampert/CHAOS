@@ -2,9 +2,10 @@ package database
 
 import (
 	"fmt"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"github.com/tiagorlampert/CHAOS/entities"
+	"github.com/tiagorlampert/CHAOS/internal/environment"
+	"github.com/tiagorlampert/CHAOS/internal/utils/constants"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 	"os"
 	"strings"
 )
@@ -14,25 +15,11 @@ const (
 	dbExtension = `.db`
 )
 
-type SqliteClient struct {
-	Conn *gorm.DB
-}
-
-func NewSqliteClient(dir, dbName string) (*SqliteClient, error) {
-	dir = strings.TrimSuffix(dir, string(os.PathSeparator))
-	dbConn, err := gorm.Open(dialect, fmt.Sprint(dir, string(os.PathSeparator), dbName, dbExtension))
+func NewSqliteClient(configuration environment.Sqlite) (*Provider, error) {
+	dir := strings.TrimSuffix(constants.DatabaseDirectory, string(os.PathSeparator))
+	gormDB, err := gorm.Open(sqlite.Open(fmt.Sprint(dir, string(os.PathSeparator), configuration.DatabaseName, dbExtension)), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
-	conn := &SqliteClient{Conn: dbConn}
-	conn.Migrate()
-	return conn, nil
-}
-
-func (d *SqliteClient) Migrate() {
-	d.Conn.AutoMigrate(
-		&entities.User{},
-		&entities.Device{},
-		&entities.Auth{},
-	)
+	return &Provider{Conn: gormDB}, nil
 }

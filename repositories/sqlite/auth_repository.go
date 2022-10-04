@@ -1,9 +1,9 @@
 package sqlite
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/tiagorlampert/CHAOS/entities"
 	"github.com/tiagorlampert/CHAOS/repositories"
+	"gorm.io/gorm"
 )
 
 type authSqliteRepository struct {
@@ -18,14 +18,18 @@ func (s authSqliteRepository) Insert(auth entities.Auth) error {
 	return s.dbClient.Create(&auth).Error
 }
 
-func (s authSqliteRepository) Update(auth entities.Auth) error {
-	return s.dbClient.Model(&auth).Update(&auth).Error
+func (s authSqliteRepository) Update(auth *entities.Auth) error {
+	return s.dbClient.Model(&auth).Updates(&auth).Error
 }
 
-func (s authSqliteRepository) GetFirst() (entities.Auth, error) {
+func (s authSqliteRepository) GetFirst() (*entities.Auth, error) {
 	var auth entities.Auth
-	if err := s.dbClient.Find(&auth).Error; err != nil {
-		return entities.Auth{}, handleError(err)
+	tx := s.dbClient.Find(&auth)
+	if tx.Error != nil {
+		return nil, handleError(tx.Error)
 	}
-	return auth, nil
+	if tx.RowsAffected == 0 {
+		return nil, repositories.ErrNotFound
+	}
+	return &auth, nil
 }

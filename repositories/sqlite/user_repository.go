@@ -1,9 +1,9 @@
 package sqlite
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/tiagorlampert/CHAOS/entities"
 	"github.com/tiagorlampert/CHAOS/repositories"
+	"gorm.io/gorm"
 )
 
 type userSqliteRepository struct {
@@ -20,7 +20,7 @@ func (u userSqliteRepository) Insert(user entities.User) error {
 
 func (u userSqliteRepository) Update(user *entities.User) error {
 	return u.dbClient.Model(&user).Where(
-		entities.User{Username: user.Username}).Update(&user).Error
+		entities.User{Username: user.Username}).Updates(&user).Error
 }
 
 func (u userSqliteRepository) FindByUsername(username string) (*entities.User, error) {

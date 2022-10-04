@@ -66,10 +66,10 @@ func (s authService) Setup() (*entities.Auth, error) {
 			return nil, err
 		}
 	}
-	return &entry, nil
+	return entry, nil
 }
 
-func (s authService) GetAuthConfig() (entities.Auth, error) {
+func (s authService) GetAuthConfig() (*entities.Auth, error) {
 	return s.AuthRepository.GetFirst()
 }
 
@@ -82,7 +82,7 @@ func (s authService) RefreshSecret() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if err := s.AuthRepository.Update(entities.Auth{
+	if err := s.AuthRepository.Update(&entities.Auth{
 		DBModel:   auth.DBModel,
 		SecretKey: utils.GenerateRandomString(secretKeySize),
 	}); err != nil {

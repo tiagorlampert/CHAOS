@@ -92,10 +92,6 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 		return "", ErrInvalidServerAddress
 	}
 
-	if !utils.StringIsNumber(input.ServerPort) {
-		return "", ErrInvalidServerPort
-	}
-
 	filename, err := utils.NormalizeString(input.Filename)
 	if err != nil {
 		return "", err

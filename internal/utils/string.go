@@ -3,7 +3,6 @@ package utils
 import (
 	"crypto/rand"
 	"regexp"
-	"strconv"
 	"strings"
 )
 
@@ -25,11 +24,4 @@ func NormalizeString(s string) (string, error) {
 		return "", err
 	}
 	return strings.TrimSpace(re.ReplaceAllString(s, "")), nil
-}
-
-func StringIsNumber(s string) bool {
-	if _, err := strconv.Atoi(s); err == nil {
-		return true
-	}
-	return false
 }

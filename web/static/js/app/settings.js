@@ -1,10 +1,11 @@
 function RefreshToken() {
     Swal.fire({
         title: 'Are you sure?',
-        text: "All connected devices will be disconnected.",
+        text: "You must restart the server for changes to take effect, and all connected devices will be disconnected.",
         icon: 'question',
         showCancelButton: true,
         reverseButtons: true,
+        confirmButtonColor: '#ffc107',
         confirmButtonText: 'Refresh',
         cancelButtonText: 'Cancel'
     }).then((result) => {

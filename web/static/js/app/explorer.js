@@ -49,7 +49,7 @@ function OpenFolder(directory) {
 
 function ExploreDirectory(address, path) {
     Swal.fire({
-        title: 'Waiting response...',
+        title: 'Loading...',
         onBeforeOpen: () => {
             Swal.showLoading()
         }

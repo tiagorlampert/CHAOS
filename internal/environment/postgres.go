@@ -6,12 +6,12 @@ import (
 )
 
 type Postgres struct {
-	Host     string `yaml:"host" json:"host" envconfig:"POSTGRES_HOST" validate:"required"`
-	Port     string `yaml:"port" json:"port" envconfig:"POSTGRES_PORT" validate:"required"`
-	User     string `yaml:"user" json:"user" envconfig:"POSTGRES_USER" validate:"required"`
-	Password string `yaml:"password" json:"password" envconfig:"POSTGRES_PASSWORD" validate:"required"`
-	Database string `yaml:"database" json:"database" envconfig:"POSTGRES_DATABASE" validate:"required"`
-	SSLMode  string `yaml:"ssl-mode" json:"ssl_mode" envconfig:"POSTGRES_SSL_MODE" validate:"required"`
+	Host     string `envconfig:"POSTGRES_HOST" validate:"required"`
+	Port     string `envconfig:"POSTGRES_PORT" validate:"required"`
+	User     string `envconfig:"POSTGRES_USER" validate:"required"`
+	Password string `envconfig:"POSTGRES_PASSWORD" validate:"required"`
+	Database string `envconfig:"POSTGRES_DATABASE" validate:"required"`
+	SSLMode  string `envconfig:"POSTGRES_SSL_MODE"`
 }
 
 func (p Postgres) BuildConnectionString() string {

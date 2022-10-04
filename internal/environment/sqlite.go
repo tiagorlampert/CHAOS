@@ -3,7 +3,7 @@ package environment
 import "github.com/go-playground/validator/v10"
 
 type Sqlite struct {
-	DatabaseName string `envconfig:"DATABASE_NAME" validate:"required"`
+	DatabaseName string `envconfig:"SQLITE_DATABASE" validate:"required"`
 }
 
 func (s Sqlite) IsValid() bool {

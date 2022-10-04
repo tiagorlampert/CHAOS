@@ -6,12 +6,12 @@
                 <hr>
 
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Secret Key</label>
+                    <label>Secret Key</label>
                     <div class="input-group">
                         <input type="text" class="form-control" id="secretKeyInput" value="{{.SecretKey}}" readonly>
 
                         <div class="input-group-append">
-                            <button class="btn btn-outline-primary" type="button" id="refreshBtn"
+                            <button class="btn btn-outline-warning" type="button" id="refreshBtn"
                                     data-placement="bottom"
                                     data-toggle="tooltip" title="Refresh Secret Key"
                                     onclick="RefreshToken()"><i class="fas fa-sync-alt"></i> Refresh

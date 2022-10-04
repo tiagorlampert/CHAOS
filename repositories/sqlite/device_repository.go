@@ -43,7 +43,7 @@ func (r deviceSqliteRepository) FindByMacAddress(address string) (*entities.Devi
 func (r deviceSqliteRepository) FindAll(updatedAt time.Time) ([]entities.Device, error) {
 	var devices []entities.Device
 	if err := r.dbClient.Where(
-		"updated_at > ?", updatedAt.String()).Find(&devices).Error; err != nil {
+		"updated_at > ?", updatedAt).Find(&devices).Error; err != nil {
 		return nil, err
 	}
 	return devices, nil

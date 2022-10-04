@@ -6,6 +6,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/environment"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 )
 
 const driverName = "postgres"
@@ -15,7 +16,8 @@ func NewPostgresClient(configuration environment.Postgres) (*Provider, error) {
 	if err != nil {
 		return nil, err
 	}
-	gormDB, err := gorm.Open(postgres.New(postgres.Config{Conn: db}))
+	gormConfig := &gorm.Config{NamingStrategy: schema.NamingStrategy{TablePrefix: tablePrefix}}
+	gormDB, err := gorm.Open(postgres.New(postgres.Config{Conn: db}), gormConfig)
 	if err != nil {
 		return nil, err
 	}

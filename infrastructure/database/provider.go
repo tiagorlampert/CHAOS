@@ -8,6 +8,8 @@ import (
 	"log"
 )
 
+const tablePrefix = "v1_0_"
+
 type Provider struct {
 	Conn *gorm.DB
 }
@@ -15,10 +17,10 @@ type Provider struct {
 func NewProvider(configuration environment.Database) (*Provider, error) {
 	switch {
 	case configuration.Sqlite.IsValid():
-		log.Println("Starting SQLite database")
+		log.Println("Starting sqlite database")
 		return NewSqliteClient(configuration.Sqlite)
 	case configuration.Postgres.IsValid():
-		log.Println("Starting PostgreSQL database")
+		log.Println("Starting postgres database")
 		return NewPostgresClient(configuration.Postgres)
 	default:
 		return nil, internal.ErrNoDatabaseProvided

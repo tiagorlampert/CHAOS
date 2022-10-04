@@ -1,6 +1,6 @@
 function DownloadFile(filename) {
     Swal.fire({
-        title: 'Downloading...',
+        title: 'Downloading ' + filename + '...',
         onBeforeOpen: () => {
             Swal.showLoading()
         }

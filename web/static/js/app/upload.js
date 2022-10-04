@@ -4,16 +4,16 @@ function SelectFile() {
 }
 
 function UploadFile() {
+    let file = document.getElementById("file-input").files[0];
+    let formData = new FormData();
+    formData.append("file", file);
+
     Swal.fire({
-        title: 'Uploading...',
+        title: 'Uploading ' + file.name + '...',
         onBeforeOpen: () => {
             Swal.showLoading()
         }
     });
-
-    let file = document.getElementById("file-input").files[0];
-    let formData = new FormData();
-    formData.append("file", file);
 
     const url = '/upload';
     const initDetails = {
@@ -65,6 +65,8 @@ function SendToDevice(filename) {
             Swal.fire({
                 text: 'File uploaded successfully!',
                 icon: 'success'
+            }).then(() => {
+                Refresh();
             });
         }).catch(err => {
         console.log('Error: ', err);
@@ -76,3 +78,5 @@ function SendToDevice(filename) {
         });
     });
 }
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));

@@ -24,7 +24,7 @@ function Refresh() {
         return
     }
 
-    let encodedPath = btoa(pathInput.value);
+    let encodedPath = btoa(encodeURI(pathInput.value));
 
     ExploreDirectory(address, encodedPath)
 }
@@ -41,12 +41,20 @@ function OpenFolder(directory) {
     let newPath = pathInput.value + "/" + directory;
 
     console.log("new path", newPath)
-    let encodedPath = btoa(newPath);
+    const encodedURI = encodeURI(newPath);
+    let encodedPath = btoa(encodedURI);
 
     ExploreDirectory(address, encodedPath)
 }
 
 function ExploreDirectory(address, path) {
+    Swal.fire({
+        title: 'Waiting response...',
+        onBeforeOpen: () => {
+            Swal.showLoading()
+        }
+    });
+
     let uri = "/explorer?address=" + address
     if (path) {
         uri = uri.concat("&path=", path)

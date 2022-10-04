@@ -140,7 +140,11 @@ func (h *Handler) HandleCommand() {
 			var hasErr bool
 
 			commandParts := strings.Split(requestCommand.Request, " ")
-			switch strings.ToLower(strings.TrimSpace(commandParts[0])) {
+
+			mainCommand := strings.ToLower(commandParts[0])
+			subCommand := strings.Join(commandParts[1:], " ")
+
+			switch mainCommand {
 			case "getos":
 				deviceSpecs, err := h.Services.Information.LoadDeviceSpecs()
 				if err != nil {
@@ -184,7 +188,7 @@ func (h *Handler) HandleCommand() {
 				}
 				break
 			case "explore":
-				fileExplorer, err := h.Services.Explorer.ExploreDirectory(commandParts[1])
+				fileExplorer, err := h.Services.Explorer.ExploreDirectory(subCommand)
 				if err != nil {
 					response = encode.StringToByte(err.Error())
 					hasErr = true
@@ -223,7 +227,7 @@ func (h *Handler) HandleCommand() {
 				response = res
 				break
 			case "open-url":
-				err := h.Services.URL.OpenURL(commandParts[1])
+				err := h.Services.URL.OpenURL(subCommand)
 				if err != nil {
 					response = encode.StringToByte(err.Error())
 					hasErr = true

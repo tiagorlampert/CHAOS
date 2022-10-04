@@ -12,7 +12,9 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/utils/template"
 	"github.com/tiagorlampert/CHAOS/internal/utils/ui"
 	httpDelivery "github.com/tiagorlampert/CHAOS/presentation/http"
-	"github.com/tiagorlampert/CHAOS/repositories/sqlite"
+	authRepo "github.com/tiagorlampert/CHAOS/repositories/auth"
+	deviceRepo "github.com/tiagorlampert/CHAOS/repositories/device"
+	userRepo "github.com/tiagorlampert/CHAOS/repositories/user"
 	"github.com/tiagorlampert/CHAOS/services/auth"
 	"github.com/tiagorlampert/CHAOS/services/client"
 	"github.com/tiagorlampert/CHAOS/services/device"
@@ -64,9 +66,9 @@ func main() {
 
 func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbClient *gorm.DB) *App {
 	//repositories
-	authRepository := sqlite.NewAuthRepository(dbClient)
-	userRepository := sqlite.NewUserRepository(dbClient)
-	deviceRepository := sqlite.NewDeviceRepository(dbClient)
+	authRepository := authRepo.NewRepository(dbClient)
+	userRepository := userRepo.NewRepository(dbClient)
+	deviceRepository := deviceRepo.NewRepository(dbClient)
 
 	//services
 	payloadService := payload.NewPayloadService()

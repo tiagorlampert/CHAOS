@@ -7,6 +7,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/entities"
 	"github.com/tiagorlampert/CHAOS/internal/utils"
 	"github.com/tiagorlampert/CHAOS/repositories"
+	"github.com/tiagorlampert/CHAOS/repositories/auth"
 	"strings"
 )
 
@@ -15,13 +16,13 @@ const secretKeySize = 50
 type authService struct {
 	Logger         *logrus.Logger
 	SecretKey      string
-	AuthRepository repositories.Auth
+	AuthRepository auth.Repository
 }
 
 func NewAuthService(
 	logger *logrus.Logger,
 	secretKey string,
-	authRepository repositories.Auth,
+	authRepository auth.Repository,
 ) Service {
 	return &authService{
 		Logger:         logger,

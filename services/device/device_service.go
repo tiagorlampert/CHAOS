@@ -5,14 +5,15 @@ import (
 	"github.com/tiagorlampert/CHAOS/entities"
 	"github.com/tiagorlampert/CHAOS/internal/utils"
 	"github.com/tiagorlampert/CHAOS/repositories"
+	"github.com/tiagorlampert/CHAOS/repositories/device"
 	"time"
 )
 
 type deviceService struct {
-	Repository repositories.Device
+	Repository device.Repository
 }
 
-func NewDeviceService(repository repositories.Device) Service {
+func NewDeviceService(repository device.Repository) Service {
 	return &deviceService{Repository: repository}
 }
 

@@ -20,10 +20,10 @@ type Database struct {
 	Postgres Postgres
 }
 
-func Load() *Configuration {
+func Load() (*Configuration, error) {
 	configuration := &Configuration{}
 	_ = readEnv(configuration)
-	return configuration
+	return configuration, configuration.Validate()
 }
 
 func readEnv(cfg interface{}) error {

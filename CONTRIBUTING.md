@@ -20,7 +20,7 @@
 - [x] ~~Lock screen~~
 - [X] ~~Open URL~~
 - [ ] Kill process
-- [ ] Add Postgres support
+- [X] Add Postgres support
 - [ ] Client connection using Websocket
 - [ ] Clipboard Monitor
 - [ ] Live stream from camera

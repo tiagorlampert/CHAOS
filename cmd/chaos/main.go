@@ -5,9 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/infrastructure/database"
+	"github.com/tiagorlampert/CHAOS/internal"
 	"github.com/tiagorlampert/CHAOS/internal/environment"
 	"github.com/tiagorlampert/CHAOS/internal/middleware"
-	"github.com/tiagorlampert/CHAOS/internal/utils/constants"
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
 	"github.com/tiagorlampert/CHAOS/internal/utils/template"
 	"github.com/tiagorlampert/CHAOS/internal/utils/ui"
@@ -47,19 +47,21 @@ func main() {
 		logger.WithField(`cause`, err.Error()).Fatal(`error running setup`)
 	}
 
-	configuration := environment.Load()
-	if err := configuration.Validate(); err != nil {
-		logger.WithField(`cause`, err.Error()).Fatal(`error validating environment config variables`)
+	configuration, err := environment.Load()
+	if err != nil {
+		logger.WithField(`cause`, err.Error()).Fatal(`error loading environment variables`)
 	}
 
-	dbProvider, err := database.NewProvider(configuration.Database)
+	db, err := database.NewProvider(configuration.Database)
 	if err != nil {
 		logger.WithField(`cause`, err).Fatal(`error connecting with database`)
 	}
 
-	dbProvider.Migrate()
+	if err := db.Migrate(); err != nil {
+		logger.WithField(`cause`, err.Error()).Fatal(`error migrating database`)
+	}
 
-	if err := NewApp(logger, configuration, dbProvider.Conn).Run(); err != nil {
+	if err := NewApp(logger, configuration, db.Conn).Run(); err != nil {
 		logger.WithField(`cause`, err).Fatal(fmt.Sprintf("failed to start %s Application", AppName))
 	}
 }
@@ -86,7 +88,7 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 
 	setup, err := authService.Setup()
 	if err != nil {
-		logger.WithField(`cause`, err).Fatal(`error preparing authentication`)
+		logger.WithField(`cause`, err).Fatal(`error preparing auth`)
 	}
 	jwtMiddleware, err := middleware.NewJWTMiddleware(setup.SecretKey, userService)
 	if err != nil {
@@ -117,7 +119,7 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 }
 
 func Setup() error {
-	return system.CreateDirs(constants.TempDirectory, constants.DatabaseDirectory)
+	return system.CreateDirs(internal.TempDirectory, internal.DatabaseDirectory)
 }
 
 func (a *App) Run() error {
@@ -128,5 +130,5 @@ func (a *App) Run() error {
 
 	return http.ListenAndServe(
 		fmt.Sprintf(":%s", a.Configuration.Server.Port),
-		http.TimeoutHandler(a.Router, constants.TimeoutDuration, constants.TimeoutExceeded))
+		http.TimeoutHandler(a.Router, internal.TimeoutDuration, internal.TimeoutExceeded))
 }

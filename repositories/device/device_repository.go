@@ -43,7 +43,7 @@ func (r deviceRepository) FindByMacAddress(address string) (*entities.Device, er
 func (r deviceRepository) FindAll(updatedAt time.Time) ([]entities.Device, error) {
 	var devices []entities.Device
 	if err := r.dbClient.Where(
-		"updated_at > ?", updatedAt).Find(&devices).Error; err != nil {
+		"fetched_unix >= ?", updatedAt.Unix()).Find(&devices).Error; err != nil {
 		return nil, err
 	}
 	return devices, nil

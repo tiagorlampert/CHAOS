@@ -7,10 +7,10 @@
 <h1 align="center">CHAOS: Remote Administration Tool</h1>
 <p align="center">
   <a href="https://golang.org/">
-    <img src="https://img.shields.io/badge/Golang-1.18-blue.svg?style=flat-square">
+    <img src="https://img.shields.io/badge/Golang-1.18+-blue.svg?style=flat-square">
   </a>
     <a href="https://github.com/tiagorlampert/CHAOS/releases">
-    <img src="https://img.shields.io/badge/Release-v5-red.svg?style=flat-square">
+    <img src="https://img.shields.io/badge/Release-v5 Beta-red.svg?style=flat-square">
   </a>
   <a href="https://github.com/tiagorlampert/CHAOS/blob/master/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square">
@@ -103,7 +103,7 @@ $ PORT=8080 SQLITE_DATABASE=chaos go run cmd/chaos/main.go
 $ mkdir ~/chaos-container
 
 $ docker run -it -v ~/chaos-container:/database/ -v ~/chaos-container:/temp/ \
-  -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:latest
+  -e PORT=8080 -e SQLITE_DATABASE=chaos -p 8080:8080 tiagorlampert/chaos:latest
 ```
 
 #### Windows
@@ -111,25 +111,33 @@ $ docker run -it -v ~/chaos-container:/database/ -v ~/chaos-container:/temp/ \
 # Create a shared directory between the host and container
 $ md c:\chaos-container
 
-$ docker run -it -v c:/chaos-container:/database/ -v c:/chaos-container:/temp/ -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:latest
+$ docker run -it -v c:/chaos-container:/database/ -v c:/chaos-container:/temp/ -e PORT=8080 -e SQLITE_DATABASE=chaos -p 8080:8080 tiagorlampert/chaos:latest
 ```
 
 </details>
 
 ### 3. Deploy on heroku
 
-<details>
-  <summary>See more:</summary>
-
-Is recommended setting up an environment variable  ```SECRET_KEY=your_secret``` with your own secret.
-
-</details>
-
 Try it now on [Heroku](https://www.heroku.com/) with a single click:
 
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
-After running go to http://localhost:8080 and login with the default username: ***admin*** and password: ***admin***.
+Is recommended setting up an environment variable  ```SECRET_KEY=your_secret``` with your own secret.
+
+To connect on the supported databases you should set some required environment variables:
+
+* SQLite:
+  * `SQLITE_DATABASE` = chaos
+
+* PostgreSQL:
+  * `POSTGRES_DATABASE` = chaos
+  * `POSTGRES_HOST` = localhost
+  * `POSTGRES_PASSWORD` = postgres
+  * `POSTGRES_PORT` = 5432
+  * `POSTGRES_USER` = postgres
+  * `POSTGRES_SSL_MODE` = disable/require //optional
+
+After running go to http://localhost:8080 and login with the default username: `admin` and password: `admin` and change the password.
 
 ## Screenshots
 ![generate](public/generate.png)

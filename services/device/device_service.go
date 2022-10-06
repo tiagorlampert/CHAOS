@@ -18,6 +18,8 @@ func NewDeviceService(repository device.Repository) Service {
 }
 
 func (d deviceService) Insert(input entities.Device) error {
+	input.UpdatedAt = time.Now().UTC()
+
 	_, err := d.Repository.FindByMacAddress(input.MacAddress)
 	if errors.Is(err, repositories.ErrNotFound) {
 		return d.Repository.Insert(input)
@@ -25,13 +27,17 @@ func (d deviceService) Insert(input entities.Device) error {
 	return d.Repository.Update(input)
 }
 
-func (d deviceService) FindAll() ([]entities.Device, error) {
-	devices, err := d.Repository.FindAll(time.Now().Add(time.Minute * time.Duration(-3)))
+func (d deviceService) FindAllConnected() ([]entities.Device, error) {
+	until := time.Now().UTC().
+		Add(time.Minute * time.Duration(-3))
+
+	devices, err := d.Repository.FindAll(until)
 	if err != nil {
 		return nil, err
 	}
-	for index, device := range devices {
-		devices[index].MacAddressBase64 = utils.EncodeBase64(device.MacAddress)
+
+	for index, entity := range devices {
+		devices[index].MacAddressBase64 = utils.EncodeBase64(entity.MacAddress)
 	}
 	return devices, nil
 }

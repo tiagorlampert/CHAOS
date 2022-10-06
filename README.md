@@ -10,7 +10,7 @@
     <img src="https://img.shields.io/badge/Golang-1.18+-blue.svg?style=flat-square">
   </a>
     <a href="https://github.com/tiagorlampert/CHAOS/releases">
-    <img src="https://img.shields.io/badge/Release-v5-red.svg?style=flat-square">
+    <img src="https://img.shields.io/badge/Release-v5 Beta-red.svg?style=flat-square">
   </a>
   <a href="https://github.com/tiagorlampert/CHAOS/blob/master/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square">
@@ -118,16 +118,11 @@ $ docker run -it -v c:/chaos-container:/database/ -v c:/chaos-container:/temp/ -
 
 ### 3. Deploy on heroku
 
-<details>
-  <summary>See more:</summary>
-
-Is recommended setting up an environment variable  ```SECRET_KEY=your_secret``` with your own secret.
-
-</details>
-
 Try it now on [Heroku](https://www.heroku.com/) with a single click:
 
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
+Is recommended setting up an environment variable  ```SECRET_KEY=your_secret``` with your own secret.
 
 To connect on the supported databases you should set some required environment variables:
 
@@ -142,7 +137,7 @@ To connect on the supported databases you should set some required environment v
   * `POSTGRES_USER` = postgres
   * `POSTGRES_SSL_MODE` = disable/require //optional
 
-After running go to http://localhost:8080 and login with the default username: ***admin*** and password: ***admin***.
+After running go to http://localhost:8080 and login with the default username: `admin` and password: `admin` and change the password.
 
 ## Screenshots
 ![generate](public/generate.png)

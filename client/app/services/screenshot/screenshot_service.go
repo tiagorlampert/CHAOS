@@ -10,7 +10,7 @@ import (
 
 type ScreenshotService struct{}
 
-func NewScreenshotService() services.Screenshot {
+func NewService() services.Screenshot {
 	return &ScreenshotService{}
 }
 

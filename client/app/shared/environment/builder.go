@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func Load(serverAddress, serverPort, token string) *Configuration {
+func Load(serverAddress, httpPort, webSocketPort, token string) *Configuration {
 	return &Configuration{
 		Connection: Connection{
 			Token:             fmt.Sprint("jwt=", token),
@@ -15,9 +15,10 @@ func Load(serverAddress, serverPort, token string) *Configuration {
 			CookieHeader:      "Cookie",
 		},
 		Server: Server{
-			Address: serverAddress,
-			Port:    serverPort,
-			URL:     newServerURL(serverAddress, serverPort),
+			Address:       serverAddress,
+			HttpPort:      httpPort,
+			WebSocketPort: webSocketPort,
+			URL:           newServerURL(serverAddress, httpPort),
 			Endpoint: Endpoint{
 				Health:   "health",
 				Device:   "device",

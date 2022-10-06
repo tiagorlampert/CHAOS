@@ -12,7 +12,8 @@ type Configuration struct {
 }
 
 type Server struct {
-	Port string `envconfig:"PORT" validate:"required"`
+	Port          string `envconfig:"HTTP_PORT" validate:"required"`
+	WebSocketPort string `envconfig:"WS_PORT" validate:"required"`
 }
 
 type Database struct {

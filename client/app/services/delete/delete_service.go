@@ -8,7 +8,7 @@ import (
 type DeleteService struct {
 }
 
-func NewDeleteService() services.Delete {
+func NewService() services.Delete {
 	return &DeleteService{}
 }
 

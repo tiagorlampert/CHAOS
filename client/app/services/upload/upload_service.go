@@ -16,7 +16,7 @@ type UploadService struct {
 	HttpClient    *http.Client
 }
 
-func NewUploadService(configuration *environment.Configuration, httpClient *http.Client) services.Upload {
+func NewService(configuration *environment.Configuration, httpClient *http.Client) services.Upload {
 	return &UploadService{
 		Configuration: configuration,
 		HttpClient:    httpClient,

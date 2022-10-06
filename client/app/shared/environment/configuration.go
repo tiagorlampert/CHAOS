@@ -16,9 +16,10 @@ type Connection struct {
 }
 
 type Server struct {
-	Address string
-	Port    string
-	URL     string
+	Address       string
+	HttpPort      string
+	WebSocketPort string
+	URL           string
 	Endpoint
 }
 

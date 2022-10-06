@@ -9,19 +9,19 @@ import (
 	"net/http"
 )
 
-type ClientGateway struct {
+type Gateway struct {
 	Configuration *environment.Configuration
 	HttpClient    *http.Client
 }
 
 func NewGateway(configuration *environment.Configuration, httpClient *http.Client) gateway.Gateway {
-	return &ClientGateway{
+	return &Gateway{
 		Configuration: configuration,
 		HttpClient:    httpClient,
 	}
 }
 
-func (c ClientGateway) NewRequest(method string, url string, body []byte) (*gateway.HttpResponse, error) {
+func (c Gateway) NewRequest(method string, url string, body []byte) (*gateway.HttpResponse, error) {
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err

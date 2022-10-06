@@ -10,15 +10,15 @@ import (
 	"time"
 )
 
-type InformationService struct {
+type Service struct {
 	ServerPort string
 }
 
-func NewInformationService(serverPort string) services.Information {
-	return &InformationService{ServerPort: serverPort}
+func NewService(serverPort string) services.Information {
+	return &Service{ServerPort: serverPort}
 }
 
-func (i InformationService) LoadDeviceSpecs() (*entities.Device, error) {
+func (i Service) LoadDeviceSpecs() (*entities.Device, error) {
 	hostname, err := os.Hostname()
 	if err != nil {
 		return nil, err
@@ -27,7 +27,7 @@ func (i InformationService) LoadDeviceSpecs() (*entities.Device, error) {
 	if err != nil {
 		return nil, err
 	}
-	macAddr, err := network.GetMacAddress()
+	macAddress, err := network.GetMacAddress()
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (i InformationService) LoadDeviceSpecs() (*entities.Device, error) {
 		UserID:         username.Username,
 		OSName:         runtime.GOOS,
 		OSArch:         runtime.GOARCH,
-		MacAddress:     macAddr,
+		MacAddress:     macAddress,
 		LocalIPAddress: network.GetLocalIP().String(),
 		Port:           i.ServerPort,
 		FetchedUnix:    time.Now().UTC().Unix(),

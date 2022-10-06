@@ -16,7 +16,7 @@ type DownloadService struct {
 	Gateway       gateway.Gateway
 }
 
-func NewDownloadService(configuration *environment.Configuration, gateway gateway.Gateway) services.Download {
+func NewService(configuration *environment.Configuration, gateway gateway.Gateway) services.Download {
 	return &DownloadService{
 		Configuration: configuration,
 		Gateway:       gateway,

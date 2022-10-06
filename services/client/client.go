@@ -23,9 +23,9 @@ type (
 )
 
 type Service interface {
-	AddClient(clientID string, connection *websocket.Conn) error
-	GetClient(clientID string) (*websocket.Conn, bool)
-	RemoveClient(clientID string) error
+	AddConnection(clientID string, connection *websocket.Conn) error
+	GetConnection(clientID string) (*websocket.Conn, bool)
+	RemoveConnection(clientID string) error
 	SendCommand(ctx context.Context, input SendCommandInput) (SendCommandOutput, error)
 	BuildClient(BuildClientBinaryInput) (string, error)
 }

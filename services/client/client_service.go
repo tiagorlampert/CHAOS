@@ -51,21 +51,21 @@ func NewClientService(
 	}
 }
 
-func (c clientService) GetClient(clientID string) (*websocket.Conn, bool) {
+func (c clientService) GetConnection(clientID string) (*websocket.Conn, bool) {
 	c.Mu.Lock()
 	conn, found := c.Clients[clientID]
 	c.Mu.Unlock()
 	return conn, found
 }
 
-func (c clientService) RemoveClient(clientID string) error {
+func (c clientService) RemoveConnection(clientID string) error {
 	c.Mu.Lock()
 	delete(c.Clients, clientID)
 	c.Mu.Unlock()
 	return nil
 }
 
-func (c clientService) AddClient(clientID string, connection *websocket.Conn) error {
+func (c clientService) AddConnection(clientID string, connection *websocket.Conn) error {
 	c.Mu.Lock()
 	c.Clients[clientID] = connection
 	c.Mu.Unlock()
@@ -78,7 +78,7 @@ func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) 
 		return SendCommandOutput{}, fmt.Errorf(`error decoding base64: %w`, err)
 	}
 
-	client, found := c.GetClient(clientID)
+	client, found := c.GetConnection(clientID)
 	if !found {
 		return SendCommandOutput{Response: internal.ErrClientConnectionNotFound.Error()}, nil
 	}

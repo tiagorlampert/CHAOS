@@ -42,7 +42,7 @@ func (h *wsController) client(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.ClientService.AddClient(clientID, conn)
+	err = h.ClientService.AddConnection(clientID, conn)
 	if err != nil {
 		h.Logger.Println("error adding client:", err)
 		return

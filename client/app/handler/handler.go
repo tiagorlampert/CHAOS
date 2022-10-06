@@ -40,26 +40,32 @@ func NewHandler(
 }
 
 func (h *Handler) HandleServer() {
-	sleepTime := 5 * time.Second
+	sleepTime := 30 * time.Second
+
 	for {
 		if h.Connected {
-			time.Sleep(10 * time.Second)
-			continue
+			time.Sleep(sleepTime)
 		}
-		if err := h.ServerIsAvailable(); err != nil {
+
+		err := h.ServerIsAvailable()
+		if err != nil {
 			h.Log("[!] Error connecting with server: " + err.Error())
 			h.Connected = false
 			time.Sleep(sleepTime)
 			continue
 		}
 
-		if err := h.SendDeviceSpecs(); err != nil {
+		err = h.SendDeviceSpecs()
+		if err != nil {
 			h.Log("[!] Error connecting with server: " + err.Error())
 			h.Connected = false
 			time.Sleep(sleepTime)
 			continue
 		}
-		h.Log("[*] Successfully connected")
+
+		if !h.Connected {
+			h.Log("[*] Successfully connected")
+		}
 		h.Connected = true
 	}
 }

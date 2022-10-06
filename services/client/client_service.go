@@ -73,12 +73,7 @@ func (c clientService) AddConnection(clientID string, connection *websocket.Conn
 }
 
 func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) (SendCommandOutput, error) {
-	clientID, err := utils.DecodeBase64(input.MacAddress)
-	if err != nil {
-		return SendCommandOutput{}, fmt.Errorf(`error decoding base64: %w`, err)
-	}
-
-	client, found := c.GetConnection(clientID)
+	client, found := c.GetConnection(input.ClientID)
 	if !found {
 		return SendCommandOutput{Response: internal.ErrClientConnectionNotFound.Error()}, nil
 	}
@@ -111,18 +106,18 @@ func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) 
 		return SendCommandOutput{}, err
 	}
 
-	p := &payload.Data{
+	data := &payload.Data{
 		Response: response.Response,
 		HasError: response.HasError,
 	}
 
-	p, err = HandleResponse(p)
+	data, err = HandleResponse(data)
 	if err != nil {
 		return SendCommandOutput{}, err
 	}
 
-	res := utils.ByteToString(p.Response)
-	if p.HasError {
+	res := utils.ByteToString(data.Response)
+	if data.HasError {
 		return SendCommandOutput{}, fmt.Errorf(res)
 	}
 	if len(strings.TrimSpace(res)) == 0 {

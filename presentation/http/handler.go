@@ -168,12 +168,18 @@ func (h *httpController) sendCommandHandler(c *gin.Context) {
 		return
 	}
 
+	clientID, err := utils.DecodeBase64(form.Address)
+	if err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
 	ctxWithTimeout, cancel := context.WithTimeout(c, 10*time.Second)
 	defer cancel()
 
 	output, err := h.ClientService.SendCommand(ctxWithTimeout, client.SendCommandInput{
-		MacAddress: form.Address,
-		Request:    form.Command,
+		ClientID: clientID,
+		Request:  form.Command,
 	})
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
@@ -283,8 +289,8 @@ func (h *httpController) fileExplorerHandler(c *gin.Context) {
 	defer cancel()
 
 	explore, err := h.ClientService.SendCommand(ctxWithTimeout, client.SendCommandInput{
-		MacAddress: req.Address,
-		Request:    fmt.Sprint("explore ", path),
+		ClientID: req.Address,
+		Request:  fmt.Sprint("explore ", path),
 	})
 	if err != nil {
 		c.HTML(http.StatusOK, "explorer.html", gin.H{"error": fmt.Sprintf("Error: %s", err.Error())})

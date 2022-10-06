@@ -8,8 +8,8 @@ import (
 
 type (
 	SendCommandInput struct {
-		MacAddress string
-		Request    string
+		ClientID string
+		Request  string
 	}
 	SendCommandOutput struct {
 		Response string

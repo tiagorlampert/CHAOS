@@ -10,8 +10,33 @@
   "stack": "container",
   "env": {
     "SQLITE_DATABASE": {
-      "description": "The SQLite database name. To set up a PostgreSQL database you should set the environment variables after created.",
-      "value": "chaos"
+      "description": "SQLite database name.",
+      "value": "chaos",
+      "required": false
+    },
+    "POSTGRES_HOST": {
+      "description": "PostgreSQL host.",
+      "required": false
+    },
+    "POSTGRES_PORT": {
+      "description": "PostgreSQL port.",
+      "required": false
+    },
+    "POSTGRES_USER": {
+      "description": "PostgreSQL username.",
+      "required": false
+    },
+    "POSTGRES_PASSWORD": {
+      "description": "PostgreSQL password.",
+      "required": false
+    },
+    "POSTGRES_DATABASE": {
+      "description": "PostgreSQL database name.",
+      "required": false
+    },
+    "POSTGRES_SSL_MODE": {
+      "description": "PostgreSQL ssl mode.",
+      "required": false
     }
   }
 }

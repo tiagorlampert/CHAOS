@@ -2,10 +2,9 @@ package auth
 
 import (
 	"errors"
-	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/entities"
-	"github.com/tiagorlampert/CHAOS/internal/utils"
+	"github.com/tiagorlampert/CHAOS/internal/utils/random"
 	"github.com/tiagorlampert/CHAOS/repositories"
 	"github.com/tiagorlampert/CHAOS/repositories/auth"
 	"strings"
@@ -32,7 +31,7 @@ func NewAuthService(
 }
 
 func (s authService) Setup() (*entities.Auth, error) {
-	entry, err := s.AuthRepository.GetFirst()
+	auth, err := s.AuthRepository.GetFirst()
 	switch err {
 	case nil, repositories.ErrNotFound:
 		break
@@ -51,7 +50,7 @@ func (s authService) Setup() (*entities.Auth, error) {
 		if hasProvidedSecretKey {
 			authEntry.SecretKey = s.SecretKey
 		} else {
-			authEntry.SecretKey = utils.GenerateRandomString(secretKeySize)
+			authEntry.SecretKey = random.GenerateString(secretKeySize)
 		}
 
 		if err := s.AuthRepository.Insert(authEntry); err != nil {
@@ -60,14 +59,14 @@ func (s authService) Setup() (*entities.Auth, error) {
 		return &authEntry, nil
 	}
 
-	if hasProvidedSecretKey && entry.SecretKey != s.SecretKey {
-		entry.SecretKey = s.SecretKey
+	if hasProvidedSecretKey && auth.SecretKey != s.SecretKey {
+		auth.SecretKey = s.SecretKey
 
-		if err := s.AuthRepository.Update(entry); err != nil {
+		if err := s.AuthRepository.Update(auth); err != nil {
 			return nil, err
 		}
 	}
-	return entry, nil
+	return auth, nil
 }
 
 func (s authService) GetAuthConfig() (*entities.Auth, error) {
@@ -75,23 +74,11 @@ func (s authService) GetAuthConfig() (*entities.Auth, error) {
 }
 
 func (s authService) RefreshSecret() (string, error) {
-	if len(s.SecretKey) != 0 {
-		return "", fmt.Errorf("%s", ErrFailedRefreshProvidedSecretKey)
-	}
-
 	auth, err := s.AuthRepository.GetFirst()
 	if err != nil {
 		return "", err
 	}
-	if err := s.AuthRepository.Update(&entities.Auth{
-		DBModel:   auth.DBModel,
-		SecretKey: utils.GenerateRandomString(secretKeySize),
-	}); err != nil {
-		return "", err
-	}
-	auth, err = s.AuthRepository.GetFirst()
-	if err != nil {
-		return "", err
-	}
-	return auth.SecretKey, nil
+	auth.SecretKey = random.GenerateString(secretKeySize)
+	err = s.AuthRepository.Update(auth)
+	return auth.SecretKey, err
 }

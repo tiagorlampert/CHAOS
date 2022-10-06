@@ -2,8 +2,8 @@ package database
 
 import (
 	"fmt"
+	"github.com/tiagorlampert/CHAOS/internal"
 	"github.com/tiagorlampert/CHAOS/internal/environment"
-	"github.com/tiagorlampert/CHAOS/internal/utils/constants"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -16,7 +16,7 @@ const (
 )
 
 func NewSqliteClient(configuration environment.Sqlite) (*Provider, error) {
-	dir := strings.TrimSuffix(constants.DatabaseDirectory, string(os.PathSeparator))
+	dir := strings.TrimSuffix(internal.DatabaseDirectory, string(os.PathSeparator))
 	gormConfig := &gorm.Config{NamingStrategy: schema.NamingStrategy{TablePrefix: tablePrefix}}
 	gormDB, err := gorm.Open(sqlite.Open(fmt.Sprint(dir, string(os.PathSeparator), configuration.DatabaseName, dbExtension)), gormConfig)
 	if err != nil {

@@ -40,6 +40,6 @@ func (i InformationService) LoadDeviceSpecs() (*entities.Device, error) {
 		MacAddress:     macAddr,
 		LocalIPAddress: network.GetLocalIP().String(),
 		Port:           i.ServerPort,
-		FetchedUnix:    time.Now().UnixNano(),
+		FetchedUnix:    time.Now().UTC().Unix(),
 	}, nil
 }

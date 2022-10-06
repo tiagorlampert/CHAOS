@@ -27,8 +27,8 @@ func NewProvider(configuration environment.Database) (*Provider, error) {
 	}
 }
 
-func (p *Provider) Migrate() {
-	p.Conn.AutoMigrate(
+func (p *Provider) Migrate() error {
+	return p.Conn.AutoMigrate(
 		&entities.User{},
 		&entities.Device{},
 		&entities.Auth{},

@@ -1,4 +1,4 @@
-package constants
+package internal
 
 import (
 	"time"

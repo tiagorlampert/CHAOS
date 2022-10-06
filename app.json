@@ -3,6 +3,15 @@
   "description": "CHAOS is a free and open-source Remote Administration Tool that allow generate binaries to control remote operating systems.",
   "repository": "https://github.com/tiagorlampert/CHAOS",
   "logo": "https://raw.githubusercontent.com/tiagorlampert/CHAOS/master/public/logo.png",
-  "keywords": ["go", "docker"],
-  "stack": "container"
+  "keywords": [
+    "go",
+    "docker"
+  ],
+  "stack": "container",
+  "env": {
+    "SQLITE_DATABASE": {
+      "description": "The SQLite database name. To set up a PostgreSQL database you should set the environment variables after created.",
+      "value": "chaos"
+    }
+  }
 }

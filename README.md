@@ -45,6 +45,7 @@ THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS
 
 - [Features](#features)
 - [Quick start](#quick-start)
+- [Databases](#databases)
 - [Screenshots](#screenshots)
 - [Contributing](#contributing)
 - [Donate](#donate)
@@ -122,6 +123,10 @@ Try it now on [Heroku](https://www.heroku.com/) with a single click:
 
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
+After running go to http://localhost:8080 and login with the default username: `admin` and password: `admin` and change the password.
+
+## Databases
+
 To connect on the supported databases you should set some required environment variables:
 
 * SQLite:
@@ -134,8 +139,6 @@ To connect on the supported databases you should set some required environment v
   * `POSTGRES_PORT` = 5432
   * `POSTGRES_USER` = postgres
   * `POSTGRES_SSL_MODE` = disable/require //optional
-
-After running go to http://localhost:8080 and login with the default username: `admin` and password: `admin` and change the password.
 
 ## Screenshots
 ![generate](public/generate.png)

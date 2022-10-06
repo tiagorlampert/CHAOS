@@ -10,32 +10,32 @@
   "stack": "container",
   "env": {
     "SQLITE_DATABASE": {
-      "description": "SQLite database name.",
+      "description": "The SQLite database name.",
       "value": "chaos",
       "required": false
     },
     "POSTGRES_HOST": {
-      "description": "PostgreSQL host.",
+      "description": "The PostgreSQL host.",
       "required": false
     },
     "POSTGRES_PORT": {
-      "description": "PostgreSQL port.",
+      "description": "The PostgreSQL port.",
       "required": false
     },
     "POSTGRES_USER": {
-      "description": "PostgreSQL username.",
+      "description": "The PostgreSQL username.",
       "required": false
     },
     "POSTGRES_PASSWORD": {
-      "description": "PostgreSQL password.",
+      "description": "The PostgreSQL password.",
       "required": false
     },
     "POSTGRES_DATABASE": {
-      "description": "PostgreSQL database name.",
+      "description": "The PostgreSQL database name.",
       "required": false
     },
     "POSTGRES_SSL_MODE": {
-      "description": "PostgreSQL ssl mode.",
+      "description": "The PostgreSQL SSL mode.",
       "required": false
     }
   }

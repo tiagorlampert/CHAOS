@@ -18,7 +18,6 @@ func NewRouter() *gin.Engine {
 }
 
 func NewServer(router *gin.Engine, configuration *environment.Configuration) error {
-	return http.ListenAndServe(
-		fmt.Sprintf(":%s", configuration.Server.Port),
+	return http.ListenAndServe(fmt.Sprintf(":%s", configuration.Server.Port),
 		http.TimeoutHandler(router, internal.TimeoutDuration, internal.TimeoutExceeded))
 }

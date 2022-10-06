@@ -8,13 +8,13 @@ import (
 	"time"
 )
 
-type TerminalService struct{}
+type Service struct{}
 
-func NewTerminalService() services.Terminal {
-	return &TerminalService{}
+func NewService() services.Terminal {
+	return &Service{}
 }
 
-func (t TerminalService) Run(cmd string, timeout time.Duration) string {
+func (t Service) Run(cmd string, timeout time.Duration) string {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout*time.Second)
 	defer cancel()
 

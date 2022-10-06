@@ -8,29 +8,19 @@ import (
 func Load(serverAddress, httpPort, webSocketPort, token string) *Configuration {
 	return &Configuration{
 		Connection: Connection{
-			Token:             fmt.Sprint("jwt=", token),
-			ContextDeadline:   5,
-			ContentTypeHeader: "Content-Type",
-			ContentTypeJSON:   "application/json",
-			CookieHeader:      "Cookie",
+			Token:           fmt.Sprint("jwt=", token),
+			ContextDeadline: 5,
 		},
 		Server: Server{
 			Address:       serverAddress,
 			HttpPort:      httpPort,
 			WebSocketPort: webSocketPort,
-			URL:           newServerURL(serverAddress, httpPort),
-			Endpoint: Endpoint{
-				Health:   "health",
-				Device:   "device",
-				Command:  "command",
-				Upload:   "upload",
-				Download: "download",
-			},
+			Url:           newServerUrl(serverAddress, httpPort),
 		},
 	}
 }
 
-func newServerURL(serverAddress, serverPort string) string {
+func newServerUrl(serverAddress, serverPort string) string {
 	if len(strings.TrimSpace(serverPort)) == 0 {
 		return fmt.Sprintf("%s/", strings.TrimRight(serverAddress, "/"))
 	}

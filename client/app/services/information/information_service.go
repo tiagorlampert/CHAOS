@@ -3,7 +3,7 @@ package information
 import (
 	"github.com/tiagorlampert/CHAOS/client/app/entities"
 	"github.com/tiagorlampert/CHAOS/client/app/services"
-	"github.com/tiagorlampert/CHAOS/client/app/utilities/network"
+	"github.com/tiagorlampert/CHAOS/client/app/utils/network"
 	"os"
 	"os/user"
 	"runtime"

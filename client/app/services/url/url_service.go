@@ -7,16 +7,16 @@ import (
 	"strings"
 )
 
-type URLService struct {
+type Service struct {
 	Terminal services.Terminal
 	OsType   os.OSType
 }
 
 func NewURLService(terminalService services.Terminal, osType os.OSType) services.URL {
-	return &URLService{Terminal: terminalService, OsType: osType}
+	return &Service{Terminal: terminalService, OsType: osType}
 }
 
-func (u URLService) OpenURL(url string) error {
+func (u Service) OpenURL(url string) error {
 	var cmdOut string
 	switch u.OsType {
 	case os.Windows:

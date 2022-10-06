@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/tiagorlampert/CHAOS/client/app"
-	"github.com/tiagorlampert/CHAOS/client/app/shared/environment"
+	"github.com/tiagorlampert/CHAOS/client/app/environment"
 	"github.com/tiagorlampert/CHAOS/client/app/ui"
 )
 

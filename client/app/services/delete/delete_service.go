@@ -5,13 +5,13 @@ import (
 	"os"
 )
 
-type DeleteService struct {
+type Service struct {
 }
 
 func NewService() services.Delete {
-	return &DeleteService{}
+	return &Service{}
 }
 
-func (d DeleteService) DeleteFile(filepath string) error {
+func (d Service) DeleteFile(filepath string) error {
 	return os.Remove(filepath)
 }

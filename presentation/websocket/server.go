@@ -7,5 +7,5 @@ import (
 )
 
 func NewServer(configuration *environment.Configuration) error {
-	return http.ListenAndServe(fmt.Sprintf(":%s", configuration.Server.WebSocketPort), nil)
+	return http.ListenAndServe(fmt.Sprintf(":%s", configuration.Server.Port), nil)
 }

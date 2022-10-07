@@ -5,17 +5,16 @@ import (
 	"strings"
 )
 
-func Load(serverAddress, httpPort, webSocketPort, token string) *Configuration {
+func Load(serverAddress, httpPort, token string) *Configuration {
 	return &Configuration{
 		Connection: Connection{
 			Token:           fmt.Sprint("jwt=", token),
 			ContextDeadline: 5,
 		},
 		Server: Server{
-			Address:       serverAddress,
-			HttpPort:      httpPort,
-			WebSocketPort: webSocketPort,
-			Url:           newServerUrl(serverAddress, httpPort),
+			Address:  serverAddress,
+			HttpPort: httpPort,
+			Url:      newServerUrl(serverAddress, httpPort),
 		},
 	}
 }

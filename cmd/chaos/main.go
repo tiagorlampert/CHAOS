@@ -11,7 +11,6 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
 	"github.com/tiagorlampert/CHAOS/internal/utils/ui"
 	httpDelivery "github.com/tiagorlampert/CHAOS/presentation/http"
-	"github.com/tiagorlampert/CHAOS/presentation/websocket"
 	authRepo "github.com/tiagorlampert/CHAOS/repositories/auth"
 	deviceRepo "github.com/tiagorlampert/CHAOS/repositories/device"
 	userRepo "github.com/tiagorlampert/CHAOS/repositories/user"
@@ -21,7 +20,6 @@ import (
 	"github.com/tiagorlampert/CHAOS/services/payload"
 	"github.com/tiagorlampert/CHAOS/services/url"
 	"github.com/tiagorlampert/CHAOS/services/user"
-	"golang.org/x/sync/errgroup"
 	"gorm.io/gorm"
 )
 
@@ -107,13 +105,6 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 		urlService,
 	)
 
-	websocket.NewController(
-		configuration,
-		logger,
-		clientService,
-		deviceService,
-	)
-
 	return &App{
 		Configuration: configuration,
 		Logger:        logger,
@@ -128,19 +119,7 @@ func Setup() error {
 func (a *App) Run() error {
 	ui.ShowMenu(Version, a.Configuration.Server.Port)
 
-	a.Logger.WithFields(logrus.Fields{`version`: Version}).Info(`Starting `, AppName)
+	a.Logger.WithFields(logrus.Fields{`version`: Version, `port`: a.Configuration.Server.Port}).Info(`Starting `, AppName)
 
-	g := new(errgroup.Group)
-
-	g.Go(func() error {
-		a.Logger.WithFields(logrus.Fields{`port`: a.Configuration.Server.Port}).Info(`Starting http server`)
-		return httpDelivery.NewServer(a.Router, a.Configuration)
-	})
-
-	g.Go(func() error {
-		a.Logger.WithFields(logrus.Fields{`port`: a.Configuration.Server.WebSocketPort}).Info(`Starting ws server`)
-		return websocket.NewServer(a.Configuration)
-	})
-
-	return g.Wait()
+	return httpDelivery.NewServer(a.Router, a.Configuration)
 }

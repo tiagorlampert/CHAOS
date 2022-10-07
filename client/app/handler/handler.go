@@ -25,14 +25,12 @@ type Handler struct {
 }
 
 func NewHandler(
-	connection *websocket.Conn,
 	configuration *environment.Configuration,
 	gateway gateways.Gateway,
 	services *services.Services,
 	clientID string,
 ) *Handler {
 	return &Handler{
-		Connection:    connection,
 		Configuration: configuration,
 		Gateway:       gateway,
 		Services:      services,

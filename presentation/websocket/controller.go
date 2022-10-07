@@ -34,16 +34,23 @@ func NewController(
 }
 
 func (h *wsController) client(w http.ResponseWriter, r *http.Request) {
-	clientID := r.Header.Get("x-client")
-
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		h.Logger.Println("error connecting client:", err)
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	err = h.ClientService.AddConnection(clientID, conn)
+	clientID := r.Header.Get("x-client")
+
+	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
+		h.Logger.Println("error connecting client:", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = h.ClientService.AddConnection(clientID, ws)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		h.Logger.Println("error adding client:", err)
 		return
 	}

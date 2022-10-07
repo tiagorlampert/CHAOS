@@ -9,11 +9,6 @@
   ],
   "stack": "container",
   "env": {
-    "PORT": {
-      "description": "The HTTP server port.",
-      "value": "8080",
-      "required": true
-    },
     "SQLITE_DATABASE": {
       "description": "The SQLite database name.",
       "value": "chaos",

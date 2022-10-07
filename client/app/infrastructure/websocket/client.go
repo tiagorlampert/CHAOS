@@ -6,13 +6,13 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/environment"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 func NewConnection(configuration *environment.Configuration, clientID string) (*websocket.Conn, error) {
-	host := configuration.Server.Address
-	if configuration.Server.HttpPort != "" {
-		host = fmt.Sprint(host, ":", configuration.Server.HttpPort)
-	}
+	host := fmt.Sprint(configuration.Server.Address, ":", configuration.Server.HttpPort)
+	host = strings.TrimPrefix(host, "http://")
+	host = strings.TrimPrefix(host, "https://")
 
 	u := url.URL{Scheme: "ws", Host: host, Path: "/client"}
 

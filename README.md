@@ -127,7 +127,7 @@ After running go to http://localhost:8080 and login with the default username: `
 
 ## Databases
 
-To connect on the supported databases you should set some required environment variables:
+To connect in a supported database you should set some required environment variables:
 
 * SQLite:
   * `SQLITE_DATABASE` = chaos

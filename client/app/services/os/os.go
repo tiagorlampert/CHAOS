@@ -1,4 +1,4 @@
-package system
+package os
 
 import (
 	"runtime"
@@ -13,13 +13,13 @@ const (
 	//Darwin
 )
 
-var OSTargetMap = map[OSType]string{
+var TargetMap = map[OSType]string{
 	Windows: "Windows",
 	Linux:   "Linux",
 	//Darwin:  "Mac OS",
 }
 
-var OSTargetIntMap = map[int]OSType{
+var TargetIntMap = map[int]OSType{
 	1: Windows,
 	2: Linux,
 	//3:  Darwin,

@@ -9,9 +9,10 @@ function DownloadFile(filename) {
     let urlParams = new URLSearchParams(window.location.search);
     let address = urlParams.get('address');
     let pathInput = document.getElementById('pathInput');
-    let filepath = "download " + pathInput.value + "/" + filename;
+    let command = "download";
+    let filepath = pathInput.value + "/" + filename;
 
-    SendCommand(address, filepath)
+    SendCommand(address, command, filepath)
         .then(response => {
             if (!response.ok) {
                 return response.text().then(err => {

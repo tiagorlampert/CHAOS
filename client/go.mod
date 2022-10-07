@@ -2,7 +2,10 @@ module github.com/tiagorlampert/CHAOS/client
 
 go 1.18
 
-require github.com/kbinani/screenshot v0.0.0-20191211154542-3a185f1ce18f
+require (
+	github.com/gorilla/websocket v1.5.0
+	github.com/kbinani/screenshot v0.0.0-20191211154542-3a185f1ce18f
+)
 
 require (
 	github.com/BurntSushi/xgb v0.0.0-20200324125942-20f126ea2843 // indirect

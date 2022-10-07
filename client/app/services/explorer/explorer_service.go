@@ -9,7 +9,7 @@ import (
 
 type ExplorerService struct{}
 
-func NewExplorerService() services.Explorer {
+func NewService() services.Explorer {
 	return &ExplorerService{}
 }
 

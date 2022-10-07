@@ -3,27 +3,28 @@ package upload
 import (
 	"bytes"
 	"fmt"
+	"github.com/tiagorlampert/CHAOS/client/app/environment"
 	"github.com/tiagorlampert/CHAOS/client/app/services"
-	"github.com/tiagorlampert/CHAOS/client/app/shared/environment"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strconv"
 )
 
-type UploadService struct {
+type Service struct {
 	Configuration *environment.Configuration
 	HttpClient    *http.Client
 }
 
-func NewUploadService(configuration *environment.Configuration, httpClient *http.Client) services.Upload {
-	return &UploadService{
+func NewService(configuration *environment.Configuration, httpClient *http.Client) services.Upload {
+	return &Service{
 		Configuration: configuration,
 		HttpClient:    httpClient,
 	}
 }
 
-func (u UploadService) UploadFile(path string) ([]byte, error) {
+func (u Service) UploadFile(path string) ([]byte, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -51,10 +52,10 @@ func (u UploadService) UploadFile(path string) ([]byte, error) {
 		return nil, err
 	}
 
-	urlStr := fmt.Sprint(u.Configuration.Server.URL, u.Configuration.Server.Upload)
-	request, err := http.NewRequest(http.MethodPost, urlStr, body)
-	request.Header.Set(u.Configuration.Connection.CookieHeader, u.Configuration.Connection.Token)
-	request.Header.Set(u.Configuration.Connection.ContentTypeHeader, writer.FormDataContentType())
+	url := fmt.Sprint(u.Configuration.Server.Url, "upload")
+	request, err := http.NewRequest(http.MethodPost, url, body)
+	request.Header.Set("Cookie", u.Configuration.Connection.Token)
+	request.Header.Set("Content-Type", writer.FormDataContentType())
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +67,7 @@ func (u UploadService) UploadFile(path string) ([]byte, error) {
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("request failed with status code: %d", res.StatusCode)
+		return nil, fmt.Errorf(strconv.Itoa(res.StatusCode))
 	}
 	return ioutil.ReadAll(res.Body)
 }

@@ -2,6 +2,8 @@ github.com/BurntSushi/xgb v0.0.0-20200324125942-20f126ea2843 h1:3iF31c7rp7nGZVDv
 github.com/BurntSushi/xgb v0.0.0-20200324125942-20f126ea2843/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/gen2brain/shm v0.0.0-20200228170931-49f9650110c5 h1:Y5Q2mEwfzjMt5+3u70Gtw93ZOu2UuPeeeTBDntF7FoY=
 github.com/gen2brain/shm v0.0.0-20200228170931-49f9650110c5/go.mod h1:uF6rMu/1nvu+5DpiRLwusA6xB8zlkNoGzKn8lmYONUo=
+github.com/gorilla/websocket v1.5.0 h1:PPwGk2jz7EePpoHN/+ClbZu8SPxiqlu12wZP/3sWmnc=
+github.com/gorilla/websocket v1.5.0/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/kbinani/screenshot v0.0.0-20191211154542-3a185f1ce18f h1:5hWo+DzJQSOBl6X+TDac0SPWffRonuRJ2///OYtYRT8=
 github.com/kbinani/screenshot v0.0.0-20191211154542-3a185f1ce18f/go.mod h1:f8GY5V3lRzakvEyr49P7hHRYoHtPr8zvj/7JodCoRzw=
 github.com/lxn/win v0.0.0-20191128105842-2da648fda5b4 h1:5BmtGkQbch91lglMHQ9JIDGiYCL3kBRBA0ItZTvOcEI=

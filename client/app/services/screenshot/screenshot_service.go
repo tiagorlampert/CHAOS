@@ -8,13 +8,13 @@ import (
 	"image/png"
 )
 
-type ScreenshotService struct{}
+type Service struct{}
 
-func NewScreenshotService() services.Screenshot {
-	return &ScreenshotService{}
+func NewService() services.Screenshot {
+	return &Service{}
 }
 
-func (s ScreenshotService) TakeScreenshot() ([]byte, error) {
+func (s Service) TakeScreenshot() ([]byte, error) {
 	display, err := screenshot.CaptureDisplay(0)
 	if err != nil {
 		return nil, err

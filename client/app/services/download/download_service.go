@@ -2,30 +2,30 @@ package download
 
 import (
 	"fmt"
-	"github.com/tiagorlampert/CHAOS/client/app/gateway"
+	"github.com/tiagorlampert/CHAOS/client/app/environment"
+	"github.com/tiagorlampert/CHAOS/client/app/gateways"
 	"github.com/tiagorlampert/CHAOS/client/app/services"
-	"github.com/tiagorlampert/CHAOS/client/app/shared/environment"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
 )
 
-type DownloadService struct {
+type Service struct {
 	Configuration *environment.Configuration
-	Gateway       gateway.Gateway
+	Gateway       gateways.Gateway
 }
 
-func NewDownloadService(configuration *environment.Configuration, gateway gateway.Gateway) services.Download {
-	return &DownloadService{
+func NewService(configuration *environment.Configuration, gateway gateways.Gateway) services.Download {
+	return &Service{
 		Configuration: configuration,
 		Gateway:       gateway,
 	}
 }
 
-func (d DownloadService) DownloadFile(filepath string) ([]byte, error) {
+func (d Service) DownloadFile(filepath string) ([]byte, error) {
 	filename := getFilenameFromPath(filepath)
-	url := fmt.Sprintf("%s/%s", fmt.Sprint(d.Configuration.Server.URL, d.Configuration.Server.Download), filename)
+	url := fmt.Sprintf("%s/%s", fmt.Sprint(d.Configuration.Server.Url, "download"), filename)
 
 	res, err := d.Gateway.NewRequest(http.MethodGet, url, nil)
 	if err != nil {

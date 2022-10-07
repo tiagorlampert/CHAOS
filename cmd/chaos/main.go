@@ -9,7 +9,6 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/environment"
 	"github.com/tiagorlampert/CHAOS/internal/middleware"
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
-	"github.com/tiagorlampert/CHAOS/internal/utils/template"
 	"github.com/tiagorlampert/CHAOS/internal/utils/ui"
 	httpDelivery "github.com/tiagorlampert/CHAOS/presentation/http"
 	authRepo "github.com/tiagorlampert/CHAOS/repositories/auth"
@@ -18,11 +17,9 @@ import (
 	"github.com/tiagorlampert/CHAOS/services/auth"
 	"github.com/tiagorlampert/CHAOS/services/client"
 	"github.com/tiagorlampert/CHAOS/services/device"
-	"github.com/tiagorlampert/CHAOS/services/payload"
 	"github.com/tiagorlampert/CHAOS/services/url"
 	"github.com/tiagorlampert/CHAOS/services/user"
 	"gorm.io/gorm"
-	"net/http"
 )
 
 const AppName = "CHAOS"
@@ -73,18 +70,11 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 	deviceRepository := deviceRepo.NewRepository(dbClient)
 
 	//services
-	payloadService := payload.NewPayloadService()
 	authService := auth.NewAuthService(logger, configuration.SecretKey, authRepository)
 	userService := user.NewUserService(userRepository)
 	deviceService := device.NewDeviceService(deviceRepository)
-	clientService := client.NewClientService(Version, authRepository, payloadService, authService)
+	clientService := client.NewClientService(Version, configuration, authRepository, authService)
 	urlService := url.NewUrlService(clientService)
-
-	//router
-	router := gin.Default()
-	router.Use(gin.Recovery())
-	router.Static("/static", "web/static")
-	router.HTMLRender = template.LoadTemplates("web")
 
 	setup, err := authService.Setup()
 	if err != nil {
@@ -98,6 +88,8 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 		logger.WithField(`cause`, err).Fatal(`error creating default user`)
 	}
 
+	router := httpDelivery.NewRouter()
+
 	httpDelivery.NewController(
 		configuration,
 		router,
@@ -105,7 +97,6 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 		jwtMiddleware,
 		clientService,
 		authService,
-		payloadService,
 		userService,
 		deviceService,
 		urlService,
@@ -125,10 +116,7 @@ func Setup() error {
 func (a *App) Run() error {
 	ui.ShowMenu(Version, a.Configuration.Server.Port)
 
-	a.Logger.WithFields(
-		logrus.Fields{`version`: Version, `port`: a.Configuration.Server.Port}).Info(`Starting `, AppName)
+	a.Logger.WithFields(logrus.Fields{`version`: Version, `port`: a.Configuration.Server.Port}).Info(`Starting `, AppName)
 
-	return http.ListenAndServe(
-		fmt.Sprintf(":%s", a.Configuration.Server.Port),
-		http.TimeoutHandler(a.Router, internal.TimeoutDuration, internal.TimeoutExceeded))
+	return httpDelivery.NewServer(a.Router, a.Configuration)
 }

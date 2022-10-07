@@ -8,35 +8,35 @@ import (
 	"time"
 )
 
-type TerminalService struct{}
+type Service struct{}
 
-func NewTerminalService() services.Terminal {
-	return &TerminalService{}
+func NewService() services.Terminal {
+	return &Service{}
 }
 
-func (t TerminalService) Run(cmd string, timeout time.Duration) string {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout*time.Second)
+func (t Service) Run(command string) ([]byte, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	var cmdExec *exec.Cmd
+	var cmd *exec.Cmd
 	switch runtime.GOOS {
 	case `windows`:
-		cmdExec = exec.CommandContext(ctx, "cmd", "/C", cmd)
-		cmdExec.SysProcAttr = GetHideWindowParam()
+		cmd = exec.CommandContext(ctx, "cmd", "/C", command)
+		cmd.SysProcAttr = GetHideWindowParam()
 	case `linux`:
-		cmdExec = exec.CommandContext(ctx, "sh", "-c", cmd)
+		cmd = exec.CommandContext(ctx, "sh", "-c", command)
 	case `darwin`:
-		cmdExec = exec.CommandContext(ctx, "sh", "-c", cmd)
+		cmd = exec.CommandContext(ctx, "sh", "-c", command)
 	default:
-		return services.ErrUnsupportedPlatform.Error()
+		return nil, services.ErrUnsupportedPlatform
 	}
 
-	c, err := cmdExec.CombinedOutput()
+	result, err := cmd.CombinedOutput()
 	if err != nil {
 		if ctx.Err() != nil {
-			return services.ErrDeadlineExceeded.Error()
+			return nil, services.ErrDeadlineExceeded
 		}
-		return string(c)
+		return result, nil
 	}
-	return string(c)
+	return result, nil
 }

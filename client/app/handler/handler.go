@@ -107,6 +107,7 @@ func (h *Handler) Reconnect() {
 	for {
 		conn, err := ws.NewConnection(h.Configuration, h.ClientID)
 		if err != nil {
+			h.Log("[!] Error connecting on WS: ", err.Error())
 			time.Sleep(time.Second * 10)
 			continue
 		}

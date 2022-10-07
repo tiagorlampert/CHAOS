@@ -46,6 +46,7 @@ THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS
 - [Features](#features)
 - [Quick start](#quick-start)
 - [Databases](#databases)
+- [Video](#video)
 - [Screenshots](#screenshots)
 - [Contributing](#contributing)
 - [Donate](#donate)
@@ -139,6 +140,12 @@ To connect in a supported database you should set some required environment vari
   * `POSTGRES_PORT` = 5432
   * `POSTGRES_USER` = postgres
   * `POSTGRES_SSL_MODE` = disable/require //optional
+
+## Video
+<p align="center">
+<a href="https://www.youtube.com/watch?v=TBMFokbSqzg">
+  <img src="https://img.youtube.com/vi/TBMFokbSqzg/maxresdefault.jpg"/>
+</a></p>
 
 ## Screenshots
 ![generate](public/generate.png)

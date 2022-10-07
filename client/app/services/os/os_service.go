@@ -26,9 +26,9 @@ func NewService(
 func (os OperatingSystemService) Restart() error {
 	switch os.OSType {
 	case Windows:
-		os.Terminal.Run("shutdown -r -t 00", os.Configuration.Connection.ContextDeadline)
+		os.Terminal.Run("shutdown -r -t 00")
 	case Linux:
-		os.Terminal.Run("reboot", os.Configuration.Connection.ContextDeadline)
+		os.Terminal.Run("reboot")
 	default:
 		return services.ErrUnsupportedPlatform
 	}
@@ -38,10 +38,10 @@ func (os OperatingSystemService) Restart() error {
 func (os OperatingSystemService) Shutdown() error {
 	switch os.OSType {
 	case Windows:
-		os.Terminal.Run("shutdown -s -t 00", os.Configuration.Connection.ContextDeadline)
+		os.Terminal.Run("shutdown -s -t 00")
 		break
 	case Linux:
-		os.Terminal.Run("poweroff", os.Configuration.Connection.ContextDeadline)
+		os.Terminal.Run("poweroff")
 	default:
 		return services.ErrUnsupportedPlatform
 	}
@@ -62,7 +62,7 @@ func (os OperatingSystemService) Lock() error {
 func (os OperatingSystemService) SignOut() error {
 	switch os.OSType {
 	case Windows:
-		os.Terminal.Run("shutdown -L", os.Configuration.Connection.ContextDeadline)
+		os.Terminal.Run("shutdown -L")
 		break
 	default:
 		return services.ErrUnsupportedPlatform

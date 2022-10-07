@@ -14,8 +14,8 @@ func NewService() services.Terminal {
 	return &Service{}
 }
 
-func (t Service) Run(command string, timeout ...time.Duration) ([]byte, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), getTimeout(timeout...))
+func (t Service) Run(command string) ([]byte, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
 	var cmd *exec.Cmd
@@ -39,11 +39,4 @@ func (t Service) Run(command string, timeout ...time.Duration) ([]byte, error) {
 		return result, nil
 	}
 	return result, nil
-}
-
-func getTimeout(t ...time.Duration) time.Duration {
-	if len(t) > 0 {
-		return t[0]
-	}
-	return time.Second * 10
 }

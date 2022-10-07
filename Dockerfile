@@ -12,7 +12,7 @@ RUN apk update && apk add --no-cache gcc g++
 
 WORKDIR /build
 COPY . .
-RUN go build -a -tags 'netgo' -ldflags '-w -X 'main.Version=${APP_VERSION}' -extldflags "-static"' -o chaos cmd/chaos/*
+RUN go build -v -a -tags 'netgo' -ldflags '-w -X 'main.Version=${APP_VERSION}' -extldflags "-static"' -o chaos cmd/chaos/*
 
 # FINAL STAGE
 FROM golang:1.18.4

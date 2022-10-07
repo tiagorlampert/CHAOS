@@ -89,7 +89,7 @@ $ git clone https://github.com/tiagorlampert/CHAOS
 $ cd CHAOS/
 
 # Run
-$ HTTP_PORT=8080 WS_PORT=8081 SQLITE_DATABASE=chaos go run cmd/chaos/main.go
+$ PORT=8080 WS_PORT=8081 SQLITE_DATABASE=chaos go run cmd/chaos/main.go
 ```
 
 </details>
@@ -104,7 +104,7 @@ $ HTTP_PORT=8080 WS_PORT=8081 SQLITE_DATABASE=chaos go run cmd/chaos/main.go
 $ mkdir ~/chaos-container
 
 $ docker run -it -v ~/chaos-container:/database/ -v ~/chaos-container:/temp/ \
-  -e HTTP_PORT=8080 -e WS_PORT=8081 -e SQLITE_DATABASE=chaos -p 8080:8080 tiagorlampert/chaos:latest
+  -e PORT=8080 -e WS_PORT=8081 -e SQLITE_DATABASE=chaos -p 8080:8080 tiagorlampert/chaos:latest
 ```
 
 #### Windows
@@ -112,7 +112,7 @@ $ docker run -it -v ~/chaos-container:/database/ -v ~/chaos-container:/temp/ \
 # Create a shared directory between the host and container
 $ md c:\chaos-container
 
-$ docker run -it -v c:/chaos-container:/database/ -v c:/chaos-container:/temp/ -e HTTP_PORT=8080 -e WS_PORT=8081 -e SQLITE_DATABASE=chaos -p 8080:8080 tiagorlampert/chaos:latest
+$ docker run -it -v c:/chaos-container:/database/ -v c:/chaos-container:/temp/ -e PORT=8080 -e WS_PORT=8081 -e SQLITE_DATABASE=chaos -p 8080:8080 tiagorlampert/chaos:latest
 ```
 
 </details>

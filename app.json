@@ -9,7 +9,7 @@
   ],
   "stack": "container",
   "env": {
-    "HTTP_PORT": {
+    "PORT": {
       "description": "The HTTP server port.",
       "value": "8080",
       "required": true

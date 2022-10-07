@@ -10,7 +10,6 @@ import (
 	ws "github.com/tiagorlampert/CHAOS/client/app/infrastructure/websocket"
 	"github.com/tiagorlampert/CHAOS/client/app/services"
 	"github.com/tiagorlampert/CHAOS/client/app/utils/encode"
-	"log"
 	"net/http"
 	"time"
 )
@@ -121,7 +120,6 @@ func (h *Handler) Reconnect() {
 
 func (h *Handler) HandleCommand() {
 	for {
-		log.Println("for")
 		if !h.Connected {
 			h.Reconnect()
 			continue

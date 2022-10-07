@@ -10,12 +10,12 @@
   "stack": "container",
   "env": {
     "HTTP_PORT": {
-      "description": "The HTTP port.",
+      "description": "The HTTP server port.",
       "value": "8080",
       "required": true
     },
     "WS_PORT": {
-      "description": "The WebSocket port.",
+      "description": "The WebSocket server port.",
       "value": "8081",
       "required": true
     },

@@ -39,7 +39,7 @@ $ git clone https://github.com/tiagorlampert/CHAOS
 $ cd CHAOS/
 
 # Run
-$ PORT=8080 SQLITE_DATABASE=chaos go run cmd/chaos/main.go
+$ HTTP_PORT=8080 WS_PORT=8081 SQLITE_DATABASE=chaos go run cmd/chaos/main.go
 ```
 
 # Build Docker Image:
@@ -50,7 +50,7 @@ docker build \
   --tag tiagorlampert/chaos:v5.0.0 \
   --tag tiagorlampert/chaos:latest -f Dockerfile .
             
-docker run -it --rm -e PORT=8080 -p 8080:8080 tiagorlampert/chaos:v5.0.0
+docker run -it --rm -e HTTP_PORT=8080 -e WS_PORT=8081 -e SQLITE_DATABASE=chaos -p 8080:8080 tiagorlampert/chaos:latest
 
 docker push tiagorlampert/chaos:latest
 docker push tiagorlampert/chaos:v5.0.0

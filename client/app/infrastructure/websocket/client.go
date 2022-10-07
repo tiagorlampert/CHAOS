@@ -14,6 +14,7 @@ func NewConnection(configuration *environment.Configuration, clientID string) (*
 	host := configuration.Server.Address
 	host = strings.TrimPrefix(host, "http://")
 	host = strings.TrimPrefix(host, "https://")
+	host = strings.TrimSuffix(host, "/")
 
 	if configuration.Server.HttpPort != "" {
 		host = fmt.Sprint(host, ":", configuration.Server.HttpPort)

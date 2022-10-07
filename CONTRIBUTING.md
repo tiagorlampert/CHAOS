@@ -21,7 +21,7 @@
 - [X] ~~Open URL~~
 - [ ] Kill process
 - [X] Add Postgres support
-- [ ] Client connection using Websocket
+- [X] Client connection using Websocket
 - [ ] Clipboard Monitor
 - [ ] Live stream from camera
 - [ ] Take photos (webcam)

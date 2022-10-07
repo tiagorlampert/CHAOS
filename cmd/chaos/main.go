@@ -17,7 +17,6 @@ import (
 	"github.com/tiagorlampert/CHAOS/services/auth"
 	"github.com/tiagorlampert/CHAOS/services/client"
 	"github.com/tiagorlampert/CHAOS/services/device"
-	"github.com/tiagorlampert/CHAOS/services/payload"
 	"github.com/tiagorlampert/CHAOS/services/url"
 	"github.com/tiagorlampert/CHAOS/services/user"
 	"gorm.io/gorm"
@@ -71,11 +70,10 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 	deviceRepository := deviceRepo.NewRepository(dbClient)
 
 	//services
-	payloadService := payload.NewPayloadService()
 	authService := auth.NewAuthService(logger, configuration.SecretKey, authRepository)
 	userService := user.NewUserService(userRepository)
 	deviceService := device.NewDeviceService(deviceRepository)
-	clientService := client.NewClientService(Version, configuration, authRepository, payloadService, authService)
+	clientService := client.NewClientService(Version, configuration, authRepository, authService)
 	urlService := url.NewUrlService(clientService)
 
 	setup, err := authService.Setup()
@@ -99,7 +97,6 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 		jwtMiddleware,
 		clientService,
 		authService,
-		payloadService,
 		userService,
 		deviceService,
 		urlService,

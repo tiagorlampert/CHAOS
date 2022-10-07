@@ -51,7 +51,7 @@ func (os OperatingSystemService) Shutdown() error {
 func (os OperatingSystemService) Lock() error {
 	switch os.OSType {
 	case Windows:
-		os.Terminal.Run("Rundll32.exe user32.dll,LockWorkStation", os.Configuration.Connection.ContextDeadline)
+		os.Terminal.Run("Rundll32.exe user32.dll,LockWorkStation")
 		break
 	default:
 		return services.ErrUnsupportedPlatform

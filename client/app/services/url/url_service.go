@@ -17,16 +17,16 @@ func NewURLService(terminalService services.Terminal, osType os.OSType) services
 }
 
 func (u Service) OpenURL(url string) error {
-	var cmdOut string
+	var cmdOut []byte
 	switch u.OsType {
 	case os.Windows:
-		cmdOut = u.Terminal.Run(fmt.Sprintf("start %s", url), 10)
+		cmdOut, _ = u.Terminal.Run(fmt.Sprintf("start %s", url))
 	case os.Linux:
-		cmdOut = u.Terminal.Run(fmt.Sprintf("xdg-open %s", url), 10)
+		cmdOut, _ = u.Terminal.Run(fmt.Sprintf("xdg-open %s", url))
 	default:
 		return services.ErrUnsupportedPlatform
 	}
-	if strings.Contains(strings.ToLower(cmdOut), "failed") {
+	if strings.Contains(strings.ToLower(string(cmdOut)), "failed") {
 		return fmt.Errorf("%s", cmdOut)
 	}
 	return nil

@@ -1,7 +1,8 @@
-async function SendCommand(address, command) {
+async function SendCommand(address, command, parameter) {
     let formData = new FormData();
     formData.append('address', address);
     formData.append('command', command);
+    formData.append('parameter', parameter);
 
     const url = '/command';
     const initDetails = {

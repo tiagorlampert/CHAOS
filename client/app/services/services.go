@@ -28,7 +28,7 @@ type Information interface {
 }
 
 type Terminal interface {
-	Run(cmd string, timeout time.Duration) string
+	Run(command string, timeout ...time.Duration) ([]byte, error)
 }
 
 type Screenshot interface {

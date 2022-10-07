@@ -1,8 +1,9 @@
 package request
 
 type SendCommandRequestForm struct {
-	Address string `form:"address" binding:"required"`
-	Command string `form:"command" binding:"required"`
+	Address   string `form:"address" binding:"required"`
+	Command   string `form:"command" binding:"required"`
+	Parameter string `form:"parameter"`
 }
 
 type RespondCommandRequestBody struct {

@@ -2,7 +2,8 @@ function DeleteFile(filename) {
     let urlParams = new URLSearchParams(window.location.search);
     let address = urlParams.get('address');
     let pathInput = document.getElementById('pathInput');
-    let filepath = "delete " + pathInput.value + "/" + filename;
+    let command = "delete";
+    let filepath = pathInput.value + "/" + filename;
 
     Swal.fire({
         title: 'Are you sure?',
@@ -22,7 +23,7 @@ function DeleteFile(filename) {
                 }
             });
 
-            SendCommand(address, filepath)
+            SendCommand(address, command, filepath)
                 .then(response => {
                     if (!response.ok) {
                         return response.text().then(err => {

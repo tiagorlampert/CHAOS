@@ -25,8 +25,9 @@ func (u urlService) OpenUrl(ctx context.Context, address string, rawUrl string) 
 		return err
 	}
 	if _, err := u.SendCommand(ctx, client.SendCommandInput{
-		ClientID: address,
-		Request:  fmt.Sprintf("open-url %s", urlStr.String()),
+		ClientID:  address,
+		Command:   "open-url",
+		Parameter: urlStr.String(),
 	}); err != nil {
 		return err
 	}

@@ -6,12 +6,20 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/ui"
 )
 
+//var (
+//	Version       = "dev"
+//	HttpPort      = "8080"
+//	WebSocketPort = "8081"
+//	ServerAddress = "localhost"
+//	Token         = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2OTY2MjE4MDEsInVzZXIiOiJkZWZhdWx0In0.QotMkmtA9V5910-Xo0BdWizd5cM51xphR0bDMTqfCjw"
+//)
+
 var (
 	Version       = "dev"
-	HttpPort      = "8080"
-	WebSocketPort = "8081"
-	ServerAddress = "localhost"
-	Token         = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2OTY2MjE4MDEsInVzZXIiOiJkZWZhdWx0In0.QotMkmtA9V5910-Xo0BdWizd5cM51xphR0bDMTqfCjw"
+	HttpPort      = ""
+	WebSocketPort = ""
+	ServerAddress = ""
+	Token         = ""
 )
 
 func main() {

@@ -289,7 +289,7 @@ func (h *httpController) fileExplorerHandler(c *gin.Context) {
 	defer cancel()
 
 	explore, err := h.ClientService.SendCommand(ctxWithTimeout, client.SendCommandInput{
-		ClientID: req.Address,
+		ClientID: address,
 		Request:  fmt.Sprint("explore ", path),
 	})
 	if err != nil {

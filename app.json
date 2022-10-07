@@ -9,6 +9,16 @@
   ],
   "stack": "container",
   "env": {
+    "HTTP_PORT": {
+      "description": "The HTTP port.",
+      "value": "8080",
+      "required": true
+    },
+    "WS_PORT": {
+      "description": "The WebSocket port.",
+      "value": "8081",
+      "required": true
+    },
     "SQLITE_DATABASE": {
       "description": "The SQLite database name.",
       "value": "chaos",

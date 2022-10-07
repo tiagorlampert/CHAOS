@@ -11,9 +11,13 @@ import (
 )
 
 func NewConnection(configuration *environment.Configuration, clientID string) (*websocket.Conn, error) {
-	host := fmt.Sprint(configuration.Server.Address, ":", configuration.Server.HttpPort)
+	host := configuration.Server.Address
 	host = strings.TrimPrefix(host, "http://")
 	host = strings.TrimPrefix(host, "https://")
+
+	if configuration.Server.HttpPort != "" {
+		host = fmt.Sprint(host, ":", configuration.Server.HttpPort)
+	}
 
 	scheme := "ws"
 	if strings.Contains(configuration.Server.Address, "https") {

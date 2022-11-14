@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/kbinani/screenshot v0.0.0-20191211154542-3a185f1ce18f
+	golang.org/x/sync v0.1.0
 )
 
 require (

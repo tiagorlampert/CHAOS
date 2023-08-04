@@ -15,7 +15,7 @@ COPY . .
 RUN go build -v -a -tags 'netgo' -ldflags '-w -X 'main.Version=${APP_VERSION}' -extldflags "-static"' -o chaos cmd/chaos/*
 
 # FINAL STAGE
-FROM golang:1.18.4
+FROM golang:1.21rc3
 
 MAINTAINER tiagorlampert@gmail.com
 

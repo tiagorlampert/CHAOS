@@ -138,8 +138,13 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 	if !isValidIPAddress(input.ServerAddress) && !isValidURL(input.ServerAddress) {
 		return "", internal.ErrInvalidServerAddress
 	}
+
 	if !isValidPort(input.ServerPort) {
 		return "", internal.ErrInvalidServerPort
+	}
+
+	if input.OSTarget == system.Linux && input.RunHidden {
+		return "", internal.ErrOsTargetDoesNotSupportRunHidden
 	}
 
 	filename, err := utils.NormalizeString(input.Filename)

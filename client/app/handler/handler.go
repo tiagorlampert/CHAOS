@@ -141,7 +141,7 @@ func (h *Handler) HandleCommand() {
 		var hasError bool
 
 		switch request.Command {
-		case "getos":
+		case GetOsCommand:
 			deviceSpecs, err := h.Services.Information.LoadDeviceSpecs()
 			if err != nil {
 				hasError = true
@@ -150,7 +150,7 @@ func (h *Handler) HandleCommand() {
 			}
 			response = encode.StringToByte(encode.PrettyJson(deviceSpecs))
 			break
-		case "screenshot":
+		case ScreenshotCommand:
 			screenshot, err := h.Services.Screenshot.TakeScreenshot()
 			if err != nil {
 				hasError = true
@@ -159,31 +159,31 @@ func (h *Handler) HandleCommand() {
 			}
 			response = screenshot
 			break
-		case "restart":
+		case RestartCommand:
 			if err := h.Services.OS.Restart(); err != nil {
 				hasError = true
 				response = encode.StringToByte(err.Error())
 			}
 			break
-		case "shutdown":
+		case ShutdownCommand:
 			if err := h.Services.OS.Shutdown(); err != nil {
 				hasError = true
 				response = encode.StringToByte(err.Error())
 			}
 			break
-		case "lock":
+		case LockCommand:
 			if err := h.Services.OS.Lock(); err != nil {
 				hasError = true
 				response = encode.StringToByte(err.Error())
 			}
 			break
-		case "sign-out":
+		case SignOutCommand:
 			if err := h.Services.OS.SignOut(); err != nil {
 				hasError = true
 				response = encode.StringToByte(err.Error())
 			}
 			break
-		case "explore":
+		case ExploreCommand:
 			fileExplorer, err := h.Services.Explorer.ExploreDirectory(request.Parameter)
 			if err != nil {
 				response = encode.StringToByte(err.Error())
@@ -193,7 +193,7 @@ func (h *Handler) HandleCommand() {
 			explorerBytes, _ := json.Marshal(fileExplorer)
 			response = explorerBytes
 			break
-		case "download":
+		case DownloadCommand:
 			filepath := request.Parameter
 			res, err := h.Services.Upload.UploadFile(filepath)
 			if err != nil {
@@ -203,7 +203,7 @@ func (h *Handler) HandleCommand() {
 			}
 			response = res
 			break
-		case "delete":
+		case DeleteCommand:
 			filepath := request.Parameter
 			err := h.Services.Delete.DeleteFile(filepath)
 			if err != nil {
@@ -212,7 +212,7 @@ func (h *Handler) HandleCommand() {
 				break
 			}
 			break
-		case "upload":
+		case UploadCommand:
 			filepath := request.Parameter
 			res, err := h.Services.Download.DownloadFile(filepath)
 			if err != nil {
@@ -222,7 +222,7 @@ func (h *Handler) HandleCommand() {
 			}
 			response = res
 			break
-		case "open-url":
+		case OpenUrlCommand:
 			err := h.Services.URL.OpenURL(request.Parameter)
 			if err != nil {
 				response = encode.StringToByte(err.Error())

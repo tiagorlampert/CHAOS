@@ -2,13 +2,17 @@ package utils
 
 import (
 	"regexp"
-	"strings"
 )
 
-func NormalizeString(s string) (string, error) {
-	re, err := regexp.Compile(`\W`)
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimSpace(re.ReplaceAllString(s, "")), nil
+func SanitizeString(s string) string {
+	return replace(s, `\W`)
+}
+
+func SanitizeUrl(s string) string {
+	return replace(s, `[^a-zA-Z0-9-_/:.,?&@=#%]`)
+}
+
+func replace(s string, r string) string {
+	re := regexp.MustCompile(r)
+	return string(re.ReplaceAll([]byte(s), []byte("")))
 }

@@ -1,4 +1,4 @@
-package system
+package utils
 
 import "os"
 
@@ -17,4 +17,8 @@ func createDirectory(path string) error {
 		return os.Mkdir(path, os.ModePerm)
 	}
 	return nil
+}
+
+func RemoveDir(path string) error {
+	return os.RemoveAll(path)
 }

@@ -17,3 +17,11 @@ func PrettyJson(i interface{}) string {
 	s, _ := json.MarshalIndent(i, "", "\t")
 	return string(s)
 }
+
+func DecodeBase64(value string) (string, error) {
+	decoded, err := base64.StdEncoding.DecodeString(value)
+	if err != nil {
+		return "", err
+	}
+	return string(decoded), nil
+}

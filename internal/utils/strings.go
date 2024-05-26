@@ -10,6 +10,6 @@ func SanitizeString(s string) string {
 }
 
 func SanitizeUrl(original string) string {
-	urlRegExp := regexp.MustCompile(`[^a-zA-Z0-9-_/:.,?&@=#%]`)
-	return string(urlRegExp.ReplaceAll([]byte(original), []byte("")))
+	re := regexp.MustCompile(`[^a-zA-Z0-9-_/:.,?&@=#%]`)
+	return string(re.ReplaceAll([]byte(original), []byte("")))
 }

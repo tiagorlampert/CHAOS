@@ -33,7 +33,7 @@ func (b BuildClientBinaryInput) GetServerPort() string {
 }
 
 func (b BuildClientBinaryInput) GetFilename() string {
-	return utils.SanitizeUrl(b.Filename)
+	return utils.SanitizeString(b.Filename)
 }
 
 type Service interface {

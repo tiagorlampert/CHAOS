@@ -178,27 +178,29 @@ type ClientParam struct {
 }
 
 func (c clientService) BuildClientConfiguration(input BuildClientBinaryInput) (map[string]ClientParam, error) {
-
-	newToken, err := c.GenerateNewToken()
+	token, err := c.GenerateNewToken()
 	if err != nil {
 		return nil, err
 	}
 
-	const jsonStringLength = 10
+	const stringLength = 10
+	const portKey = "port"
+	const serverAddressKey = "server_address"
+	const tokenKey = "token"
 
 	configurationMap := make(map[string]ClientParam)
 
-	configurationMap["port"] = ClientParam{
-		Key:   random.GenerateString(jsonStringLength),
+	configurationMap[portKey] = ClientParam{
+		Key:   random.GenerateString(stringLength),
 		Value: input.GetServerPort(),
 	}
-	configurationMap["server_address"] = ClientParam{
-		Key:   random.GenerateString(jsonStringLength),
+	configurationMap[serverAddressKey] = ClientParam{
+		Key:   random.GenerateString(stringLength),
 		Value: input.GetServerAddress(),
 	}
-	configurationMap["token"] = ClientParam{
-		Key:   random.GenerateString(jsonStringLength),
-		Value: newToken,
+	configurationMap[tokenKey] = ClientParam{
+		Key:   random.GenerateString(stringLength),
+		Value: token,
 	}
 
 	return configurationMap, err
@@ -230,7 +232,6 @@ func (c clientService) GenerateNewToken() (string, error) {
 
 func (c clientService) WriteClientConfigurationFile(configuration map[string]ClientParam, buildPath string, sessionFilename string) error {
 	m := make(map[string]string)
-
 	for _, config := range configuration {
 		m[config.Key] = config.Value
 	}
@@ -252,16 +253,16 @@ func (c clientService) ReplaceClientConfigurationFile(configuration map[string]C
 		return err
 	}
 
-	s := string(file)
+	fileContent := string(file)
 	for key, param := range configuration {
 		oldParam := fmt.Sprintf(`"%s"`, key)
 		newParam := fmt.Sprintf(`"%s"`, param.Key)
-		s = strings.ReplaceAll(s, oldParam, newParam)
+		fileContent = strings.ReplaceAll(fileContent, oldParam, newParam)
 	}
 
-	s = strings.ReplaceAll(s, configFileName, sessionFilename)
+	fileContent = strings.ReplaceAll(fileContent, configFileName, sessionFilename)
 
-	return utils.WriteFile(mainFilepath, bytes.NewBufferString(s).Bytes())
+	return utils.WriteFile(mainFilepath, bytes.NewBufferString(fileContent).Bytes())
 }
 
 func (c clientService) PrepareBuildSession(input BuildClientBinaryInput) (string, error) {

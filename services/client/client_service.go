@@ -28,11 +28,12 @@ import (
 )
 
 const (
-	clientBaseDir  = "client/"
-	buildBaseDir   = "build/"
-	configFileName = "config.json"
-	mainFileName   = "main.go"
-	buildStr       = `GO_ENABLED=1 GOOS=%s GOARCH=amd64 go build -ldflags '%s -s -w -X main.Version=%s -extldflags "-static"' -o ../../temp/%s main.go`
+	clientBaseDir        = "client/"
+	buildBaseDir         = "build/"
+	configFileName       = "config.json"
+	mainFileName         = "main.go"
+	clientConfigFilepath = "app/utils/config.go"
+	buildStr             = `GO_ENABLED=1 GOOS=%s GOARCH=amd64 go build -ldflags '%s -s -w -X main.Version=%s -extldflags "-static"' -o ../../temp/%s main.go`
 )
 
 type clientService struct {
@@ -247,22 +248,31 @@ func (c clientService) WriteClientConfigurationFile(configuration map[string]Cli
 }
 
 func (c clientService) ReplaceClientConfigurationFile(configuration map[string]ClientParam, buildPath string, sessionFilename string) error {
-	mainFilepath := buildPath + mainFileName
-	file, err := os.ReadFile(mainFilepath)
+	filepath := buildPath + clientConfigFilepath
+	f, err := os.ReadFile(filepath)
 	if err != nil {
 		return err
 	}
 
-	fileContent := string(file)
+	content := string(f)
 	for key, param := range configuration {
 		oldParam := fmt.Sprintf(`"%s"`, key)
 		newParam := fmt.Sprintf(`"%s"`, param.Key)
-		fileContent = strings.ReplaceAll(fileContent, oldParam, newParam)
+		content = strings.ReplaceAll(content, oldParam, newParam)
 	}
 
-	fileContent = strings.ReplaceAll(fileContent, configFileName, sessionFilename)
+	return utils.WriteFile(filepath, bytes.NewBufferString(content).Bytes())
+}
 
-	return utils.WriteFile(mainFilepath, bytes.NewBufferString(fileContent).Bytes())
+func (c clientService) ReplaceMainConfigurationFile(buildPath string, sessionFilename string) error {
+	filepath := buildPath + mainFileName
+	f, err := os.ReadFile(filepath)
+	if err != nil {
+		return err
+	}
+
+	content := strings.ReplaceAll(string(f), configFileName, sessionFilename)
+	return utils.WriteFile(filepath, bytes.NewBufferString(content).Bytes())
 }
 
 func (c clientService) PrepareBuildSession(input BuildClientBinaryInput) (string, error) {
@@ -286,6 +296,11 @@ func (c clientService) PrepareBuildSession(input BuildClientBinaryInput) (string
 	}
 
 	err = c.ReplaceClientConfigurationFile(clientConfiguration, buildPath, sessionFilename)
+	if err != nil {
+		return "", err
+	}
+
+	err = c.ReplaceMainConfigurationFile(buildPath, sessionFilename)
 	if err != nil {
 		return "", err
 	}

@@ -1,70 +1,60 @@
 package middleware
 
 import (
+	"bytes"
 	"github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
-	"github.com/tiagorlampert/CHAOS/entities"
 	jwtUtil "github.com/tiagorlampert/CHAOS/internal/utils/jwt"
+	"github.com/tiagorlampert/CHAOS/services/auth"
 	"github.com/tiagorlampert/CHAOS/services/user"
 	"net/http"
 	"time"
+)
+
+const (
+	nameToDisplay   = "chaos"
+	tokenLookup     = "cookie:jwt"
+	tokenHeaderName = "Bearer"
+	authorizedKey   = "authorized"
 )
 
 type JWT struct {
 	*jwt.GinJWTMiddleware
 }
 
-func NewJWTMiddleware(secretKey string, userService user.Service) (*JWT, error) {
-	middleware, err := jwt.New(&jwt.GinJWTMiddleware{
-		Realm:         "chaos",
-		Key:           []byte(secretKey),
-		Timeout:       time.Hour,
-		MaxRefresh:    time.Hour,
-		IdentityKey:   jwtUtil.IdentityKey,
-		SendCookie:    true,
-		TokenLookup:   "cookie:jwt",
-		TokenHeadName: "Bearer",
-		TimeFunc:      time.Now,
-		PayloadFunc: func(data interface{}) jwt.MapClaims {
-			if v, ok := data.(*entities.User); ok {
-				return jwt.MapClaims{
-					"authorized":        true,
-					jwtUtil.IdentityKey: v.Username,
-				}
-			}
-			return jwt.MapClaims{}
-		},
-		IdentityHandler: func(c *gin.Context) interface{} {
-			claims := jwt.ExtractClaims(c)
-			return &entities.User{
-				Username: claims[jwtUtil.IdentityKey].(string),
-			}
-		},
-		Authenticator: func(c *gin.Context) (interface{}, error) {
-			var user entities.User
-			if err := c.ShouldBind(&user); err != nil {
-				return "", jwt.ErrMissingLoginValues
-			}
-			if userService.Login(user.Username, user.Password) {
-				return &entities.User{
-					Username: user.Username,
-				}, nil
-			}
-			return nil, jwt.ErrFailedAuthentication
-		},
-		Unauthorized: func(c *gin.Context, code int, message string) {
-			c.HTML(http.StatusUnauthorized, "login.html", gin.H{"unauthorized": true})
-			return
-		},
-		LogoutResponse: func(c *gin.Context, code int) {
-			c.HTML(http.StatusOK, "login.html", gin.H{"unauthorized": true})
-			return
-		},
+func NewJwtMiddleware(
+	authService auth.Service,
+	userService user.Service,
+) *JWT {
+	secret, err := authService.GetSecret()
+	if err != nil {
+		panic(err)
+	}
+
+	authHandler := &authHandler{
+		UserService: userService,
+	}
+
+	m, err := jwt.New(&jwt.GinJWTMiddleware{
+		Realm:           nameToDisplay,
+		Key:             bytes.NewBufferString(secret).Bytes(),
+		Timeout:         time.Hour,
+		MaxRefresh:      time.Hour,
+		IdentityKey:     jwtUtil.IdentityKey,
+		SendCookie:      true,
+		TokenLookup:     tokenLookup,
+		TokenHeadName:   tokenHeaderName,
+		TimeFunc:        time.Now,
+		PayloadFunc:     authHandler.payloadFuncHandler,
+		IdentityHandler: authHandler.identityHandler,
+		Authenticator:   authHandler.authenticatorHandler,
+		Unauthorized:    authHandler.unauthorizedHandler,
+		LogoutResponse:  authHandler.logoutResponseHandler,
 	})
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
-	return &JWT{middleware}, nil
+	return &JWT{m}
 }
 
 func (j *JWT) AuthAdmin(c *gin.Context) {

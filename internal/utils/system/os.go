@@ -12,7 +12,7 @@ const (
 	Unknown OSType = iota
 	Windows
 	Linux
-	//Darwin
+	Darwin
 )
 
 var OSTargetMap = map[OSType]string{
@@ -24,18 +24,18 @@ var OSTargetMap = map[OSType]string{
 var OSTargetIntMap = map[int]OSType{
 	1: Windows,
 	2: Linux,
-	//3:  Darwin,
+	3: Darwin,
 }
 
-// DetectOS return an int which represent a OS type
+// DetectOS return an int which represent an OS type
 func DetectOS() OSType {
 	switch runtime.GOOS {
 	case `windows`:
 		return Windows
 	case `linux`:
 		return Linux
-	//case `darwin`:
-	//	return Darwin
+	case `darwin`:
+		return Darwin
 	default:
 		return Unknown
 	}

@@ -63,12 +63,10 @@ func main() {
 }
 
 func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbClient *gorm.DB) *App {
-	//repositories
 	authRepository := authRepo.NewRepository(dbClient)
 	userRepository := userRepo.NewRepository(dbClient)
 	deviceRepository := deviceRepo.NewRepository(dbClient)
 
-	//services
 	authService := auth.NewAuthService(logger, configuration.SecretKey, authRepository)
 	userService := user.NewUserService(userRepository)
 	deviceService := device.NewDeviceService(deviceRepository)

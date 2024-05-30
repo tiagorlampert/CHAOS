@@ -39,7 +39,7 @@ func New(configuration *environment.Configuration) *App {
 		Delete:      delete.NewService(),
 		Explorer:    explorer.NewService(),
 		OS:          os.NewService(configuration, terminalService, operatingSystem),
-		URL:         url.NewURLService(terminalService, operatingSystem),
+		Url:         url.NewUrlService(terminalService, operatingSystem),
 	}
 
 	deviceSpecs, err := clientServices.Information.LoadDeviceSpecs()

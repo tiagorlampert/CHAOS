@@ -13,7 +13,7 @@ type Config struct {
 	Token         string `json:"token"`
 }
 
-func ReadConfigFileOrPanic(configFile []byte) *Config {
+func ReadConfigFile(configFile []byte) *Config {
 	decoded, err := encode.DecodeBase64(bytes.NewBuffer(configFile).String())
 	if err != nil {
 		log.Fatal("error reading config file: ", err)

@@ -16,7 +16,7 @@ var (
 var configFile []byte
 
 func main() {
-	config := utils.ReadConfigFileOrPanic(configFile)
+	config := utils.ReadConfigFile(configFile)
 
 	ui.ShowMenu(Version, config.ServerAddress, config.Port)
 

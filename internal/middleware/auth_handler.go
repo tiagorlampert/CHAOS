@@ -13,6 +13,10 @@ type authHandler struct {
 	UserService user.Service
 }
 
+func newAuthHandler(userService user.Service) *authHandler {
+	return &authHandler{UserService: userService}
+}
+
 func (a authHandler) payloadFuncHandler(data interface{}) jwt.MapClaims {
 	if v, ok := data.(*entities.User); ok {
 		return jwt.MapClaims{

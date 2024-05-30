@@ -31,9 +31,7 @@ func NewJwtMiddleware(
 		panic(err)
 	}
 
-	authHandler := &authHandler{
-		UserService: userService,
-	}
+	authHandler := newAuthHandler(userService)
 
 	m, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:           nameToDisplay,
@@ -41,9 +39,9 @@ func NewJwtMiddleware(
 		Timeout:         time.Hour,
 		MaxRefresh:      time.Hour,
 		IdentityKey:     jwtUtil.IdentityKey,
-		SendCookie:      true,
 		TokenLookup:     tokenLookup,
 		TokenHeadName:   tokenHeaderName,
+		SendCookie:      true,
 		TimeFunc:        time.Now,
 		PayloadFunc:     authHandler.payloadFuncHandler,
 		IdentityHandler: authHandler.identityHandler,

@@ -12,11 +12,11 @@ type Service struct {
 	OsType   os.OSType
 }
 
-func NewURLService(terminalService services.Terminal, osType os.OSType) services.URL {
+func NewUrlService(terminalService services.Terminal, osType os.OSType) services.Url {
 	return &Service{Terminal: terminalService, OsType: osType}
 }
 
-func (u Service) OpenURL(url string) error {
+func (u Service) OpenUrl(url string) error {
 	var cmdOut []byte
 	switch u.OsType {
 	case os.Windows:

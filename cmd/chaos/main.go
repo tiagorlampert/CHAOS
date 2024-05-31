@@ -33,11 +33,9 @@ type App struct {
 	Router        *gin.Engine
 }
 
-func init() {
-	_ = system.ClearScreen()
-}
-
 func main() {
+	_ = system.ClearScreen()
+
 	logger := logrus.New()
 	logger.Info(`Loading environment variables`)
 
@@ -65,43 +63,24 @@ func main() {
 }
 
 func NewApp(logger *logrus.Logger, configuration *environment.Configuration, dbClient *gorm.DB) *App {
-	//repositories
 	authRepository := authRepo.NewRepository(dbClient)
 	userRepository := userRepo.NewRepository(dbClient)
 	deviceRepository := deviceRepo.NewRepository(dbClient)
 
-	//services
 	authService := auth.NewAuthService(logger, configuration.SecretKey, authRepository)
 	userService := user.NewUserService(userRepository)
 	deviceService := device.NewDeviceService(deviceRepository)
 	clientService := client.NewClientService(Version, configuration, authRepository, authService)
 	urlService := url.NewUrlService(clientService)
 
-	setup, err := authService.Setup()
-	if err != nil {
-		logger.WithField(`cause`, err).Fatal(`error preparing auth`)
-	}
-	jwtMiddleware, err := middleware.NewJWTMiddleware(setup.SecretKey, userService)
-	if err != nil {
-		logger.WithField(`cause`, err).Fatal(`error creating jwt middleware`)
-	}
 	if err := userService.CreateDefaultUser(); err != nil {
-		logger.WithField(`cause`, err).Fatal(`error creating default user`)
+		logger.WithField(`cause`, err.Error()).Fatal(`error setting up default user`)
 	}
 
 	router := httpDelivery.NewRouter()
+	jwtMiddleware := middleware.NewJwtMiddleware(authService, userService)
 
-	httpDelivery.NewController(
-		configuration,
-		router,
-		logger,
-		jwtMiddleware,
-		clientService,
-		authService,
-		userService,
-		deviceService,
-		urlService,
-	)
+	httpDelivery.NewController(configuration, router, logger, jwtMiddleware, clientService, authService, userService, deviceService, urlService)
 
 	return &App{
 		Configuration: configuration,

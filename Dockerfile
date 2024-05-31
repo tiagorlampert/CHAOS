@@ -1,21 +1,22 @@
 # BUILD STAGE
-FROM golang:1.18-alpine AS build
+FROM golang:1.22.3-alpine AS build
 
 ARG APP_VERSION=dev
 ARG CGO=1
 ENV CGO_ENABLED=${CGO}
 ENV GOOS=linux
+ENV GOARCH=amd64
 ENV GO111MODULE=on
 
-# gcc/g++ are required by sqlite driver
-RUN apk update && apk add --no-cache gcc g++
+# required by go-sqlite3
+RUN apk add --update gcc g++ musl-dev
 
 WORKDIR /build
 COPY . .
-RUN go build -v -a -tags 'netgo' -ldflags '-w -X 'main.Version=${APP_VERSION}' -extldflags "-static"' -o chaos cmd/chaos/*
+RUN go build -v -a -tags 'netgo' -ldflags '-w -X 'main.Version=${APP_VERSION}' -linkmode external -extldflags -static' -o chaos cmd/chaos/*
 
 # FINAL STAGE
-FROM golang:1.18.4
+FROM golang:1.22.3
 
 MAINTAINER tiagorlampert@gmail.com
 

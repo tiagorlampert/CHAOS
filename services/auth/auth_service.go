@@ -30,8 +30,16 @@ func NewAuthService(
 	}
 }
 
-func (s authService) Setup() (*entities.Auth, error) {
-	auth, err := s.AuthRepository.GetFirst()
+func (a authService) GetSecret() (string, error) {
+	setup, err := a.Setup()
+	if err != nil {
+		return "", err
+	}
+	return setup.SecretKey, nil
+}
+
+func (a authService) Setup() (*entities.Auth, error) {
+	auth, err := a.AuthRepository.GetFirst()
 	switch err {
 	case nil, repositories.ErrNotFound:
 		break
@@ -39,46 +47,46 @@ func (s authService) Setup() (*entities.Auth, error) {
 		return nil, err
 	}
 
-	hasProvidedSecretKey := len(strings.TrimSpace(s.SecretKey)) > 0
+	hasProvidedSecretKey := len(strings.TrimSpace(a.SecretKey)) > 0
 	if hasProvidedSecretKey {
-		defer s.Logger.WithFields(logrus.Fields{"key": s.SecretKey}).
+		defer a.Logger.WithFields(logrus.Fields{"key": a.SecretKey}).
 			Info("Using a provided secret key from environment variable")
 	}
 
 	if errors.Is(err, repositories.ErrNotFound) {
 		authEntry := entities.Auth{}
 		if hasProvidedSecretKey {
-			authEntry.SecretKey = s.SecretKey
+			authEntry.SecretKey = a.SecretKey
 		} else {
 			authEntry.SecretKey = random.GenerateString(secretKeySize)
 		}
 
-		if err := s.AuthRepository.Insert(authEntry); err != nil {
+		if err := a.AuthRepository.Insert(authEntry); err != nil {
 			return nil, err
 		}
 		return &authEntry, nil
 	}
 
-	if hasProvidedSecretKey && auth.SecretKey != s.SecretKey {
-		auth.SecretKey = s.SecretKey
+	if hasProvidedSecretKey && auth.SecretKey != a.SecretKey {
+		auth.SecretKey = a.SecretKey
 
-		if err := s.AuthRepository.Update(auth); err != nil {
+		if err := a.AuthRepository.Update(auth); err != nil {
 			return nil, err
 		}
 	}
 	return auth, nil
 }
 
-func (s authService) GetAuthConfig() (*entities.Auth, error) {
-	return s.AuthRepository.GetFirst()
+func (a authService) GetAuthConfig() (*entities.Auth, error) {
+	return a.AuthRepository.GetFirst()
 }
 
-func (s authService) RefreshSecret() (string, error) {
-	auth, err := s.AuthRepository.GetFirst()
+func (a authService) RefreshSecret() (string, error) {
+	auth, err := a.AuthRepository.GetFirst()
 	if err != nil {
 		return "", err
 	}
 	auth.SecretKey = random.GenerateString(secretKeySize)
-	err = s.AuthRepository.Update(auth)
+	err = a.AuthRepository.Update(auth)
 	return auth.SecretKey, err
 }

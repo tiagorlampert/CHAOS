@@ -6,13 +6,13 @@ import (
 	"time"
 )
 
-func NewHttpClient(timeout time.Duration) *http.Client {
+func NewHttpClient() *http.Client {
 	return &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: true,
 			},
 		},
-		Timeout: time.Second * timeout,
+		Timeout: time.Second * 10,
 	}
 }

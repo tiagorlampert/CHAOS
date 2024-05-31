@@ -223,7 +223,7 @@ func (h *Handler) HandleCommand() {
 			response = res
 			break
 		case "open-url":
-			err := h.Services.URL.OpenURL(request.Parameter)
+			err := h.Services.Url.OpenUrl(request.Parameter)
 			if err != nil {
 				response = encode.StringToByte(err.Error())
 				hasError = true

@@ -19,7 +19,7 @@ type Services struct {
 	Delete
 	Explorer
 	OS
-	URL
+	Url
 }
 
 type Information interface {
@@ -57,6 +57,6 @@ type OS interface {
 	SignOut() error
 }
 
-type URL interface {
-	OpenURL(url string) error
+type Url interface {
+	OpenUrl(url string) error
 }

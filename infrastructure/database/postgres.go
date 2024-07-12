@@ -8,8 +8,6 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-const driverName = "postgres"
-
 func NewPostgresClient(configuration environment.Postgres) (*Provider, error) {
 	connString := configuration.BuildConnectionString()
 	gormConfig := &gorm.Config{NamingStrategy: schema.NamingStrategy{TablePrefix: tablePrefix}}

@@ -94,3 +94,17 @@ func (c *Client) sendDeviceRequest() error {
     }
     return c.conn.WriteMessage(websocket.TextMessage, []byte("POST /device"))
 }
+
+func connectWithRetry(url string, maxAttempts int) (*websocket.Conn, error) {
+    var conn *websocket.Conn
+    var err error
+    for attempt := 1; attempt <= maxAttempts; attempt++ {
+        conn, _, err = websocket.DefaultDialer.Dial(url, nil)
+        if err == nil {
+            return conn, nil
+        }
+        log.Printf("Connection attempt %d failed: %v. Retrying...", attempt, err)
+        time.Sleep(time.Second * time.Duration(attempt))
+    }
+    return nil, fmt.Errorf("failed to establish connection after %d attempts", maxAttempts)
+}

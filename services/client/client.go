@@ -9,7 +9,9 @@ import (
 	"sync"
 )
 
-// Assuming Service struct holds a map to manage connections
+// Author: Viru
+// Email: viru@gmail.com
+
 type Service struct {
 	connections map[string]*websocket.Conn
 	mu          sync.Mutex
@@ -45,10 +47,13 @@ func (s *Service) SendCommand(ctx context.Context, input SendCommandInput) (Send
 	if !exists {
 		return SendCommandOutput{}, errors.New("client not connected")
 	}
-	defer conn.Close()
+	defer func() {
+		if err := conn.Close(); err != nil {
+			// Log error if needed
+		}
+	}()
 
-	err := conn.WriteMessage(websocket.TextMessage, []byte(input.Command))
-	if err != nil {
+	if err := conn.WriteMessage(websocket.TextMessage, []byte(input.Command)); err != nil {
 		s.RemoveConnection(input.ClientID)
 		return SendCommandOutput{}, err
 	}

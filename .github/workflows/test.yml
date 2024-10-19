@@ -11,9 +11,12 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.22.x'
-      - name: Install dependencies
-        run: go get .
-      - name: Build
-        run: go build -v ./...
-      - name: Test with the Go CLI
-        run: go test
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Run tests
+        run: go test -race ./...

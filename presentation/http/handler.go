@@ -325,7 +325,7 @@ func (h *httpController) uploadFileHandler(c *gin.Context) {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-	if err := c.SaveUploadedFile(file, fmt.Sprint(internal.TempDirectory, file.Filename)); err != nil {
+	if err := c.SaveUploadedFile(file, fmt.Sprint(internal.TempDirectory, string(os.PathSeparator), file.Filename)); err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}

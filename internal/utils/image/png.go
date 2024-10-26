@@ -11,7 +11,7 @@ import (
 func WritePNG(content []byte) (string, error) {
 	filename := fmt.Sprint(uuid.New().String(), ".png")
 	file, err := os.OpenFile(
-		fmt.Sprint(internal.TempDirectory, filename),
+		fmt.Sprint(internal.TempDirectory, string(os.PathSeparator), filename),
 		os.O_WRONLY|os.O_TRUNC|os.O_CREATE,
 		os.ModePerm,
 	)

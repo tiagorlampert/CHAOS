@@ -24,11 +24,6 @@ jobs:
           username: ${{secrets.DOCKERHUB_USERNAME}}
           password: ${{secrets.DOCKERHUB_TOKEN}}
 
-      - name : pull
-        if: ${{ success() }}
-        run: |
-          git pull          
-
       - name: build and push docker image to registry
         if: ${{ success() }}
         run: |

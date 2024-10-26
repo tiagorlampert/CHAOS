@@ -19,6 +19,7 @@ import (
 	"github.com/tiagorlampert/CHAOS/services/user"
 	"net/http"
 	"net/url"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -252,7 +253,7 @@ func (h *httpController) shellHandler(c *gin.Context) {
 
 func (h *httpController) downloadFileHandler(c *gin.Context) {
 	fileName := c.Param("filename")
-	targetPath := filepath.Join(internal.TempDirectory, fileName)
+	targetPath := filepath.Join(internal.TempDirectory, string(os.PathSeparator), fileName)
 	if !strings.HasPrefix(filepath.Clean(targetPath), internal.TempDirectory) {
 		c.String(403, "Forbidden")
 		return

@@ -23,6 +23,7 @@ import (
 	"os/exec"
 	"strings"
 	"sync"
+	"syscall"
 )
 
 const (
@@ -31,7 +32,15 @@ const (
 	configFileName       = "config.json"
 	mainFileName         = "main.go"
 	clientConfigFilepath = "app/utils/config.go"
-	buildStr             = `GO_ENABLED=1 GOOS=%s GOARCH=amd64 go build -ldflags '%s -s -w -X main.Version=%s -extldflags "-static"' -o ../../temp/%s main.go`
+	buildStr             = `go build -ldflags="%s -s -w -X 'main.Version=%s' -extldflags -static" -o ../../temp/%s main.go`
+)
+
+var (
+	envVarBuildMap = map[string]string{
+		"GO_ENABLED": "1",
+		"GOOS":       "%s",
+		"GOARCH":     "amd64",
+	}
 )
 
 type clientService struct {
@@ -160,9 +169,19 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 	defer utils.RemoveDir(buildPath)
 
 	filename := buildFilename(input.OSTarget, input.GetFilename())
-	buildCmd := fmt.Sprintf(buildStr, getOSBuildParam(input.OSTarget), getRunHiddenBuildParam(input.RunHidden), c.AppVersion, filename)
+	buildCmd := fmt.Sprintf(getEnvVarBuild()+" "+buildStr, getOSBuildParam(input.OSTarget), getRunHiddenBuildParam(input.RunHidden), c.AppVersion, filename)
 
-	cmd := exec.Command("sh", "-c", buildCmd)
+	var cmd *exec.Cmd
+
+	switch system.DetectOS() {
+	case system.Windows:
+		cmd = exec.Command("cmd")
+		cmd.SysProcAttr = &syscall.SysProcAttr{CmdLine: fmt.Sprintf(`/c "%s"`, buildCmd)}
+		break
+	default:
+		cmd = exec.Command("sh", "-c", buildCmd)
+	}
+
 	cmd.Dir = buildPath
 
 	outputErr, err := cmd.CombinedOutput()
@@ -300,6 +319,30 @@ func getOSBuildParam(osType system.OSType) string {
 	default:
 		return unknownKey
 	}
+}
+
+func getEnvVarBuild() string {
+	const (
+		linuxEnvVarPrefixSeparator   = " "
+		linuxEnvVarSuffixSeparator   = " "
+		windowsEnvVarSuffixSeparator = " | "
+		windowsEnvVarPrefixSeparator = " set "
+	)
+
+	switch system.DetectOS() {
+	case system.Windows:
+		return MapKeysString(envVarBuildMap, windowsEnvVarPrefixSeparator, windowsEnvVarSuffixSeparator)
+	default:
+		return MapKeysString(envVarBuildMap, linuxEnvVarPrefixSeparator, linuxEnvVarSuffixSeparator)
+	}
+}
+
+func MapKeysString(m map[string]string, prefixSeparator string, suffixSeparator string) string {
+	keys := make([]string, 0, len(m))
+	for k, v := range m {
+		keys = append(keys, strings.ReplaceAll(fmt.Sprintf("%s %s=%s %s", prefixSeparator, k, v, suffixSeparator), "  ", " "))
+	}
+	return strings.Join(keys, "")
 }
 
 func getRunHiddenBuildParam(hidden bool) string {

@@ -1,0 +1,36 @@
+name: Build and Push Docker Image to Docker Hub
+
+on:
+  pull_request_target:
+    types:
+      - closed
+    branches:
+      - 'main'
+
+env:
+  REGISTRY_IMAGE: tiagorlampert/chaos
+
+jobs:
+  build:
+    name: build and push docker image to hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: check out code
+        uses: actions/checkout@v4
+
+      - name: login to docker registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
+
+      - name: build and push docker image to registry
+        if: ${{ success() }}
+        run: |
+          TAG=${GITHUB_SHA::7}
+          IMAGE=$REGISTRY_IMAGE
+          docker build \
+            --build-arg APP_VERSION=$TAG \
+            --tag $IMAGE:$TAG \
+            --tag $IMAGE:latest -f Dockerfile .
+              docker push $IMAGE --all-tags

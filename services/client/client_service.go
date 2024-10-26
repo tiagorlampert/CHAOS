@@ -19,11 +19,11 @@ import (
 	"github.com/tiagorlampert/CHAOS/presentation/http/request"
 	authRepo "github.com/tiagorlampert/CHAOS/repositories/auth"
 	"github.com/tiagorlampert/CHAOS/services/auth"
+	syscallCmd "github.com/tiagorlampert/CHAOS/services/client/syscall_cmd"
 	"os"
 	"os/exec"
 	"strings"
 	"sync"
-	"syscall"
 )
 
 const (
@@ -176,7 +176,7 @@ func (c clientService) BuildClient(input BuildClientBinaryInput) (string, error)
 	switch system.DetectOS() {
 	case system.Windows:
 		cmd = exec.Command("cmd")
-		cmd.SysProcAttr = &syscall.SysProcAttr{CmdLine: fmt.Sprintf(`/c "%s"`, buildCmd)}
+		cmd.SysProcAttr = syscallCmd.GetSyscallCmdLine(buildCmd)
 		break
 	default:
 		cmd = exec.Command("sh", "-c", buildCmd)

@@ -3,9 +3,11 @@ on:
   push:
     branches:
       - "*"
+      - "!main"
   pull_request:
     branches:
       - "*"
+      - "!main"
 
 jobs:
   test:
@@ -19,7 +21,7 @@ jobs:
           go-version: '1.22.x'
 
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Download dependencies
         run: go mod download

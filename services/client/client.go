@@ -2,44 +2,67 @@ package client
 
 import (
 	"context"
+	"errors"
 	"github.com/gorilla/websocket"
 	"github.com/tiagorlampert/CHAOS/internal/utils"
 	"github.com/tiagorlampert/CHAOS/internal/utils/system"
+	"sync"
 )
 
-type SendCommandInput struct {
-	ClientID  string
-	Command   string
-	Parameter string
-	Request   string
+// Author: Viru
+// Email: viru@gmail.com
+
+type Service struct {
+	connections map[string]*websocket.Conn
+	mu          sync.Mutex
 }
 
-type SendCommandOutput struct {
-	Response string
+func (s *Service) AddConnection(clientID string, conn *websocket.Conn) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.connections[clientID] = conn
+	return nil
 }
 
-type BuildClientBinaryInput struct {
-	ServerAddress, ServerPort, Filename string
-	RunHidden                           bool
-	OSTarget                            system.OSType
+func (s *Service) GetConnection(clientID string) (*websocket.Conn, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	conn, exists := s.connections[clientID]
+	return conn, exists
 }
 
-func (b BuildClientBinaryInput) GetServerAddress() string {
-	return utils.SanitizeUrl(b.ServerAddress)
+func (s *Service) RemoveConnection(clientID string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if conn, exists := s.connections[clientID]; exists {
+		err := conn.Close()
+		delete(s.connections, clientID)
+		return err
+	}
+	return errors.New("connection not found")
 }
 
-func (b BuildClientBinaryInput) GetServerPort() string {
-	return utils.SanitizeUrl(b.ServerPort)
-}
+func (s *Service) SendCommand(ctx context.Context, input SendCommandInput) (SendCommandOutput, error) {
+	conn, exists := s.GetConnection(input.ClientID)
+	if !exists {
+		return SendCommandOutput{}, errors.New("client not connected")
+	}
+	defer func() {
+		if err := conn.Close(); err != nil {
+			// Log error if needed
+		}
+	}()
 
-func (b BuildClientBinaryInput) GetFilename() string {
-	return utils.SanitizeString(b.Filename)
-}
+	if err := conn.WriteMessage(websocket.TextMessage, []byte(input.Command)); err != nil {
+		s.RemoveConnection(input.ClientID)
+		return SendCommandOutput{}, err
+	}
 
-type Service interface {
-	AddConnection(clientID string, connection *websocket.Conn) error
-	GetConnection(clientID string) (*websocket.Conn, bool)
-	RemoveConnection(clientID string) error
-	SendCommand(ctx context.Context, input SendCommandInput) (SendCommandOutput, error)
-	BuildClient(BuildClientBinaryInput) (string, error)
+	_, message, err := conn.ReadMessage()
+	if err != nil {
+		s.RemoveConnection(input.ClientID)
+		return SendCommandOutput{}, err
+	}
+
+	return SendCommandOutput{Response: string(message)}, nil
 }
